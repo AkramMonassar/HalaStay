@@ -6,5 +6,19 @@ use Illuminate\Database\Eloquent\Model;
 
 class HotelImage extends Model
 {
-    //
+    protected $fillable = [
+        'hotel_id',
+        'image_path',
+        'sort_order',
+        'is_cover',
+    ];
+
+    protected $casts = [
+        'is_cover' => 'boolean',
+    ];
+
+    public function hotel()
+    {
+        return $this->belongsTo(Hotel::class);
+    }
 }
