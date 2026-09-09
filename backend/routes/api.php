@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\CityController;
 use App\Http\Controllers\Api\V1\CountryController;
 use App\Http\Controllers\Api\V1\PaymentMethodController;
+use App\Http\Controllers\Api\V1\SearchController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -17,6 +18,9 @@ Route::prefix('v1')->group(function () {
     Route::get('/countries', [CountryController::class, 'index']);
     Route::get('/cities', [CityController::class, 'index']);
     Route::get('/payment-methods', [PaymentMethodController::class, 'index']);
+
+    // 🔍 Search API
+    Route::get('/search', [SearchController::class, 'index']);
 
     // 🔐 Auth APIs
     Route::prefix('auth')->group(function () {
