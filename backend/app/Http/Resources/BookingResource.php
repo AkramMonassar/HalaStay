@@ -24,6 +24,8 @@ class BookingResource extends JsonResource
             'currency_code' => $this->currency_code,
             'booking_status' => $this->booking_status,
             'payment_status' => $this->payment_status,
+            'payments' => PaymentResource::collection($this->whenLoaded('payments')),
+            'status_history' => BookingStatusHistoryResource::collection($this->whenLoaded('statusHistory')),
             'created_at' => $this->created_at,
         ];
     }

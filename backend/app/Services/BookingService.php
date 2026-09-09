@@ -13,6 +13,9 @@ use Illuminate\Validation\ValidationException;
 
 class BookingService
 {
+    /** حالات الحجز التي يسمح فيها بالإلغاء (BR-15) */
+    public const CANCELABLE_STATUSES = ['pending_payment', 'pending_confirmation'];
+
     public function __construct(protected AvailabilityService $availabilityService)
     {
     }
@@ -21,7 +24,6 @@ class BookingService
     {
         return DB::transaction(function () use ($user, $data) {
 
-            // 1) جلب نوع الإقامة مع قفل الصف لمنع التعارض (BR-06)
             $type = AccommodationType::whereKey($data['accommodation_type_id'])
                 ->where('is_active', true)
                 ->lockForUpdate()
@@ -33,7 +35,6 @@ class BookingService
                 ]);
             }
 
-            // 2) التحقق من اعتماد الفندق ونشاطه (BR-07)
             $hotel = Hotel::whereKey($type->hotel_id)
                 ->where('status', 'approved')
                 ->where('is_active', true)
@@ -45,7 +46,6 @@ class BookingService
                 ]);
             }
 
-            // 3) حساب عدد الليالي (BR-01 / BR-02)
             $checkIn = $data['check_in'];
             $checkOut = $data['check_out'];
             $nights = (int) Carbon::parse($checkIn)->diffInDays(Carbon::parse($checkOut));
@@ -56,7 +56,6 @@ class BookingService
                 ]);
             }
 
-            // 4) قاعدة السعة (§4.8.4)
             $rooms = (int) $data['rooms'];
             $guests = (int) $data['adults'] + (int) ($data['children'] ?? 0);
 
@@ -66,7 +65,6 @@ class BookingService
                 ]);
             }
 
-            // 5) التحقق من التوفر عبر خدمة التوفر الموحدة (BR-05)
             $availableUnits = $this->availabilityService->availableUnits($type, $checkIn, $checkOut);
 
             if ($availableUnits < $rooms) {
@@ -75,10 +73,8 @@ class BookingService
                 ]);
             }
 
-            // 6) حساب السعر الإجمالي (BR-12)
             $totalPrice = $type->base_price * $nights * $rooms;
 
-            // 7) إنشاء الحجز برقم فريد (BR-14)
             $booking = Booking::create([
                 'booking_number' => 'HS-' . strtoupper(uniqid()),
                 'user_id' => $user->id,
@@ -97,7 +93,6 @@ class BookingService
                 'notes' => $data['notes'] ?? null,
             ]);
 
-            // 8) توثيق اللحظة في سجل حالات الحجز (§4.7.13)
             BookingStatusHistory::create([
                 'booking_id' => $booking->id,
                 'changed_by' => $user->id,
@@ -107,6 +102,55 @@ class BookingService
             ]);
 
             return $booking;
+        });
+    }
+
+    /** هل يمكن إلغاء هذا الحجز وفق السياسة؟ */
+    public function canCancel(Booking $booking): bool
+    {
+        return in_array($booking->booking_status, self::CANCELABLE_STATUSES, true);
+    }
+
+    /** إلغاء الحجز مع مزامنة حالة الدفع وتسجيل الحدث (BR-13 / BR-15) */
+    public function cancelBooking(User $user, Booking $booking, ?string $reason = null): Booking
+    {
+        if ($booking->user_id !== $user->id) {
+            throw ValidationException::withMessages([
+                'booking' => 'لا يمكنك إلغاء حجز لا تملكه.',
+            ]);
+        }
+
+        if (!$this->canCancel($booking)) {
+            throw ValidationException::withMessages([
+                'booking_status' => 'لا يمكن إلغاء الحجز في حالته الحالية (' . $booking->booking_status . ').',
+            ]);
+        }
+
+        return DB::transaction(function () use ($user, $booking, $reason) {
+            $oldStatus = $booking->booking_status;
+
+            $booking->update([
+                'booking_status' => 'cancelled',
+                'payment_status' => $booking->payment_status === 'under_review'
+                    ? 'refunded'
+                    : $booking->payment_status,
+            ]);
+
+            if ($booking->payment_status === 'refunded') {
+                $booking->payments()
+                    ->where('payment_status', 'under_review')
+                    ->update(['payment_status' => 'refunded']);
+            }
+
+            BookingStatusHistory::create([
+                'booking_id' => $booking->id,
+                'changed_by' => $user->id,
+                'old_status' => $oldStatus,
+                'new_status' => 'cancelled',
+                'note' => $reason ?? 'تم إلغاء الحجز من قبل المستخدم',
+            ]);
+
+            return $booking->refresh();
         });
     }
 }
