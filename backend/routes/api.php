@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\CityController;
 use App\Http\Controllers\Api\V1\CountryController;
+use App\Http\Controllers\Api\V1\HotelController;
 use App\Http\Controllers\Api\V1\PaymentMethodController;
 use App\Http\Controllers\Api\V1\SearchController;
 use Illuminate\Http\Request;
@@ -21,6 +22,11 @@ Route::prefix('v1')->group(function () {
 
     // 🔍 Search API
     Route::get('/search', [SearchController::class, 'index']);
+
+    // 🏨 Hotel Details & Availability APIs
+    Route::get('/hotels/{hotel}', [HotelController::class, 'show']);
+    Route::get('/hotels/{hotel}/rooms', [HotelController::class, 'rooms']);
+    Route::get('/hotels/{hotel}/availability', [HotelController::class, 'availability']);
 
     // 🔐 Auth APIs
     Route::prefix('auth')->group(function () {
