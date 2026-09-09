@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\BookingController;
 use App\Http\Controllers\Api\V1\CityController;
 use App\Http\Controllers\Api\V1\CountryController;
 use App\Http\Controllers\Api\V1\HotelController;
@@ -20,13 +21,16 @@ Route::prefix('v1')->group(function () {
     Route::get('/cities', [CityController::class, 'index']);
     Route::get('/payment-methods', [PaymentMethodController::class, 'index']);
 
-    // 🔍 Search API
+    // 🔍 Search & Hotel Details APIs
     Route::get('/search', [SearchController::class, 'index']);
-
-    // 🏨 Hotel Details & Availability APIs
     Route::get('/hotels/{hotel}', [HotelController::class, 'show']);
     Route::get('/hotels/{hotel}/rooms', [HotelController::class, 'rooms']);
     Route::get('/hotels/{hotel}/availability', [HotelController::class, 'availability']);
+
+    // 🧾 Booking APIs (Auth Required)
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::post('/bookings', [BookingController::class, 'store']);
+    });
 
     // 🔐 Auth APIs
     Route::prefix('auth')->group(function () {
