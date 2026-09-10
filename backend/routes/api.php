@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\V1\BookingController;
 use App\Http\Controllers\Api\V1\CityController;
 use App\Http\Controllers\Api\V1\CountryController;
 use App\Http\Controllers\Api\V1\HotelController;
+use App\Http\Controllers\Api\V1\PaymentController;
 use App\Http\Controllers\Api\V1\PaymentMethodController;
 use App\Http\Controllers\Api\V1\SearchController;
 use Illuminate\Http\Request;
@@ -27,12 +28,16 @@ Route::prefix('v1')->group(function () {
     Route::get('/hotels/{hotel}/rooms', [HotelController::class, 'rooms']);
     Route::get('/hotels/{hotel}/availability', [HotelController::class, 'availability']);
 
-    // 🧾 Booking APIs (Auth Required)
+    // 🧾 Booking & Payment APIs (Auth Required)
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('/bookings', [BookingController::class, 'store']);
         Route::get('/user/bookings', [BookingController::class, 'userBookings']);
         Route::get('/bookings/{booking}', [BookingController::class, 'show']);
         Route::post('/bookings/{booking}/cancel', [BookingController::class, 'cancel']);
+
+        Route::post('/payments/manual', [PaymentController::class, 'store']);
+        Route::post('/payments/manual/{payment}/receipt', [PaymentController::class, 'uploadReceipt']);
+        Route::get('/payments/{payment}', [PaymentController::class, 'show']);
     });
 
     // 🔐 Auth APIs
