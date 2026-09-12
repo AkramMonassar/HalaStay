@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\V1\BookingController;
 use App\Http\Controllers\Api\V1\CityController;
 use App\Http\Controllers\Api\V1\CountryController;
 use App\Http\Controllers\Api\V1\HotelController;
+use App\Http\Controllers\Api\V1\OwnerHotelController;
 use App\Http\Controllers\Api\V1\PaymentController;
 use App\Http\Controllers\Api\V1\PaymentMethodController;
 use App\Http\Controllers\Api\V1\SearchController;
@@ -38,6 +39,17 @@ Route::prefix('v1')->group(function () {
         Route::post('/payments/manual', [PaymentController::class, 'store']);
         Route::post('/payments/manual/{payment}/receipt', [PaymentController::class, 'uploadReceipt']);
         Route::get('/payments/{payment}', [PaymentController::class, 'show']);
+    });
+
+    // 🏨 Owner Dashboard APIs (hotel_owner Role Required)
+    Route::middleware(['auth:sanctum', 'role:hotel_owner'])->prefix('owner')->group(function () {
+        Route::get('/hotels', [OwnerHotelController::class, 'index']);
+        Route::post('/hotels', [OwnerHotelController::class, 'store']);
+        Route::get('/hotels/{hotel}', [OwnerHotelController::class, 'show']);
+        Route::put('/hotels/{hotel}', [OwnerHotelController::class, 'update']);
+        Route::post('/hotels/{hotel}/images', [OwnerHotelController::class, 'storeImages']);
+        Route::get('/hotels/{hotel}/rooms', [OwnerHotelController::class, 'rooms']);
+        Route::post('/hotels/{hotel}/rooms', [OwnerHotelController::class, 'storeRoom']);
     });
 
     // 🔐 Auth APIs
