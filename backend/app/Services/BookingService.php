@@ -16,6 +16,9 @@ class BookingService
     /** حالات الحجز التي يسمح فيها بالإلغاء (BR-15) */
     public const CANCELABLE_STATUSES = ['pending_payment', 'pending_confirmation'];
 
+    /** الحالات التي يسمح لصاحب الفندق بتأكيدها أو رفضها */
+    public const OWNER_PROCESSABLE = ['pending_confirmation'];
+
     public function __construct(protected AvailabilityService $availabilityService)
     {
     }
@@ -105,13 +108,11 @@ class BookingService
         });
     }
 
-    /** هل يمكن إلغاء هذا الحجز وفق السياسة؟ */
     public function canCancel(Booking $booking): bool
     {
         return in_array($booking->booking_status, self::CANCELABLE_STATUSES, true);
     }
 
-    /** إلغاء الحجز مع مزامنة حالة الدفع وتسجيل الحدث (BR-13 / BR-15) */
     public function cancelBooking(User $user, Booking $booking, ?string $reason = null): Booking
     {
         if ($booking->user_id !== $user->id) {
@@ -152,5 +153,86 @@ class BookingService
 
             return $booking->refresh();
         });
+    }
+
+    /** تأكيد الحجز من صاحب الفندق */
+    public function confirmBookingByOwner(User $owner, Booking $booking, ?string $note = null): Booking
+    {
+        $this->assertOwnerOfBookingHotel($owner, $booking);
+
+        if (!in_array($booking->booking_status, self::OWNER_PROCESSABLE, true)) {
+            throw ValidationException::withMessages([
+                'booking_status' => 'لا يمكن تأكيد حجز بحالة ' . $booking->booking_status . '.',
+            ]);
+        }
+
+        return DB::transaction(function () use ($owner, $booking, $note) {
+            $oldStatus = $booking->booking_status;
+
+            $booking->update(['booking_status' => 'confirmed']);
+
+            BookingStatusHistory::create([
+                'booking_id' => $booking->id,
+                'changed_by' => $owner->id,
+                'old_status' => $oldStatus,
+                'new_status' => 'confirmed',
+                'note' => $note ?? 'تم تأكيد الحجز من قبل صاحب الفندق',
+            ]);
+
+            return $booking->refresh();
+        });
+    }
+
+    /** رفض الحجز من صاحب الفندق مع مزامنة الدفعة */
+    public function rejectBookingByOwner(User $owner, Booking $booking, ?string $reason = null): Booking
+    {
+        $this->assertOwnerOfBookingHotel($owner, $booking);
+
+        if (!in_array($booking->booking_status, self::OWNER_PROCESSABLE, true)) {
+            throw ValidationException::withMessages([
+                'booking_status' => 'لا يمكن رفض حجز بحالة ' . $booking->booking_status . '.',
+            ]);
+        }
+
+        return DB::transaction(function () use ($owner, $booking, $reason) {
+            $oldStatus = $booking->booking_status;
+
+            $booking->update([
+                'booking_status' => 'cancelled',
+                'payment_status' => $booking->payment_status === 'under_review'
+                    ? 'refunded'
+                    : $booking->payment_status,
+            ]);
+
+            if ($booking->payment_status === 'refunded') {
+                $booking->payments()
+                    ->where('payment_status', 'under_review')
+                    ->update(['payment_status' => 'refunded']);
+            }
+
+            BookingStatusHistory::create([
+                'booking_id' => $booking->id,
+                'changed_by' => $owner->id,
+                'old_status' => $oldStatus,
+                'new_status' => 'cancelled',
+                'note' => $reason ?? 'تم رفض الحجز من قبل صاحب الفندق',
+            ]);
+
+            return $booking->refresh();
+        });
+    }
+
+    /** حماية الملكية: لا يدير صاحب الفندق إلا حجوزات فنادقه (BR-08) */
+    protected function assertOwnerOfBookingHotel(User $user, Booking $booking): void
+    {
+        $isOwner = Hotel::whereKey($booking->hotel_id)
+            ->where('owner_id', $user->id)
+            ->exists();
+
+        if (!$isOwner) {
+            throw ValidationException::withMessages([
+                'booking' => 'لا يمكنك إدارة حجوزات فندق لا تملكه.',
+            ]);
+        }
     }
 }

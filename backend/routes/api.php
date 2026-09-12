@@ -5,7 +5,9 @@ use App\Http\Controllers\Api\V1\BookingController;
 use App\Http\Controllers\Api\V1\CityController;
 use App\Http\Controllers\Api\V1\CountryController;
 use App\Http\Controllers\Api\V1\HotelController;
+use App\Http\Controllers\Api\V1\OwnerBookingController;
 use App\Http\Controllers\Api\V1\OwnerHotelController;
+use App\Http\Controllers\Api\V1\OwnerPaymentController;
 use App\Http\Controllers\Api\V1\PaymentController;
 use App\Http\Controllers\Api\V1\PaymentMethodController;
 use App\Http\Controllers\Api\V1\SearchController;
@@ -50,6 +52,13 @@ Route::prefix('v1')->group(function () {
         Route::post('/hotels/{hotel}/images', [OwnerHotelController::class, 'storeImages']);
         Route::get('/hotels/{hotel}/rooms', [OwnerHotelController::class, 'rooms']);
         Route::post('/hotels/{hotel}/rooms', [OwnerHotelController::class, 'storeRoom']);
+
+        Route::get('/bookings', [OwnerBookingController::class, 'index']);
+        Route::post('/bookings/{booking}/confirm', [OwnerBookingController::class, 'confirm']);
+        Route::post('/bookings/{booking}/reject', [OwnerBookingController::class, 'reject']);
+
+        Route::get('/payments', [OwnerPaymentController::class, 'index']);
+        Route::patch('/payments/{payment}/review', [OwnerPaymentController::class, 'review']);
     });
 
     // 🔐 Auth APIs

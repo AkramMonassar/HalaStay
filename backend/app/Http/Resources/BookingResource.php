@@ -12,6 +12,7 @@ class BookingResource extends JsonResource
         return [
             'id' => $this->id,
             'booking_number' => $this->booking_number,
+            'guest_name' => $this->whenLoaded('user', fn () => $this->user->name),
             'hotel' => $this->whenLoaded('hotel', fn () => $this->hotel->name),
             'accommodation_type' => $this->whenLoaded('accommodationType', fn () => $this->accommodationType->name),
             'check_in' => $this->check_in->toDateString(),

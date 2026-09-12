@@ -23,7 +23,6 @@ class PaymentService
     {
         return DB::transaction(function () use ($user, $data, $receipt) {
 
-            // 1) قفل الحجز والتحقق من ملكيته وحالته
             $booking = Booking::whereKey($data['booking_id'])->lockForUpdate()->first();
 
             if (!$booking) {
@@ -44,7 +43,6 @@ class PaymentService
                 ]);
             }
 
-            // 2) منع تكرار الدفعات النشطة على نفس الحجز
             $hasActivePayment = $booking->payments()
                 ->whereIn('payment_status', ['pending', 'under_review'])
                 ->exists();
@@ -55,7 +53,6 @@ class PaymentService
                 ]);
             }
 
-            // 3) التحقق من طريقة الدفع (يدوية ونشطة فقط)
             $method = PaymentMethod::whereKey($data['payment_method_id'])
                 ->where('is_active', true)
                 ->where('type', 'manual')
@@ -67,7 +64,6 @@ class PaymentService
                 ]);
             }
 
-            // 4) حالة الدفعة حسب الطريقة: وصول = pending | تحويل/محفظة = under_review
             $isCash = $method->method_key === 'cash_on_arrival';
             $paymentStatus = $isCash ? 'pending' : 'under_review';
 
@@ -84,7 +80,6 @@ class PaymentService
                 'receipt_image' => $receipt?->store('receipts', 'public'),
             ]);
 
-            // 5) تحديث الحجز وتوثيق الحدث (BR-13)
             $oldStatus = $booking->booking_status;
 
             $booking->update([
@@ -106,7 +101,6 @@ class PaymentService
         });
     }
 
-    /** رفع إشعار الدفع لدفعة موجودة وتحديث الحالات */
     public function uploadReceipt(User $user, Payment $payment, UploadedFile $file): Payment
     {
         if ($payment->user_id !== $user->id) {
@@ -144,6 +138,70 @@ class PaymentService
                     'old_status' => $oldStatus,
                     'new_status' => 'pending_confirmation',
                     'note' => 'تم رفع إشعار الدفع',
+                ]);
+            }
+
+            return $payment->refresh();
+        });
+    }
+
+    /** مراجعة صاحب الفندق لدفعة يدوية: اعتماد أو رفض (BR-10) */
+    public function reviewPaymentByOwner(User $owner, Payment $payment, string $action, ?string $note = null): Payment
+    {
+        $payment->loadMissing('booking.hotel');
+
+        if ($payment->booking?->hotel?->owner_id !== $owner->id) {
+            throw ValidationException::withMessages([
+                'payment' => 'لا يمكنك مراجعة دفعة لفندق لا تملكه.',
+            ]);
+        }
+
+        if ($payment->payment_status !== 'under_review') {
+            throw ValidationException::withMessages([
+                'payment_status' => 'لا يمكن مراجعة دفعة بحالة ' . $payment->payment_status . '.',
+            ]);
+        }
+
+        return DB::transaction(function () use ($owner, $payment, $action, $note) {
+            $booking = $payment->booking;
+            $oldBookingStatus = $booking->booking_status;
+
+            if ($action === 'approve') {
+                $payment->update([
+                    'payment_status' => 'success',
+                    'paid_at' => now(),
+                    'admin_note' => $note,
+                ]);
+
+                $booking->update([
+                    'payment_status' => 'paid',
+                    'booking_status' => 'confirmed',
+                ]);
+
+                BookingStatusHistory::create([
+                    'booking_id' => $booking->id,
+                    'changed_by' => $owner->id,
+                    'old_status' => $oldBookingStatus,
+                    'new_status' => 'confirmed',
+                    'note' => 'تم اعتماد إشعار الدفع من صاحب الفندق',
+                ]);
+            } else {
+                $payment->update([
+                    'payment_status' => 'failed',
+                    'admin_note' => $note,
+                ]);
+
+                $booking->update([
+                    'payment_status' => 'unpaid',
+                    'booking_status' => 'pending_payment',
+                ]);
+
+                BookingStatusHistory::create([
+                    'booking_id' => $booking->id,
+                    'changed_by' => $owner->id,
+                    'old_status' => $oldBookingStatus,
+                    'new_status' => 'pending_payment',
+                    'note' => 'تم رفض إشعار الدفع من صاحب الفندق' . ($note ? ': ' . $note : ''),
                 ]);
             }
 
