@@ -6,10 +6,10 @@ use App\Models\Hotel;
 use App\Models\HotelImage;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class HotelService
 {
-    /** إنشاء فندق جديد بحالة pending مع صوره (BR-07) */
     public function createHotel(User $owner, array $data, array $images = []): Hotel
     {
         return DB::transaction(function () use ($owner, $data, $images) {
@@ -33,7 +33,6 @@ class HotelService
         });
     }
 
-    /** تحديث جزئي لبيانات الفندق */
     public function updateHotel(Hotel $hotel, array $data): Hotel
     {
         $hotel->update([
@@ -49,7 +48,6 @@ class HotelService
         return $hotel->refresh();
     }
 
-    /** إرفاق صور جديدة: أول صورة تصبح غلافاً إن لم يوجد غلاف */
     public function attachImages(Hotel $hotel, array $images): void
     {
         if (empty($images)) {
@@ -69,5 +67,33 @@ class HotelService
 
             $hasCover = true;
         }
+    }
+
+    /** اعتماد الفندق من الأدمن (FR-ADMIN-01) */
+    public function approveHotel(Hotel $hotel): Hotel
+    {
+        if ($hotel->status !== 'pending') {
+            throw ValidationException::withMessages([
+                'status' => 'لا يمكن اعتماد فندق بحالة ' . $hotel->status . '.',
+            ]);
+        }
+
+        $hotel->update(['status' => 'approved']);
+
+        return $hotel->refresh();
+    }
+
+    /** رفض الفندق من الأدمن */
+    public function rejectHotel(Hotel $hotel): Hotel
+    {
+        if ($hotel->status !== 'pending') {
+            throw ValidationException::withMessages([
+                'status' => 'لا يمكن رفض فندق بحالة ' . $hotel->status . '.',
+            ]);
+        }
+
+        $hotel->update(['status' => 'rejected']);
+
+        return $hotel->refresh();
     }
 }

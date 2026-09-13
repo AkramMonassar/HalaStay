@@ -1,5 +1,10 @@
 <?php
 
+use App\Http\Controllers\Api\V1\AdminCityController;
+use App\Http\Controllers\Api\V1\AdminDashboardController;
+use App\Http\Controllers\Api\V1\AdminHotelController;
+use App\Http\Controllers\Api\V1\AdminPaymentMethodController;
+use App\Http\Controllers\Api\V1\AdminUserController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\BookingController;
 use App\Http\Controllers\Api\V1\CityController;
@@ -59,6 +64,27 @@ Route::prefix('v1')->group(function () {
 
         Route::get('/payments', [OwnerPaymentController::class, 'index']);
         Route::patch('/payments/{payment}/review', [OwnerPaymentController::class, 'review']);
+    });
+
+    // 👑 Admin Dashboard APIs (admin Role Required)
+    Route::middleware(['auth:sanctum', 'role:admin'])->prefix('admin')->group(function () {
+        Route::get('/stats', [AdminDashboardController::class, 'stats']);
+
+        Route::get('/hotels', [AdminHotelController::class, 'index']);
+        Route::patch('/hotels/{hotel}/approve', [AdminHotelController::class, 'approve']);
+        Route::patch('/hotels/{hotel}/reject', [AdminHotelController::class, 'reject']);
+
+        Route::get('/users', [AdminUserController::class, 'index']);
+        Route::patch('/users/{user}/toggle-active', [AdminUserController::class, 'toggleActive']);
+
+        Route::get('/bookings', [AdminDashboardController::class, 'bookings']);
+        Route::get('/payments', [AdminDashboardController::class, 'payments']);
+
+        Route::get('/cities', [AdminCityController::class, 'index']);
+        Route::post('/cities', [AdminCityController::class, 'store']);
+        Route::patch('/cities/{city}', [AdminCityController::class, 'update']);
+
+        Route::patch('/payment-methods/{method}/toggle', [AdminPaymentMethodController::class, 'toggle']);
     });
 
     // 🔐 Auth APIs

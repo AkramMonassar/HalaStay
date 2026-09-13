@@ -21,6 +21,8 @@ class HotelResource extends JsonResource
             'longitude' => $this->longitude,
             'star_rating' => $this->star_rating,
             'review_score' => $this->review_score,
+            'status' => $this->status,
+            'owner_name' => $this->whenLoaded('owner', fn () => $this->owner->name),
             'city' => $this->whenLoaded('city', fn () => $this->city->name),
             'images' => HotelImageResource::collection($this->whenLoaded('images')),
             'accommodation_types' => AccommodationTypeResource::collection($this->whenLoaded('accommodationTypes')),
