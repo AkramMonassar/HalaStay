@@ -14,9 +14,7 @@ class AdminHotelController extends Controller
 {
     use ApiResponse;
 
-    public function __construct(protected HotelService $hotelService)
-    {
-    }
+    public function __construct(protected HotelService $hotelService) {}
 
     public function index(Request $request): JsonResponse
     {
@@ -25,7 +23,7 @@ class AdminHotelController extends Controller
         ]);
 
         $hotels = Hotel::with(['city', 'owner', 'images'])
-            ->when(!empty($validated['status']), fn ($q) => $q->where('status', $validated['status']))
+            ->when(!empty($validated['status']), fn($q) => $q->where('status', $validated['status']))
             ->latest()
             ->paginate(10)
             ->withQueryString();
@@ -45,6 +43,7 @@ class AdminHotelController extends Controller
 
     public function approve(Request $request, Hotel $hotel): JsonResponse
     {
+        $this->authorize('approve', $hotel);
         $hotel = $this->hotelService->approveHotel($hotel);
 
         return $this->successResponse(
@@ -55,6 +54,7 @@ class AdminHotelController extends Controller
 
     public function reject(Request $request, Hotel $hotel): JsonResponse
     {
+        $this->authorize('approve', $hotel);
         $hotel = $this->hotelService->rejectHotel($hotel);
 
         return $this->successResponse(

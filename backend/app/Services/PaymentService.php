@@ -185,6 +185,8 @@ class PaymentService
                     'new_status' => 'confirmed',
                     'note' => 'تم اعتماد إشعار الدفع من صاحب الفندق',
                 ]);
+                
+                NotificationService::send($booking->user, 'تم اعتماد دفعتك', 'دفعتك للحجز ' . $booking->booking_number . ' معتمدة والحجز مؤكد.', 'payment');
             } else {
                 $payment->update([
                     'payment_status' => 'failed',
@@ -203,6 +205,8 @@ class PaymentService
                     'new_status' => 'pending_payment',
                     'note' => 'تم رفض إشعار الدفع من صاحب الفندق' . ($note ? ': ' . $note : ''),
                 ]);
+                
+                NotificationService::send($booking->user, 'تحديث على دفعتك', 'دفعتك للحجز ' . $booking->booking_number . ' مرفوضة. يمكنك إعادة المحاولة.', 'payment');
             }
 
             return $payment->refresh();

@@ -18,6 +18,7 @@ use App\Http\Controllers\Api\V1\PaymentMethodController;
 use App\Http\Controllers\Api\V1\SearchController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\V1\NotificationController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -46,6 +47,10 @@ Route::prefix('v1')->group(function () {
         Route::post('/payments/manual', [PaymentController::class, 'store']);
         Route::post('/payments/manual/{payment}/receipt', [PaymentController::class, 'uploadReceipt']);
         Route::get('/payments/{payment}', [PaymentController::class, 'show']);
+
+        Route::get('/notifications', [NotificationController::class, 'index']);
+        Route::post('/notifications/read-all', [NotificationController::class, 'markAllRead']);
+        Route::post('/notifications/{notification}/read', [NotificationController::class, 'markRead']);
     });
 
     // 🏨 Owner Dashboard APIs (hotel_owner Role Required)

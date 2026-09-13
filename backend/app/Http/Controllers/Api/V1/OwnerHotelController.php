@@ -64,7 +64,7 @@ class OwnerHotelController extends Controller
 
     public function show(Request $request, Hotel $hotel): JsonResponse
     {
-        $this->authorizeOwner($request, $hotel);
+        $this->authorize('update', $hotel);
 
         $hotel->load(['city', 'images', 'accommodationTypes']);
 
@@ -73,7 +73,7 @@ class OwnerHotelController extends Controller
 
     public function update(UpdateHotelRequest $request, Hotel $hotel): JsonResponse
     {
-        $this->authorizeOwner($request, $hotel);
+        $this->authorize('update', $hotel);
 
         $hotel = $this->hotelService->updateHotel($hotel, $request->validated());
 
@@ -84,7 +84,7 @@ class OwnerHotelController extends Controller
 
     public function storeImages(StoreHotelImagesRequest $request, Hotel $hotel): JsonResponse
     {
-        $this->authorizeOwner($request, $hotel);
+        $this->authorize('update', $hotel);
 
         $this->hotelService->attachImages($hotel, $request->file('images'));
 
@@ -99,7 +99,7 @@ class OwnerHotelController extends Controller
 
     public function rooms(Request $request, Hotel $hotel): JsonResponse
     {
-        $this->authorizeOwner($request, $hotel);
+        $this->authorize('update', $hotel);
 
         $types = $hotel->accommodationTypes()->latest()->get();
 
@@ -111,7 +111,7 @@ class OwnerHotelController extends Controller
 
     public function storeRoom(StoreRoomRequest $request, Hotel $hotel): JsonResponse
     {
-        $this->authorizeOwner($request, $hotel);
+        $this->authorize('update', $hotel);
 
         $type = $hotel->accommodationTypes()->create([
             'name' => $request->validated('name'),
@@ -132,11 +132,4 @@ class OwnerHotelController extends Controller
         );
     }
 
-    /** حماية الملكية: لا يدير صاحب الفندق إلا فنادقه (BR-08) */
-    protected function authorizeOwner(Request $request, Hotel $hotel): void
-    {
-        if ($hotel->owner_id !== $request->user()->id) {
-            abort(403, 'لا يمكنك إدارة فندق لا تملكه.');
-        }
-    }
 }

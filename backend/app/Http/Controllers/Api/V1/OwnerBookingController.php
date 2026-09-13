@@ -14,9 +14,7 @@ class OwnerBookingController extends Controller
 {
     use ApiResponse;
 
-    public function __construct(protected BookingService $bookingService)
-    {
-    }
+    public function __construct(protected BookingService $bookingService) {}
 
     public function index(Request $request): JsonResponse
     {
@@ -28,7 +26,7 @@ class OwnerBookingController extends Controller
 
         $bookings = Booking::with(['hotel', 'user', 'accommodationType', 'payments'])
             ->whereIn('hotel_id', $hotelIds)
-            ->when(!empty($validated['status']), fn ($q) => $q->where('booking_status', $validated['status']))
+            ->when(!empty($validated['status']), fn($q) => $q->where('booking_status', $validated['status']))
             ->latest()
             ->paginate(10)
             ->withQueryString();
@@ -48,6 +46,7 @@ class OwnerBookingController extends Controller
 
     public function confirm(Request $request, Booking $booking): JsonResponse
     {
+        $this->authorize('process', $booking);
         $validated = $request->validate([
             'note' => ['nullable', 'string', 'max:255'],
         ]);
@@ -65,6 +64,7 @@ class OwnerBookingController extends Controller
 
     public function reject(Request $request, Booking $booking): JsonResponse
     {
+        $this->authorize('process', $booking);
         $validated = $request->validate([
             'reason' => ['nullable', 'string', 'max:255'],
         ]);

@@ -58,11 +58,7 @@ class BookingController extends Controller
 
     public function show(Request $request, Booking $booking): JsonResponse
     {
-        $user = $request->user();
-
-        if ($booking->user_id !== $user->id && $user->role !== 'admin') {
-            return $this->errorResponse('لا يمكنك الاطلاع على هذا الحجز.', 403);
-        }
+        $this->authorize('view', $booking);
 
         $booking->load(['hotel', 'accommodationType', 'payments.paymentMethod', 'statusHistory.changedBy']);
 

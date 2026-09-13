@@ -178,7 +178,7 @@ class BookingService
                 'new_status' => 'confirmed',
                 'note' => $note ?? 'تم تأكيد الحجز من قبل صاحب الفندق',
             ]);
-
+            NotificationService::send($booking->user, 'تم تأكيد حجزك', 'حجزك رقم ' . $booking->booking_number . ' مؤكد الآن. نتمنى لك إقامة سعيدة!', 'booking');
             return $booking->refresh();
         });
     }
@@ -217,7 +217,7 @@ class BookingService
                 'new_status' => 'cancelled',
                 'note' => $reason ?? 'تم رفض الحجز من قبل صاحب الفندق',
             ]);
-
+            NotificationService::send($booking->user, 'تحديث على حجزك', 'حجزك رقم ' . $booking->booking_number . ' مرفوض من قبل الفندق.', 'booking');
             return $booking->refresh();
         });
     }

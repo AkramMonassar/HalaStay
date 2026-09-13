@@ -55,16 +55,9 @@ class PaymentController extends Controller
 
     public function show(Request $request, Payment $payment): JsonResponse
     {
+        $this->authorize('view', $payment);
+
         $payment->load(['paymentMethod', 'booking.hotel']);
-
-        $user = $request->user();
-        $isOwner = $payment->user_id === $user->id;
-        $isAdmin = $user->role === 'admin';
-        $isHotelOwner = $payment->booking?->hotel?->owner_id === $user->id;
-
-        if (!$isOwner && !$isAdmin && !$isHotelOwner) {
-            return $this->errorResponse('لا يمكنك الاطلاع على هذه الدفعة.', 403);
-        }
 
         return $this->successResponse(new PaymentResource($payment), 'تفاصيل الدفعة.');
     }
