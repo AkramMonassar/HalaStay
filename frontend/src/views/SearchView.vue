@@ -1,9 +1,10 @@
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import api from '../services/api'
 import FilterSidebar from '../components/FilterSidebar.vue'
 import HotelCard from '../components/HotelCard.vue'
+import SearchForm from '../components/SearchForm.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -13,6 +14,12 @@ const results = ref([])
 const meta = ref(null)
 const message = ref('')
 const filters = ref({})
+
+const highCapacityDemand = computed(() => {
+  const guests = Number(filters.value.adults || 0) + Number(filters.value.children || 0)
+  const rooms = Number(filters.value.rooms || 1)
+  return guests > rooms * 4
+})
 
 function readQuery() {
   const q = route.query
@@ -69,6 +76,12 @@ watch(() => route.query, () => { readQuery(); fetchResults() }, { immediate: tru
 
 <template>
   <div class="container py-4">
+    <div class="card shadow-sm mb-3">
+      <div class="card-body">
+        <SearchForm :initial="filters" />
+      </div>
+    </div>
+
     <div class="row">
       <div class="col-lg-3 mb-3">
         <FilterSidebar :filters="filters" @update="applyFilters" />
@@ -84,7 +97,12 @@ watch(() => route.query, () => { readQuery(); fetchResults() }, { immediate: tru
           </div>
         </div>
 
-        <div v-else class="alert alert-info">لا توجد نتائج مطابقة — جرّب تعديل المعايير.</div>
+        <div v-else class="alert alert-info">
+          لا توجد نتائج مطابقة — جرّب تعديل المعايير.
+          <div v-if="highCapacityDemand" class="small mt-2">
+            💡 عدد الأفراد كبير مقارنة بعدد الغرف — معظم المنشآت لا تستوعب هذا العدد في غرفة واحدة؛ جرّب زيادة عدد الغرف.
+          </div>
+        </div>
 
         <nav v-if="meta && meta.last_page > 1" class="mt-4">
           <ul class="pagination justify-content-center">

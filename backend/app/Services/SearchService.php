@@ -34,7 +34,9 @@ class SearchService
                     ->when(!empty($filters['stay_type']), function ($q) use ($filters) {
                         $q->whereIn('stay_type', $filters['stay_type']);
                     })
+                    // قاعدة السعة §4.8.4: الأفراد <= الغرف × (max_adults + max_children)
                     ->whereRaw('(? * (max_adults + max_children)) >= ?', [$rooms, $guests])
+                    // استبعاد الأنواع التي لا يتبقى فيها وحدات كافية §4.8.2
                     ->whereNotExists(function ($sub) use ($checkIn, $checkOut, $rooms) {
                         $sub->selectRaw('1')
                             ->from('bookings')

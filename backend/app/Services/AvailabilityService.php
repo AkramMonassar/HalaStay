@@ -9,8 +9,8 @@ use Illuminate\Support\Collection;
 
 class AvailabilityService
 {
-    /** حالات الحجز التي تحجز الوحدات فعلياً */
-    public const BLOCKING_STATUSES = ['pending_confirmation', 'confirmed', 'completed'];
+    /** حالات الحجز التي تحجز الوحدات فعلياً — تشمل بانتظار الدفع لحيازة الوحدات خلال نافذة الدفع */
+    public const BLOCKING_STATUSES = ['pending_payment', 'pending_confirmation', 'confirmed', 'completed'];
 
     /** عدد الوحدات المحجوزة لنوع إقامة بين تاريخين */
     public function bookedUnits(int $accommodationTypeId, string $checkIn, string $checkOut): int
