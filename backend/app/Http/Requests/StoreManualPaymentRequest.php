@@ -17,7 +17,7 @@ class StoreManualPaymentRequest extends FormRequest
             'booking_id' => ['required', 'exists:bookings,id'],
             'payment_method_id' => ['required', 'exists:payment_methods,id'],
             'transaction_id' => ['nullable', 'string', 'max:100'],
-            'receipt' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'receipt' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
         ];
     }
 
@@ -30,7 +30,8 @@ class StoreManualPaymentRequest extends FormRequest
             'payment_method_id.exists' => 'طريقة الدفع غير موجودة.',
             'receipt.image' => 'إشعار الدفع يجب أن يكون صورة.',
             'receipt.mimes' => 'صيغة الصورة يجب أن تكون jpg أو jpeg أو png أو webp.',
-            'receipt.max' => 'حجم الصورة يجب ألا يتجاوز 2 ميغابايت.',
+            'receipt.max' => 'حجم الصورة يجب ألا يتجاوز 5 ميغابايت.',
+            'receipt.uploaded' => 'تعذر رفع الملف — تحقق من حجمه وصيغته وحاول مجدداً.',
         ];
     }
 }

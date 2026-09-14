@@ -17,6 +17,7 @@ async function logout() {
       <router-link class="navbar-brand fw-bold text-primary" to="/">🏨 هلا ستاي</router-link>
       <div class="d-flex align-items-center gap-2">
         <template v-if="auth.isAuthenticated">
+          <router-link class="btn btn-outline-primary btn-sm" to="/bookings">حجوزاتي</router-link>
           <router-link class="btn btn-outline-primary btn-sm" to="/dashboard">لوحتي</router-link>
           <button class="btn btn-outline-danger btn-sm" @click="logout">خروج</button>
         </template>
