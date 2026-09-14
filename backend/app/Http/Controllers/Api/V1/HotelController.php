@@ -39,11 +39,15 @@ class HotelController extends Controller
         if ($hotel->status !== 'approved' || !$hotel->is_active) {
             return $this->errorResponse('الفندق غير موجود أو غير متاح حالياً.', 404);
         }
-
         $validated = $request->validate([
             'check_in' => ['nullable', 'date'],
             'check_out' => ['nullable', 'date', 'after:check_in'],
             'rooms' => ['nullable', 'integer', 'min:1'],
+        ], [
+            'check_in.date' => 'صيغة تاريخ الدخول غير صحيحة.',
+            'check_out.date' => 'صيغة تاريخ الخروج غير صحيحة.',
+            'check_out.after' => 'تاريخ الخروج يجب أن يكون بعد تاريخ الدخول.',
+            'rooms.min' => 'يجب أن يكون عدد الغرف واحداً على الأقل.',
         ]);
 
         if (!empty($validated['check_in']) && !empty($validated['check_out'])) {
@@ -79,6 +83,12 @@ class HotelController extends Controller
             'check_out' => ['required', 'date', 'after:check_in'],
             'rooms' => ['nullable', 'integer', 'min:1'],
             'accommodation_type_id' => ['nullable', 'exists:accommodation_types,id'],
+        ], [
+            'check_in.required' => 'تاريخ الدخول مطلوب.',
+            'check_out.required' => 'تاريخ الخروج مطلوب.',
+            'check_out.after' => 'تاريخ الخروج يجب أن يكون بعد تاريخ الدخول.',
+            'rooms.min' => 'يجب أن يكون عدد الغرف واحداً على الأقل.',
+            'accommodation_type_id.exists' => 'نوع الإقامة غير موجود في هذا الفندق.',
         ]);
 
         $rooms = (int) ($validated['rooms'] ?? 1);

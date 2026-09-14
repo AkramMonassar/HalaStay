@@ -54,7 +54,10 @@ async function checkAvailability() {
     availableTypes.value = data.data
     availabilityMessage.value = data.message
   } catch (e) {
-    availabilityMessage.value = e.response?.data?.message || 'تعذر فحص التوفر.'
+    const errors = e.response?.data?.errors
+    availabilityMessage.value = errors
+      ? Object.values(errors).flat()[0]
+      : (e.response?.data?.message || 'تعذر فحص التوفر.')
     availableTypes.value = []
   } finally {
     loadingAvailability.value = false
