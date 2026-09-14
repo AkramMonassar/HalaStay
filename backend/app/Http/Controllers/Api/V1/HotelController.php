@@ -15,9 +15,7 @@ class HotelController extends Controller
 {
     use ApiResponse;
 
-    public function __construct(protected AvailabilityService $availabilityService)
-    {
-    }
+    public function __construct(protected AvailabilityService $availabilityService) {}
 
     public function show(Hotel $hotel): JsonResponse
     {
@@ -27,8 +25,8 @@ class HotelController extends Controller
 
         $hotel->load([
             'city',
-            'images' => fn ($q) => $q->orderBy('sort_order'),
-            'accommodationTypes' => fn ($q) => $q->where('is_active', true),
+            'images' => fn($q) => $q->orderBy('sort_order'),
+            'accommodationTypes' => fn($q) => $q->where('is_active', true),
         ]);
 
         return $this->successResponse(new HotelResource($hotel), 'تفاصيل الفندق.');
@@ -43,6 +41,8 @@ class HotelController extends Controller
             'check_in' => ['nullable', 'date'],
             'check_out' => ['nullable', 'date', 'after:check_in'],
             'rooms' => ['nullable', 'integer', 'min:1'],
+            'adults' => ['nullable', 'integer', 'min:1'],
+            'children' => ['nullable', 'integer', 'min:0'],
         ], [
             'check_in.date' => 'صيغة تاريخ الدخول غير صحيحة.',
             'check_out.date' => 'صيغة تاريخ الخروج غير صحيحة.',
@@ -83,6 +83,8 @@ class HotelController extends Controller
             'check_out' => ['required', 'date', 'after:check_in'],
             'rooms' => ['nullable', 'integer', 'min:1'],
             'accommodation_type_id' => ['nullable', 'exists:accommodation_types,id'],
+            'adults' => ['nullable', 'integer', 'min:1'],
+            'children' => ['nullable', 'integer', 'min:0'],
         ], [
             'check_in.required' => 'تاريخ الدخول مطلوب.',
             'check_out.required' => 'تاريخ الخروج مطلوب.',
@@ -123,7 +125,8 @@ class HotelController extends Controller
             $hotel,
             $validated['check_in'],
             $validated['check_out'],
-            $rooms
+            $rooms,
+            (int) ($validated['adults'] ?? 0) + (int) ($validated['children'] ?? 0)
         );
 
         return $this->successResponse(

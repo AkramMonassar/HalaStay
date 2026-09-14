@@ -53,8 +53,8 @@ class SearchService
     }
 
     /** أنواع الإقامة المتاحة لفندق محدد — تفويض كامل لخدمة التوفر */
-    public function availableTypesFor(Hotel $hotel, string $checkIn, string $checkOut, int $rooms)
+    public function availableTypesFor(Hotel $hotel, string $checkIn, string $checkOut, int $rooms, int $guests = 0)
     {
-        return $this->availabilityService->typesForHotel($hotel, $checkIn, $checkOut, $rooms);
+        return $this->availabilityService->typesForHotel($hotel, $checkIn, $checkOut, $rooms, $guests);
     }
 }

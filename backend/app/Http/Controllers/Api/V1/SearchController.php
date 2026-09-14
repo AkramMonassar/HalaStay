@@ -20,7 +20,13 @@ class SearchController extends Controller
         foreach ($hotels as $hotel) {
             $hotel->setAttribute(
                 'available_types',
-                $searchService->availableTypesFor($hotel, $filters['check_in'], $filters['check_out'], $rooms)
+                $searchService->availableTypesFor(
+                    $hotel,
+                    $filters['check_in'],
+                    $filters['check_out'],
+                    $rooms,
+                    (int) $filters['adults'] + (int) ($filters['children'] ?? 0)
+                )
             );
         }
 

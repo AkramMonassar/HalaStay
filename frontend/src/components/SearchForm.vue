@@ -9,15 +9,17 @@ const props = defineProps({
 
 const router = useRouter()
 
+const stored = JSON.parse(localStorage.getItem('halastay_last_search') || 'null')
+
 const cities = ref([])
 const error = ref('')
 const form = ref({
-  city_id: props.initial?.city_id || '',
-  check_in: props.initial?.check_in || '',
-  check_out: props.initial?.check_out || '',
-  adults: Number(props.initial?.adults) || 2,
-  children: Number(props.initial?.children) || 0,
-  rooms: Number(props.initial?.rooms) || 1,
+  city_id: props.initial?.city_id || stored?.city_id || '',
+  check_in: props.initial?.check_in || stored?.check_in || '',
+  check_out: props.initial?.check_out || stored?.check_out || '',
+  adults: Number(props.initial?.adults ?? stored?.adults) || 2,
+  children: Number(props.initial?.children ?? stored?.children) || 0,
+  rooms: Number(props.initial?.rooms ?? stored?.rooms) || 1,
 })
 
 onMounted(async () => {
@@ -43,6 +45,7 @@ function submit() {
     return
   }
 
+  localStorage.setItem('halastay_last_search', JSON.stringify(form.value))
   router.push({ name: 'search', query: { ...form.value } })
 }
 </script>

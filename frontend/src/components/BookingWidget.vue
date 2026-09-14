@@ -56,6 +56,8 @@ async function checkAvailability() {
         check_in: form.value.check_in,
         check_out: form.value.check_out,
         rooms: form.value.rooms,
+        adults: form.value.adults,
+        children: form.value.children,
       },
     })
     availableTypes.value = data.data
@@ -73,7 +75,14 @@ async function checkAvailability() {
 
 async function book(type) {
   if (!auth.isAuthenticated) {
-    router.push({ name: 'login', query: { redirect: `/hotels/${props.hotelId}` } })
+    const q = new URLSearchParams({
+      check_in: form.value.check_in,
+      check_out: form.value.check_out,
+      adults: form.value.adults,
+      children: form.value.children,
+      rooms: form.value.rooms,
+    }).toString()
+    router.push({ name: 'login', query: { redirect: `/hotels/${props.hotelId}?${q}` } })
     return
   }
 

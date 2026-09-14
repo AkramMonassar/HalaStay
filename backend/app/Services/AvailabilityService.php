@@ -29,8 +29,8 @@ class AvailabilityService
         return max(0, $type->total_units - $this->bookedUnits($type->id, $checkIn, $checkOut));
     }
 
-    /** أنواع الإقامة النشطة لفندق مع available_units مصفاة حسب الغرف المطلوبة */
-    public function typesForHotel(Hotel $hotel, string $checkIn, string $checkOut, int $rooms = 1): Collection
+    /** أنواع الإقامة النشطة لفندق مع available_units مصفاة حسب الغرف المطلوبة والسعة */
+    public function typesForHotel(Hotel $hotel, string $checkIn, string $checkOut, int $rooms = 1, int $guests = 0): Collection
     {
         return $hotel->accommodationTypes()
             ->where('is_active', true)
@@ -40,6 +40,7 @@ class AvailabilityService
                 return $type;
             })
             ->filter(fn (AccommodationType $type) => $type->available_units >= $rooms)
+            ->filter(fn (AccommodationType $type) => $guests === 0 || $rooms * ($type->max_adults + $type->max_children) >= $guests)
             ->values();
     }
 }
