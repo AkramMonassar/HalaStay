@@ -1,6 +1,6 @@
 <script setup>
-import { ref, computed } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, computed, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import api from '../services/api'
 import { useAuthStore } from '../stores/auth'
 
@@ -8,13 +8,20 @@ const props = defineProps({ hotelId: [Number, String] })
 
 const router = useRouter()
 const auth = useAuthStore()
+const route = useRoute()
 
 const form = ref({
-  check_in: '',
-  check_out: '',
-  adults: 2,
-  children: 0,
-  rooms: 1,
+  check_in: route.query.check_in || '',
+  check_out: route.query.check_out || '',
+  adults: Number(route.query.adults) || 2,
+  children: Number(route.query.children) || 0,
+  rooms: Number(route.query.rooms) || 1,
+})
+
+onMounted(() => {
+  if (form.value.check_in && form.value.check_out) {
+    checkAvailability()
+  }
 })
 
 const loadingAvailability = ref(false)

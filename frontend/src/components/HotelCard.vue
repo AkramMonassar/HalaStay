@@ -1,7 +1,9 @@
 <script setup>
 import { computed } from 'vue'
+import { useRoute } from 'vue-router'
 
 const props = defineProps({ hotel: Object })
+const route = useRoute()
 
 const storageBase = (import.meta.env.VITE_API_BASE_URL || '').replace('/api/v1', '') + '/storage/'
 
@@ -13,6 +15,15 @@ const cover = computed(() => {
 const minPrice = computed(() => {
   const prices = (props.hotel.available_types || []).map((t) => Number(t.base_price))
   return prices.length ? Math.min(...prices) : null
+})
+
+/** نحمل تواريخ البحث ومعاييره معنا إلى صفحة الفندق */
+const carryQuery = computed(() => {
+  const q = {}
+  ;['check_in', 'check_out', 'adults', 'children', 'rooms'].forEach((k) => {
+    if (route.query[k]) q[k] = route.query[k]
+  })
+  return q
 })
 </script>
 
@@ -35,7 +46,10 @@ const minPrice = computed(() => {
       <div class="small text-muted mt-1">{{ hotel.available_types?.length || 0 }} أنواع متاحة</div>
     </div>
     <div class="card-footer bg-white">
-      <router-link :to="{ name: 'hotel', params: { id: hotel.id } }" class="btn btn-outline-primary btn-sm w-100">
+      <router-link
+        :to="{ name: 'hotel', params: { id: hotel.id }, query: carryQuery }"
+        class="btn btn-outline-primary btn-sm w-100"
+      >
         عرض التفاصيل
       </router-link>
     </div>
