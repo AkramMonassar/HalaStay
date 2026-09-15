@@ -93,6 +93,7 @@ Route::prefix('v1')->group(function () {
         Route::patch('/cities/{city}', [AdminCityController::class, 'update']);
 
         Route::patch('/payment-methods/{method}/toggle', [AdminPaymentMethodController::class, 'toggle']);
+        Route::get('/payment-methods', [AdminPaymentMethodController::class, 'index']);
     });
 
     // 🔐 Auth APIs

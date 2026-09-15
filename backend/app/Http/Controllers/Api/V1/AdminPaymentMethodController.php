@@ -12,6 +12,13 @@ class AdminPaymentMethodController extends Controller
 {
     use ApiResponse;
 
+        public function index(): JsonResponse
+    {
+        $methods = PaymentMethod::orderBy('id')->get();
+
+        return $this->successResponse(PaymentMethodResource::collection($methods), 'كل طرق الدفع.');
+    }
+    
     public function toggle(PaymentMethod $method): JsonResponse
     {
         $method->update(['is_active' => !$method->is_active]);
