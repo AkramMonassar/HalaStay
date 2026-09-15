@@ -11,6 +11,7 @@ class HotelResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'city_id' => $this->city_id,
             'name' => $this->name,
             'slug' => $this->slug,
             'description' => $this->description,
@@ -22,8 +23,8 @@ class HotelResource extends JsonResource
             'star_rating' => $this->star_rating,
             'review_score' => $this->review_score,
             'status' => $this->status,
-            'owner_name' => $this->whenLoaded('owner', fn () => $this->owner->name),
-            'city' => $this->whenLoaded('city', fn () => $this->city->name),
+            'owner_name' => $this->whenLoaded('owner', fn() => $this->owner->name),
+            'city' => $this->whenLoaded('city', fn() => $this->city->name),
             'images' => HotelImageResource::collection($this->whenLoaded('images')),
             'accommodation_types' => AccommodationTypeResource::collection($this->whenLoaded('accommodationTypes')),
         ];
