@@ -15,9 +15,13 @@ async function logout() {
   <nav class="navbar navbar-expand-lg bg-white shadow-sm">
     <div class="container">
       <router-link class="navbar-brand fw-bold text-primary" to="/">🏨 هلا ستاي</router-link>
-      <div class="d-flex align-items-center gap-2">
+      <div class="d-flex align-items-center gap-2 flex-wrap">
         <template v-if="auth.isAuthenticated">
-          <router-link v-if="auth.role === 'hotel_owner'" class="btn btn-outline-success btn-sm" to="/owner">لوحة المالك</router-link>
+          <template v-if="auth.role === 'hotel_owner'">
+            <router-link class="btn btn-outline-success btn-sm" to="/owner">فنادقي</router-link>
+            <router-link class="btn btn-outline-success btn-sm" to="/owner/bookings">حجوزات فنادقي</router-link>
+            <router-link class="btn btn-outline-success btn-sm" to="/owner/payments">مراجعة الدفعات</router-link>
+          </template>
           <router-link class="btn btn-outline-primary btn-sm" to="/bookings">حجوزاتي</router-link>
           <router-link class="btn btn-outline-primary btn-sm" to="/dashboard">لوحتي</router-link>
           <button class="btn btn-outline-danger btn-sm" @click="logout">خروج</button>
