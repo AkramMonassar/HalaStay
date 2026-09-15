@@ -69,6 +69,9 @@ Route::prefix('v1')->group(function () {
 
         Route::get('/payments', [OwnerPaymentController::class, 'index']);
         Route::patch('/payments/{payment}/review', [OwnerPaymentController::class, 'review']);
+
+        Route::put('/hotels/{hotel}/rooms/{type}', [OwnerHotelController::class, 'updateRoom']);
+        Route::patch('/hotels/{hotel}/rooms/{type}/toggle', [OwnerHotelController::class, 'toggleRoom']);
     });
 
     // 👑 Admin Dashboard APIs (admin Role Required)

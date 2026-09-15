@@ -15,7 +15,7 @@ use App\Services\HotelService;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-
+use App\Models\AccommodationType;
 class OwnerHotelController extends Controller
 {
     use ApiResponse;
@@ -131,5 +131,46 @@ class OwnerHotelController extends Controller
             201
         );
     }
+    public function updateRoom(Request $request, Hotel $hotel, AccommodationType $type): JsonResponse
+    {
+        $this->authorize('update', $hotel);
 
+        if ($type->hotel_id !== $hotel->id) {
+            return $this->errorResponse('نوع الإقامة لا يتبع هذا الفندق.', 404);
+        }
+
+        $validated = $request->validate([
+            'name' => ['sometimes', 'required', 'string', 'max:120'],
+            'stay_type' => ['sometimes', 'required', 'in:room,apartment,suite,hall'],
+            'description' => ['nullable', 'string'],
+            'max_adults' => ['sometimes', 'required', 'integer', 'min:1'],
+            'max_children' => ['nullable', 'integer', 'min:0'],
+            'total_units' => ['sometimes', 'required', 'integer', 'min:1'],
+            'base_price' => ['sometimes', 'required', 'numeric', 'min:0'],
+        ], [
+            'stay_type.in' => 'التصنيف يجب أن يكون: غرفة، شقة، جناح، أو قاعة.',
+            'total_units.min' => 'عدد الوحدات يجب أن يكون واحداً على الأقل.',
+            'base_price.min' => 'السعر يجب ألا يكون سالباً.',
+        ]);
+
+        $type->update($validated);
+
+        return $this->successResponse(new AccommodationTypeResource($type->refresh()), 'تم تحديث نوع الإقامة.');
+    }
+
+    public function toggleRoom(Hotel $hotel, AccommodationType $type): JsonResponse
+    {
+        $this->authorize('update', $hotel);
+
+        if ($type->hotel_id !== $hotel->id) {
+            return $this->errorResponse('نوع الإقامة لا يتبع هذا الفندق.', 404);
+        }
+
+        $type->update(['is_active' => !$type->is_active]);
+
+        return $this->successResponse(
+            new AccommodationTypeResource($type->refresh()),
+            $type->is_active ? 'تم تفعيل نوع الإقامة.' : 'تم إيقاف نوع الإقامة عن الحجز.'
+        );
+    }
 }

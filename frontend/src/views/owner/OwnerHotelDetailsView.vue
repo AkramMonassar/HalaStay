@@ -17,18 +17,13 @@ const newImages = ref([])
 const uploadingImages = ref(false)
 const imagesMessage = ref('')
 
-const roomForm = ref({
-  name: '',
-  stay_type: 'room',
-  description: '',
-  max_adults: 2,
-  max_children: 0,
-  total_units: 1,
-  base_price: 100,
-})
+const roomForm = ref({ name: '', stay_type: 'room', description: '', max_adults: 2, max_children: 0, total_units: 1, base_price: 100 })
 const savingRoom = ref(false)
 const roomMessage = ref('')
 const roomError = ref('')
+
+const editingId = ref(null)
+const editForm = ref({})
 
 onMounted(async () => {
   try {
@@ -97,6 +92,44 @@ async function saveRoom() {
     roomError.value = errors ? Object.values(errors).flat()[0] : (e.response?.data?.message || 'تعذر الإضافة.')
   } finally {
     savingRoom.value = false
+  }
+}
+
+function startEdit(t) {
+  editingId.value = t.id
+  editForm.value = {
+    name: t.name,
+    stay_type: t.stay_type,
+    max_adults: t.max_adults,
+    max_children: t.max_children,
+    total_units: t.total_units,
+    base_price: Number(t.base_price),
+  }
+}
+
+async function saveEdit(t) {
+  roomError.value = ''
+  roomMessage.value = ''
+  try {
+    const { data } = await api.put(`/owner/hotels/${hotel.value.id}/rooms/${t.id}`, editForm.value)
+    const idx = hotel.value.accommodation_types.findIndex((x) => x.id === t.id)
+    if (idx >= 0) hotel.value.accommodation_types[idx] = data.data
+    editingId.value = null
+    roomMessage.value = 'تم تحديث نوع الإقامة.'
+  } catch (e) {
+    const errors = e.response?.data?.errors
+    roomError.value = errors ? Object.values(errors).flat()[0] : (e.response?.data?.message || 'تعذر التحديث.')
+  }
+}
+
+async function toggleType(t) {
+  roomError.value = ''
+  try {
+    const { data } = await api.patch(`/owner/hotels/${hotel.value.id}/rooms/${t.id}/toggle`)
+    const idx = hotel.value.accommodation_types.findIndex((x) => x.id === t.id)
+    if (idx >= 0) hotel.value.accommodation_types[idx] = data.data
+  } catch (e) {
+    roomError.value = e.response?.data?.message || 'تعذر تغيير الحالة.'
   }
 }
 </script>
@@ -168,10 +201,40 @@ async function saveRoom() {
               <div v-if="roomMessage" class="alert alert-success py-2">{{ roomMessage }}</div>
               <div v-if="roomError" class="alert alert-danger py-2">{{ roomError }}</div>
 
-              <div v-for="t in hotel.accommodation_types" :key="t.id" class="border rounded p-2 mb-2 d-flex justify-content-between">
-                <div>
-                  <div class="fw-semibold">{{ t.name }}</div>
-                  <div class="small text-muted">{{ t.stay_type }} — {{ t.total_units }} وحدة — {{ t.base_price }} ريال</div>
+              <div v-for="t in hotel.accommodation_types" :key="t.id" class="border rounded p-2 mb-2">
+                <div v-if="editingId !== t.id" class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <div class="fw-semibold">
+                      {{ t.name }}
+                      <span v-if="!t.is_active" class="badge bg-secondary ms-1">موقوف</span>
+                    </div>
+                    <div class="small text-muted">{{ t.stay_type }} — {{ t.total_units }} وحدة — {{ t.base_price }} ريال</div>
+                  </div>
+                  <div class="d-flex gap-1">
+                    <button class="btn btn-outline-primary btn-sm" @click="startEdit(t)">تعديل</button>
+                    <button class="btn btn-outline-secondary btn-sm" @click="toggleType(t)">
+                      {{ t.is_active ? 'إيقاف' : 'تفعيل' }}
+                    </button>
+                  </div>
+                </div>
+
+                <div v-else>
+                  <div class="row g-2 mb-2">
+                    <div class="col-6"><input v-model="editForm.name" class="form-control form-control-sm" /></div>
+                    <div class="col-6">
+                      <select v-model="editForm.stay_type" class="form-select form-select-sm">
+                        <option value="room">غرفة</option><option value="apartment">شقة</option><option value="suite">جناح</option><option value="hall">قاعة</option>
+                      </select>
+                    </div>
+                    <div class="col-4"><input v-model.number="editForm.max_adults" type="number" min="1" class="form-control form-control-sm" /></div>
+                    <div class="col-4"><input v-model.number="editForm.max_children" type="number" min="0" class="form-control form-control-sm" /></div>
+                    <div class="col-4"><input v-model.number="editForm.total_units" type="number" min="1" class="form-control form-control-sm" /></div>
+                    <div class="col-8"><input v-model.number="editForm.base_price" type="number" min="0" class="form-control form-control-sm" /></div>
+                    <div class="col-4 d-flex gap-1">
+                      <button class="btn btn-success btn-sm flex-fill" @click="saveEdit(t)">حفظ</button>
+                      <button class="btn btn-light btn-sm flex-fill" @click="editingId = null">إلغاء</button>
+                    </div>
+                  </div>
                 </div>
               </div>
 

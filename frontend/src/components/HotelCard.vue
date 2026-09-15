@@ -8,6 +8,7 @@ const route = useRoute()
 const storageBase = (import.meta.env.VITE_API_BASE_URL || '').replace('/api/v1', '') + '/storage/'
 
 const cover = computed(() => {
+  if (props.hotel.cover_image) return storageBase + props.hotel.cover_image
   const img = props.hotel.images?.find((i) => i.is_cover) || props.hotel.images?.[0]
   return img ? storageBase + img.image_path : null
 })
