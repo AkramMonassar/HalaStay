@@ -24,7 +24,7 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-Route::prefix('v1')->group(function () {
+Route::prefix('v1')->middleware('throttle:api')->group(function () {
 
     // 🌍 Public Data APIs (No Auth Required)
     Route::get('/countries', [CountryController::class, 'index']);
@@ -32,7 +32,7 @@ Route::prefix('v1')->group(function () {
     Route::get('/payment-methods', [PaymentMethodController::class, 'index']);
 
     // 🔍 Search & Hotel Details APIs
-    Route::get('/search', [SearchController::class, 'index']);
+    Route::get('/search', [SearchController::class, 'index'])->middleware('throttle:search');
     Route::get('/hotels/{hotel}', [HotelController::class, 'show']);
     Route::get('/hotels/{hotel}/rooms', [HotelController::class, 'rooms']);
     Route::get('/hotels/{hotel}/availability', [HotelController::class, 'availability']);
@@ -97,7 +97,7 @@ Route::prefix('v1')->group(function () {
     });
 
     // 🔐 Auth APIs
-    Route::prefix('auth')->group(function () {
+    Route::prefix('auth')->middleware('throttle:auth')->group(function () {
         Route::post('/register', [AuthController::class, 'register']);
         Route::post('/login', [AuthController::class, 'login']);
 

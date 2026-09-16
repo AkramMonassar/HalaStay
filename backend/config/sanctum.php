@@ -50,7 +50,7 @@ return [
     |
     */
 
-    'expiration' => null,
+    'expiration' => (int) env('sanctum_token_expiration', 60 * 24 * 7),
 
     /*
     |--------------------------------------------------------------------------

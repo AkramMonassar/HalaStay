@@ -6,17 +6,17 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\CountryResource;
 use App\Models\Country;
 use App\Traits\ApiResponse;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Cache;
 
 class CountryController extends Controller
 {
     use ApiResponse;
 
-    public function index()
+    public function index(): JsonResponse
     {
-        $countries = Country::where('is_active', true)->get();
-        return $this->successResponse(
-            CountryResource::collection($countries),
-            'تم جلب الدول بنجاح.'
-        );
+        $countries = Cache::remember('countries', 3600, fn () => Country::with('cities')->get());
+
+        return $this->successResponse(CountryResource::collection($countries), 'قائمة الدول.');
     }
 }

@@ -7,6 +7,7 @@ use App\Http\Resources\PaymentMethodResource;
 use App\Models\PaymentMethod;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Cache;
 
 class AdminPaymentMethodController extends Controller
 {
@@ -23,6 +24,7 @@ class AdminPaymentMethodController extends Controller
     {
         $method->update(['is_active' => !$method->is_active]);
 
+        Cache::forget('payment_methods');
         return $this->successResponse(
             new PaymentMethodResource($method),
             $method->is_active ? 'تم تفعيل طريقة الدفع.' : 'تم إيقاف طريقة الدفع.'
