@@ -29,8 +29,8 @@ const carryQuery = computed(() => {
 </script>
 
 <template>
-  <div class="card shadow-sm h-100">
-    <div class="bg-light d-flex align-items-center justify-content-center" style="height: 170px">
+  <div class="card hotel-card h-100">
+        <div class="bg-light d-flex align-items-center justify-content-center" style="height: 170px">
       <img v-if="cover" :src="cover" class="w-100 h-100" style="object-fit: cover" alt="" />
       <span v-else class="fs-1">🏨</span>
     </div>
