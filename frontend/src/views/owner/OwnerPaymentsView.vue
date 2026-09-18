@@ -1,26 +1,19 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue'
 import api from '../../services/api'
+import AppModal from '../../components/AppModal.vue'
+import AppSkeleton from '../../components/AppSkeleton.vue'
+import { useToastStore } from '../../stores/toast'
+
+const toast = useToastStore()
 
 const payments = ref([])
 const loading = ref(true)
 const statusFilter = ref('under_review')
-const message = ref('')
+const modal = ref(null)
 
-const statusLabels = {
-  pending: 'قيد الانتظار',
-  under_review: 'قيد المراجعة',
-  success: 'ناجحة',
-  failed: 'مرفوضة',
-  refunded: 'مستردة',
-}
-const statusClasses = {
-  pending: 'bg-warning',
-  under_review: 'bg-info',
-  success: 'bg-success',
-  failed: 'bg-danger',
-  refunded: 'bg-secondary',
-}
+const statusLabels = { pending: 'قيد الانتظار', under_review: 'قيد المراجعة', success: 'ناجحة', failed: 'مرفوضة', refunded: 'مستردة' }
+const statusClasses = { pending: 'bg-warning', under_review: 'bg-info', success: 'bg-success', failed: 'bg-danger', refunded: 'bg-secondary' }
 
 async function fetchPayments() {
   loading.value = true
@@ -36,25 +29,22 @@ async function fetchPayments() {
 onMounted(fetchPayments)
 watch(statusFilter, fetchPayments)
 
-async function review(p, action) {
-  let note = null
+function askReview(payment, action) {
+  modal.value = { payment, action }
+}
 
-  if (action === 'approve') {
-    if (!confirm(`اعتماد الدفعة ${p.payment_number} بمبلغ ${p.amount}؟ سيُؤكد الحجز فوراً.`)) return
-  } else {
-    note = prompt('سبب الرفض (سيصل للسائح):')
-    if (note === null) return
-  }
-
-  message.value = ''
+async function confirmReview(note) {
+  const { payment, action } = modal.value
+  modal.value = null
   try {
-    await api.patch(`/owner/payments/${p.id}/review`, { action, admin_note: note })
-    message.value = action === 'approve'
-      ? 'تم اعتماد الدفعة وتأكيد الحجز.'
-      : 'تم رفض الدفعة وإعادة الحجز لانتظار الدفع.'
+    await api.patch(`/owner/payments/${payment.id}/review`, { action, admin_note: note || null })
+    toast.push(
+      action === 'approve' ? 'تم اعتماد الدفعة وتأكيد الحجز.' : 'تم رفض الدفعة وإعادة الحجز لانتظار الدفع.',
+      action === 'approve' ? 'success' : 'warning'
+    )
     fetchPayments()
   } catch (e) {
-    message.value = e.response?.data?.message || 'تعذرت المراجعة.'
+    toast.push(e.response?.data?.message || 'تعذرت المراجعة.', 'danger')
   }
 }
 </script>
@@ -73,9 +63,9 @@ async function review(p, action) {
       </select>
     </div>
 
-    <div v-if="message" class="alert alert-info py-2">{{ message }}</div>
-
-    <div v-if="loading" class="text-center py-5">جارِ التحميل...</div>
+    <div v-if="loading" class="d-flex flex-column gap-2">
+      <AppSkeleton v-for="i in 3" :key="i" variant="row" />
+    </div>
 
     <div v-else-if="payments.length" class="d-flex flex-column gap-2">
       <div v-for="p in payments" :key="p.id" class="card shadow-sm">
@@ -93,13 +83,23 @@ async function review(p, action) {
             </a>
           </div>
           <div v-if="p.payment_status === 'under_review'" class="d-flex gap-1">
-            <button class="btn btn-success btn-sm" @click="review(p, 'approve')">اعتماد</button>
-            <button class="btn btn-outline-danger btn-sm" @click="review(p, 'reject')">رفض</button>
+            <button class="btn btn-success btn-sm" @click="askReview(p, 'approve')">اعتماد</button>
+            <button class="btn btn-outline-danger btn-sm" @click="askReview(p, 'reject')">رفض</button>
           </div>
         </div>
       </div>
     </div>
 
     <div v-else class="alert alert-success">لا توجد دفعات بهذه الحالة — الطابور نظيف ✔</div>
+
+    <AppModal
+      :show="!!modal"
+      :title="modal?.action === 'approve' ? 'اعتماد الدفعة' : 'رفض الدفعة'"
+      :message="modal ? `الدفعة ${modal.payment.payment_number} بمبلغ ${modal.payment.amount} ريال.` : ''"
+      :with-note="modal?.action === 'reject'"
+      :tone="modal?.action === 'approve' ? 'success' : 'danger'"
+      @confirm="confirmReview"
+      @cancel="modal = null"
+    />
   </div>
 </template>
