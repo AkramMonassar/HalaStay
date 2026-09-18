@@ -1,6 +1,7 @@
 <script setup>
 import { useAuthStore } from './stores/auth'
 import { useRouter } from 'vue-router'
+import ToastContainer from './components/ToastContainer.vue'
 
 const auth = useAuthStore()
 const router = useRouter()
@@ -42,6 +43,7 @@ async function logout() {
 
   <main class="main-content">
     <router-view />
+    <ToastContainer />
   </main>
 </template>
 

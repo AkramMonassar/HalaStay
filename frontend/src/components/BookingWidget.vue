@@ -3,6 +3,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import api from '../services/api'
 import { useAuthStore } from '../stores/auth'
+import AppDate from './AppDate.vue'
 
 const props = defineProps({ hotelId: [Number, String] })
 
@@ -119,15 +120,9 @@ function totalPrice(type) {
     <div class="card-body p-4">
       <h5 class="mb-3">📅 احجز إقامتك</h5>
 
-      <div class="row g-2 mb-3">
-        <div class="col-6">
-          <label class="form-label">الدخول</label>
-          <input v-model="form.check_in" type="date" class="form-control" />
-        </div>
-        <div class="col-6">
-          <label class="form-label">الخروج</label>
-          <input v-model="form.check_out" type="date" class="form-control" />
-        </div>
+      <div class="row g-2 mb-2">
+        <div class="col-6"><AppDate v-model="form.check_in" label="الدخول" /></div>
+        <div class="col-6"><AppDate v-model="form.check_out" label="الخروج" /></div>
       </div>
 
       <div class="d-flex gap-2 mb-3">

@@ -5,6 +5,7 @@ import api from '../services/api'
 import FilterSidebar from '../components/FilterSidebar.vue'
 import HotelCard from '../components/HotelCard.vue'
 import SearchForm from '../components/SearchForm.vue'
+import AppSkeleton from '../components/AppSkeleton.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -89,7 +90,11 @@ watch(() => route.query, () => { readQuery(); fetchResults() }, { immediate: tru
       <div class="col-lg-9">
         <p class="text-muted mb-3">{{ message }}</p>
 
-        <div v-if="loading" class="text-center py-5">جارِ البحث...</div>
+        <div v-if="loading" class="row g-3">
+          <div v-for="i in 3" :key="i" class="col-md-4">
+            <AppSkeleton variant="card" />
+          </div>
+        </div>
 
         <div v-else-if="results.length" class="row g-3">
           <div v-for="h in results" :key="h.id" class="col-md-6 col-xl-4">
@@ -100,7 +105,8 @@ watch(() => route.query, () => { readQuery(); fetchResults() }, { immediate: tru
         <div v-else class="alert alert-info">
           لا توجد نتائج مطابقة — جرّب تعديل المعايير.
           <div v-if="highCapacityDemand" class="small mt-2">
-            💡 عدد الأفراد كبير مقارنة بعدد الغرف — معظم المنشآت لا تستوعب هذا العدد في غرفة واحدة؛ جرّب زيادة عدد الغرف.
+            💡 عدد الأفراد كبير مقارنة بعدد الغرف — معظم المنشآت لا تستوعب هذا العدد في غرفة واحدة؛ جرّب زيادة عدد
+            الغرف.
           </div>
         </div>
 
