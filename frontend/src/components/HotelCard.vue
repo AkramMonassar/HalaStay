@@ -21,16 +21,16 @@ const minPrice = computed(() => {
 /** نحمل تواريخ البحث ومعاييره معنا إلى صفحة الفندق */
 const carryQuery = computed(() => {
   const q = {}
-  ;['check_in', 'check_out', 'adults', 'children', 'rooms'].forEach((k) => {
-    if (route.query[k]) q[k] = route.query[k]
-  })
+    ;['check_in', 'check_out', 'adults', 'children', 'rooms'].forEach((k) => {
+      if (route.query[k]) q[k] = route.query[k]
+    })
   return q
 })
 </script>
 
 <template>
   <div class="card hotel-card h-100">
-        <div class="bg-light d-flex align-items-center justify-content-center" style="height: 170px">
+    <div class="bg-light d-flex align-items-center justify-content-center" style="height: 170px">
       <img v-if="cover" :src="cover" class="w-100 h-100" style="object-fit: cover" alt="" />
       <span v-else class="fs-1">🏨</span>
     </div>
@@ -47,10 +47,8 @@ const carryQuery = computed(() => {
       <div class="small text-muted mt-1">{{ hotel.available_types?.length || 0 }} أنواع متاحة</div>
     </div>
     <div class="card-footer bg-white">
-      <router-link
-        :to="{ name: 'hotel', params: { id: hotel.id }, query: carryQuery }"
-        class="btn btn-outline-primary btn-sm w-100"
-      >
+      <router-link :to="{ name: 'hotel', params: { id: hotel.id }, query: carryQuery }"
+        class="btn btn-outline-primary btn-sm w-100">
         عرض التفاصيل
       </router-link>
     </div>
