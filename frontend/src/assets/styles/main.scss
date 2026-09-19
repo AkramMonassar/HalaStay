@@ -139,7 +139,6 @@ a {
 .btn {
   font-weight: 500;
   border-radius: $border-radius;
-  padding: $spacing-sm $spacing-lg;
   transition: $transition-base;
 
   &:hover {
@@ -259,4 +258,63 @@ a {
     background-color: $danger;
     color: white;
   }
+}
+
+// ========================================
+// SESSION 27 — TOURIST JOURNEY
+// ========================================
+
+.hero {
+  background: linear-gradient(160deg, #006c35 0%, #004d26 60%, #00331a 100%);
+  color: #fff;
+  padding: 4rem 0 5rem;
+
+  .hero-text h1 {
+    color: #fff;
+    font-size: 2.6rem;
+    font-weight: 900;
+    margin-bottom: 0.75rem;
+  }
+
+  .hero-text p {
+    color: #d3e9dc;
+    max-width: 560px;
+  }
+
+  .hero-form {
+    background: #fff;
+    border-radius: 16px;
+    padding: 1.25rem;
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.25);
+    margin-top: 2rem;
+  }
+}
+
+.city-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: #fff;
+  border: 1px solid #e9ecef;
+  border-radius: 14px;
+  padding: 1.4rem 1rem;
+  text-align: center;
+  text-decoration: none;
+  transition: all 0.2s ease;
+
+  .city-name { font-weight: 700; color: #212529; }
+  .city-hint { font-size: 0.8rem; color: #6c757d; }
+
+  &:hover {
+    border-color: #006c35;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 22px rgba(0, 108, 53, 0.12);
+  }
+}
+
+.features-strip {
+  background: #f8f9fa;
+  padding: 3.5rem 0;
+
+  .feature-icon { font-size: 2.2rem; margin-bottom: 0.75rem; }
 }
