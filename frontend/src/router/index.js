@@ -15,7 +15,12 @@ const routes = [
   { path: '/owner/hotels/:id', name: 'owner-hotel-details', component: () => import('../views/owner/OwnerHotelDetailsView.vue'), meta: { requiresAuth: true, requiresRole: 'hotel_owner', title: 'إدارة الفندق' } },
   { path: '/owner/bookings', name: 'owner-bookings', component: () => import('../views/owner/OwnerBookingsView.vue'), meta: { requiresAuth: true, requiresRole: 'hotel_owner', title: 'حجوزات فنادقي' } },
   { path: '/owner/payments', name: 'owner-payments', component: () => import('../views/owner/OwnerPaymentsView.vue'), meta: { requiresAuth: true, requiresRole: 'hotel_owner', title: 'مراجعة الدفعات' } },
- 
+   { path: '/admin', name: 'admin-dashboard', component: () => import('../views/admin/AdminDashboardView.vue'), meta: { requiresAuth: true, requiresRole: 'admin', title: 'لوحة الأدمن' } },
+  { path: '/admin/hotels', name: 'admin-hotels', component: () => import('../views/admin/AdminHotelsView.vue'), meta: { requiresAuth: true, requiresRole: 'admin', title: 'الفنادق' } },
+  { path: '/admin/users', name: 'admin-users', component: () => import('../views/admin/AdminUsersView.vue'), meta: { requiresAuth: true, requiresRole: 'admin', title: 'المستخدمون' } },
+  { path: '/admin/bookings', name: 'admin-bookings', component: () => import('../views/admin/AdminBookingsView.vue'), meta: { requiresAuth: true, requiresRole: 'admin', title: 'الحجوزات' } },
+  { path: '/admin/payments', name: 'admin-payments', component: () => import('../views/admin/AdminPaymentsView.vue'), meta: { requiresAuth: true, requiresRole: 'admin', title: 'الدفعات' } },
+  { path: '/admin/settings', name: 'admin-settings', component: () => import('../views/admin/AdminSettingsView.vue'), meta: { requiresAuth: true, requiresRole: 'admin', title: 'الإعدادات' } },
  
   { path: '/login', name: 'login', component: () => import('../views/LoginView.vue'), meta: { guest: true, title: 'تسجيل الدخول' } },
   { path: '/register', name: 'register', component: () => import('../views/RegisterView.vue'), meta: { guest: true, title: 'حساب جديد' } },

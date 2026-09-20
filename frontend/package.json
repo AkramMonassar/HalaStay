@@ -13,7 +13,7 @@
     "format": "prettier --write --experimental-cli src/"
   },
   "dependencies": {
-    "apexcharts": "^7.4.0",
+    "apexcharts": "^4.7.0",
     "axios": "^1.20.0",
     "bootstrap": "^5.3.8",
     "pinia": "^4.0.3",
