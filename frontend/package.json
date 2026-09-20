@@ -13,11 +13,13 @@
     "format": "prettier --write --experimental-cli src/"
   },
   "dependencies": {
+    "apexcharts": "^7.4.0",
     "axios": "^1.20.0",
     "bootstrap": "^5.3.8",
     "pinia": "^4.0.3",
     "vue": "^3.5.40",
-    "vue-router": "^5.3.1"
+    "vue-router": "^5.3.1",
+    "vue3-apexcharts": "^1.11.1"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

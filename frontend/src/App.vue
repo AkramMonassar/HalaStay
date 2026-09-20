@@ -19,7 +19,8 @@ async function logout() {
       <div class="d-flex align-items-center gap-2 flex-wrap">
         <template v-if="auth.isAuthenticated">
           <template v-if="auth.role === 'hotel_owner'">
-            <router-link class="btn btn-outline-success btn-sm" to="/owner">فنادقي</router-link>
+            <router-link class="btn btn-outline-success btn-sm" to="/owner">لوحة المالك</router-link>
+            <router-link class="btn btn-outline-success btn-sm" to="/owner/hotels">فنادقي</router-link>
             <router-link class="btn btn-outline-success btn-sm" to="/owner/bookings">حجوزات فنادقي</router-link>
             <router-link class="btn btn-outline-success btn-sm" to="/owner/payments">مراجعة الدفعات</router-link>
           </template>

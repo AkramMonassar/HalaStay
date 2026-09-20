@@ -7,11 +7,16 @@ const routes = [
   { path: '/hotels/:id', name: 'hotel', component: () => import('../views/HotelView.vue'), meta: { title: 'تفاصيل الفندق' } },
   { path: '/bookings', name: 'bookings', component: () => import('../views/BookingsView.vue'), meta: { requiresAuth: true, title: 'حجوزاتي' } },
   { path: '/bookings/:id', name: 'booking', component: () => import('../views/BookingDetailsView.vue'), meta: { requiresAuth: true, title: 'تفاصيل الحجز' } },
-  { path: '/owner', name: 'owner-hotels', component: () => import('../views/owner/OwnerHotelsView.vue'), meta: { requiresAuth: true, requiresRole: 'hotel_owner', title: 'فنادقي' } },
+  
+  
+    { path: '/owner', name: 'owner-dashboard', component: () => import('../views/owner/OwnerDashboardView.vue'), meta: { requiresAuth: true, requiresRole: 'hotel_owner', title: 'لوحة المالك' } },
+  { path: '/owner/hotels', name: 'owner-hotels', component: () => import('../views/owner/OwnerHotelsView.vue'), meta: { requiresAuth: true, requiresRole: 'hotel_owner', title: 'فنادقي' } },
   { path: '/owner/hotels/new', name: 'owner-hotel-create', component: () => import('../views/owner/OwnerHotelCreateView.vue'), meta: { requiresAuth: true, requiresRole: 'hotel_owner', title: 'إضافة فندق' } },
   { path: '/owner/hotels/:id', name: 'owner-hotel-details', component: () => import('../views/owner/OwnerHotelDetailsView.vue'), meta: { requiresAuth: true, requiresRole: 'hotel_owner', title: 'إدارة الفندق' } },
   { path: '/owner/bookings', name: 'owner-bookings', component: () => import('../views/owner/OwnerBookingsView.vue'), meta: { requiresAuth: true, requiresRole: 'hotel_owner', title: 'حجوزات فنادقي' } },
   { path: '/owner/payments', name: 'owner-payments', component: () => import('../views/owner/OwnerPaymentsView.vue'), meta: { requiresAuth: true, requiresRole: 'hotel_owner', title: 'مراجعة الدفعات' } },
+ 
+ 
   { path: '/login', name: 'login', component: () => import('../views/LoginView.vue'), meta: { guest: true, title: 'تسجيل الدخول' } },
   { path: '/register', name: 'register', component: () => import('../views/RegisterView.vue'), meta: { guest: true, title: 'حساب جديد' } },
   { path: '/dashboard', name: 'dashboard', component: () => import('../views/DashboardView.vue'), meta: { requiresAuth: true, title: 'لوحتي' } },
