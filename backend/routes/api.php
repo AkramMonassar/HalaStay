@@ -19,6 +19,7 @@ use App\Http\Controllers\Api\V1\SearchController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\NotificationController;
+use App\Http\Controllers\Api\V1\OwnerStatsController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -72,6 +73,8 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
 
         Route::put('/hotels/{hotel}/rooms/{type}', [OwnerHotelController::class, 'updateRoom']);
         Route::patch('/hotels/{hotel}/rooms/{type}/toggle', [OwnerHotelController::class, 'toggleRoom']);
+
+        Route::get('/stats', OwnerStatsController::class);
     });
 
     // 👑 Admin Dashboard APIs (admin Role Required)

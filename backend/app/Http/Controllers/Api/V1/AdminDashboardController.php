@@ -19,31 +19,39 @@ class AdminDashboardController extends Controller
 
     public function stats(): JsonResponse
     {
-        $usersByRole = User::selectRaw('role, COUNT(*) as total')->groupBy('role')->pluck('total', 'role');
-        $hotelsByStatus = Hotel::selectRaw('status, COUNT(*) as total')->groupBy('status')->pluck('total', 'status');
-        $bookingsByStatus = Booking::selectRaw('booking_status, COUNT(*) as total')->groupBy('booking_status')->pluck('total', 'booking_status');
+        $months = collect(range(5, 0))->map(fn ($i) => now()->subMonths($i)->format('Y-m'));
+
+        $bookings = Booking::all();
+        $payments = Payment::all();
+        $success = $payments->where('payment_status', 'success');
+
+        $bookingsByMonth = $bookings->groupBy(fn ($b) => $b->created_at->format('Y-m'));
+        $revenueByMonth = $success->groupBy(fn ($p) => $p->updated_at->format('Y-m'));
 
         return $this->successResponse([
             'users' => [
-                'total' => $usersByRole->sum(),
-                'tourists' => $usersByRole['tourist'] ?? 0,
-                'owners' => $usersByRole['hotel_owner'] ?? 0,
-                'admins' => $usersByRole['admin'] ?? 0,
+                'total' => User::count(),
+                'tourists' => User::where('role', 'tourist')->count(),
+                'owners' => User::where('role', 'hotel_owner')->count(),
+                'admins' => User::where('role', 'admin')->count(),
             ],
             'hotels' => [
-                'total' => $hotelsByStatus->sum(),
-                'pending' => $hotelsByStatus['pending'] ?? 0,
-                'approved' => $hotelsByStatus['approved'] ?? 0,
+                'total' => Hotel::count(),
+                'approved' => Hotel::where('status', 'approved')->count(),
+                'pending' => Hotel::where('status', 'pending')->count(),
             ],
             'bookings' => [
-                'total' => $bookingsByStatus->sum(),
-                'by_status' => $bookingsByStatus,
+                'total' => $bookings->count(),
+                'by_status' => $bookings->groupBy('booking_status')->map->count(),
             ],
             'payments' => [
-                'under_review' => Payment::where('payment_status', 'under_review')->count(),
-                'total_success_amount' => (float) Payment::where('payment_status', 'success')->sum('amount'),
+                'under_review' => $payments->where('payment_status', 'under_review')->count(),
+                'total_success_amount' => (float) $success->sum('amount'),
             ],
-        ], 'إحصاءات لوحة الأدمن.');
+            'months' => $months,
+            'monthly_bookings' => $months->map(fn ($m) => $bookingsByMonth->get($m, collect())->count())->values(),
+            'monthly_revenue' => $months->map(fn ($m) => (float) ($revenueByMonth->get($m, collect())->sum('amount')))->values(),
+        ], 'إحصاءات المنصة.');
     }
 
     public function bookings(Request $request): JsonResponse
@@ -52,23 +60,12 @@ class AdminDashboardController extends Controller
             'status' => ['nullable', 'string', 'in:pending_payment,pending_confirmation,confirmed,cancelled,completed,expired'],
         ]);
 
-        $bookings = Booking::with(['hotel', 'user', 'accommodationType'])
+        $bookings = Booking::with(['user', 'accommodationType.hotel'])
             ->when(!empty($validated['status']), fn ($q) => $q->where('booking_status', $validated['status']))
             ->latest()
-            ->paginate(10)
-            ->withQueryString();
+            ->get();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'كل الحجوزات.',
-            'data' => BookingResource::collection($bookings),
-            'meta' => [
-                'current_page' => $bookings->currentPage(),
-                'last_page' => $bookings->lastPage(),
-                'per_page' => $bookings->perPage(),
-                'total' => $bookings->total(),
-            ],
-        ]);
+        return $this->successResponse(BookingResource::collection($bookings), 'كل الحجوزات.');
     }
 
     public function payments(Request $request): JsonResponse
@@ -77,22 +74,11 @@ class AdminDashboardController extends Controller
             'status' => ['nullable', 'string', 'in:pending,success,failed,under_review,refunded'],
         ]);
 
-        $payments = Payment::with(['paymentMethod', 'booking.hotel', 'user'])
+        $payments = Payment::with(['paymentMethod', 'booking', 'user'])
             ->when(!empty($validated['status']), fn ($q) => $q->where('payment_status', $validated['status']))
             ->latest()
-            ->paginate(10)
-            ->withQueryString();
+            ->get();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'كل الدفعات.',
-            'data' => PaymentResource::collection($payments),
-            'meta' => [
-                'current_page' => $payments->currentPage(),
-                'last_page' => $payments->lastPage(),
-                'per_page' => $payments->perPage(),
-                'total' => $payments->total(),
-            ],
-        ]);
+        return $this->successResponse(PaymentResource::collection($payments), 'كل الدفعات.');
     }
 }
