@@ -3,6 +3,9 @@ import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import api from '../services/api'
 import BookingWidget from '../components/BookingWidget.vue'
+import { useAuthStore } from '../stores/auth'
+
+const auth = useAuthStore()
 
 const route = useRoute()
 const hotel = ref(null)
@@ -75,8 +78,11 @@ onMounted(async () => {
         </div>
 
         <div class="col-lg-4">
-          <div class="sticky-widget">
+          <div v-if="auth.role !== 'admin'" class="sticky-widget">
             <BookingWidget :hotel="hotel" />
+          </div>
+          <div v-else class="alert alert-secondary small">
+            👑 وضع الاستعراض الإداري: الحسابات الإدارية تتصفح المنصة ولا تنشئ حجوزات.
           </div>
         </div>
       </div>

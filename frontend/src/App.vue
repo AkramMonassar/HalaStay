@@ -23,15 +23,18 @@ async function logout() {
             <router-link class="btn btn-outline-success btn-sm" to="/owner/hotels">فنادقي</router-link>
             <router-link class="btn btn-outline-success btn-sm" to="/owner/bookings">حجوزات فنادقي</router-link>
             <router-link class="btn btn-outline-success btn-sm" to="/owner/payments">مراجعة الدفعات</router-link>
+            <router-link class="btn btn-outline-primary btn-sm" to="/bookings">حجوزاتي</router-link>
           </template>
-          <template v-if="auth.role === 'admin'">
+          <template v-else-if="auth.role === 'admin'">
             <router-link class="btn btn-outline-dark btn-sm" to="/admin">لوحة الأدمن</router-link>
             <router-link class="btn btn-outline-dark btn-sm" to="/admin/hotels">الفنادق</router-link>
             <router-link class="btn btn-outline-dark btn-sm" to="/admin/users">المستخدمون</router-link>
             <router-link class="btn btn-outline-dark btn-sm" to="/admin/settings">الإعدادات</router-link>
           </template>
-          <router-link class="btn btn-outline-primary btn-sm" to="/bookings">حجوزاتي</router-link>
-          <router-link class="btn btn-outline-primary btn-sm" to="/dashboard">لوحتي</router-link>
+          <template v-else>
+            <router-link class="btn btn-outline-primary btn-sm" to="/bookings">حجوزاتي</router-link>
+            <router-link class="btn btn-outline-primary btn-sm" to="/dashboard">لوحتي</router-link>
+          </template>
           <button class="btn btn-outline-danger btn-sm" @click="logout">خروج</button>
         </template>
         <template v-else>

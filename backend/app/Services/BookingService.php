@@ -48,7 +48,11 @@ class BookingService
                     'accommodation_type_id' => 'الفندق غير متاح للحجز حالياً.',
                 ]);
             }
-
+            if ($hotel->owner_id === $user->id) {
+            throw ValidationException::withMessages([
+                'accommodation_type_id' => 'لا يمكن إنشاء حجز في فندق تملكه.',
+            ]);
+        }
             $checkIn = $data['check_in'];
             $checkOut = $data['check_out'];
             $nights = (int) Carbon::parse($checkIn)->diffInDays(Carbon::parse($checkOut));
@@ -232,6 +236,12 @@ class BookingService
         if (!$isOwner) {
             throw ValidationException::withMessages([
                 'booking' => 'لا يمكنك إدارة حجوزات فندق لا تملكه.',
+            ]);
+        }
+        
+        if ($user->role === 'admin') {
+            throw ValidationException::withMessages([
+                'accommodation_type_id' => 'الحسابات الإدارية تستعرض المنصة ولا تنشئ حجوزات.',
             ]);
         }
     }
