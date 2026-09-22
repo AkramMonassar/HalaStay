@@ -3,6 +3,11 @@ import { ref, onMounted, computed } from 'vue'
 import api from '../../services/api'
 
 const stats = ref(null)
+import { useThemeStore } from '../../stores/theme'
+
+const theme = useThemeStore()
+const ink = computed(() => (theme.mode === 'dark' ? '#e9ecef' : '#373d3f'))
+const sub = computed(() => (theme.mode === 'dark' ? '#adb5bd' : '#6c757d'))
 
 const statusLabels = {
   pending_payment: 'بانتظار الدفع',
@@ -14,16 +19,25 @@ const statusLabels = {
 }
 
 const donutOptions = computed(() => ({
-  chart: { type: 'donut', fontFamily: 'Tajawal, sans-serif' },
+  chart: { type: 'donut', fontFamily: 'Tajawal, sans-serif', foreColor: sub.value },
   labels: Object.keys(stats.value?.by_status || {}).map((k) => statusLabels[k] || k),
-  legend: { position: 'bottom' },
+  legend: { position: 'bottom', labels: { colors: ink.value } },
+  tooltip: { theme: theme.mode },
   colors: ['#ffc107', '#0dcaf0', '#198754', '#dc3545', '#0d6efd', '#6c757d'],
 }))
 const donutSeries = computed(() => Object.values(stats.value?.by_status || {}))
 
 const barOptions = computed(() => ({
-  chart: { type: 'bar', fontFamily: 'Tajawal, sans-serif' },
-  xaxis: { categories: stats.value?.months || [] },
+  chart: { type: 'bar', fontFamily: 'Tajawal, sans-serif', foreColor: sub.value },
+  xaxis: {
+    categories: stats.value?.months || [],
+    labels: { style: { colors: sub.value, fontFamily: 'Tajawal, sans-serif' } },
+  },
+  yaxis: {
+    labels: { style: { colors: sub.value } },
+  },
+  legend: { labels: { colors: ink.value } },
+  tooltip: { theme: theme.mode },
   colors: ['#006c35'],
   plotOptions: { bar: { borderRadius: 6 } },
 }))

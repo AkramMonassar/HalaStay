@@ -2,7 +2,8 @@
 import { useAuthStore } from './stores/auth'
 import { useRouter } from 'vue-router'
 import ToastContainer from './components/ToastContainer.vue'
-
+import { useThemeStore } from './stores/theme'
+const theme = useThemeStore()
 const auth = useAuthStore()
 const router = useRouter()
 
@@ -35,18 +36,33 @@ async function logout() {
             <router-link class="btn btn-outline-primary btn-sm" to="/bookings">حجوزاتي</router-link>
             <router-link class="btn btn-outline-primary btn-sm" to="/dashboard">لوحتي</router-link>
           </template>
+
+          <router-link class="btn btn-outline-secondary btn-sm" to="/profile">👤 ملفي</router-link>
+          <span class="nav-divider" aria-hidden="true"></span>
           <button class="btn btn-outline-danger btn-sm" @click="logout">خروج</button>
         </template>
         <template v-else>
           <router-link class="btn btn-outline-primary btn-sm" to="/login">دخول</router-link>
           <router-link class="btn btn-primary btn-sm" to="/register">حساب جديد</router-link>
         </template>
+
+        <button
+          class="btn btn-light btn-sm theme-toggle"
+          :title="theme.mode === 'light' ? 'الوضع الليلي' : 'الوضع النهاري'"
+          @click="theme.toggle"
+        >
+          {{ theme.mode === 'light' ? '🌙' : '☀️' }}
+        </button>
       </div>
     </div>
   </nav>
 
   <main class="main-content">
-    <router-view />
+    <router-view v-slot="{ Component }">
+      <transition name="page-fade" mode="out-in">
+        <component :is="Component" />
+      </transition>
+    </router-view>
     <ToastContainer />
   </main>
 </template>

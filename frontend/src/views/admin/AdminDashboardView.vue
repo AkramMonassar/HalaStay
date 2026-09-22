@@ -2,8 +2,14 @@
 import { ref, onMounted, computed } from 'vue'
 import api from '../../services/api'
 
-const stats = ref(null)
 
+import { useThemeStore } from '../../stores/theme'
+
+const theme = useThemeStore()
+const ink = computed(() => (theme.mode === 'dark' ? '#e9ecef' : '#373d3f'))
+const sub = computed(() => (theme.mode === 'dark' ? '#adb5bd' : '#6c757d'))
+
+const stats = ref(null)
 const statusLabels = {
   pending_payment: 'بانتظار الدفع',
   pending_confirmation: 'بانتظار التأكيد',
@@ -14,10 +20,12 @@ const statusLabels = {
 }
 
 const donutOptions = computed(() => ({
-  chart: { type: 'donut', fontFamily: 'Tajawal, sans-serif' },
+  chart: { type: 'donut', fontFamily: 'Tajawal, sans-serif', foreColor: sub.value },
   labels: Object.keys(stats.value?.bookings?.by_status || {}).map((k) => statusLabels[k] || k),
-  legend: { position: 'bottom' },
+  legend: { position: 'bottom', labels: { colors: ink.value } },
+  tooltip: { theme: theme.mode },
 }))
+
 const donutSeries = computed(() => Object.values(stats.value?.bookings?.by_status || {}))
 
 const revenueOptions = computed(() => ({
@@ -29,11 +37,14 @@ const revenueOptions = computed(() => ({
 const revenueSeries = computed(() => [{ name: 'الإيراد', data: stats.value?.monthly_revenue || [] }])
 
 const bookingsOptions = computed(() => ({
-  chart: { type: 'line', fontFamily: 'Tajawal, sans-serif' },
+  chart: { type: 'line', fontFamily: 'Tajawal, sans-serif', foreColor: sub.value },
   xaxis: { categories: stats.value?.months || [] },
+  legend: { labels: { colors: ink.value } },
+  tooltip: { theme: theme.mode },
   colors: ['#1a5490'],
   stroke: { width: 3, curve: 'smooth' },
 }))
+
 const bookingsSeries = computed(() => [{ name: 'الحجوزات', data: stats.value?.monthly_bookings || [] }])
 
 onMounted(async () => {

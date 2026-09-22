@@ -36,7 +36,7 @@ const carryQuery = computed(() => {
     <div class="hotel-body">
       <div class="d-flex justify-content-between align-items-start gap-2">
         <h6 class="hotel-name mb-1">{{ hotel.name }}</h6>
-        <span class="review-pill">{{ hotel.review_score ?? 'جديد' }}</span>
+        <span class="review-pill">{{ hotel.review_score > 0 ? hotel.review_score : 'جديد' }}</span>
       </div>
       <div class="hotel-city">📍 {{ hotel.city }}</div>
       <div class="d-flex justify-content-between align-items-end mt-3">
