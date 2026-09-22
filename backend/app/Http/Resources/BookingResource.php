@@ -28,6 +28,7 @@ class BookingResource extends JsonResource
             'payments' => PaymentResource::collection($this->whenLoaded('payments')),
             'status_history' => BookingStatusHistoryResource::collection($this->whenLoaded('statusHistory')),
             'created_at' => $this->created_at,
+            'guest_phone' => $this->whenLoaded('user', fn () => $this->user?->phone),
         ];
     }
 }

@@ -10,9 +10,12 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use App\Http\Resources\UserResource;
+use App\Traits\ApiResponse;
 
 class AuthController extends Controller
 {
+    use ApiResponse;
     public function register(RegisterRequest $request): JsonResponse
     {
         $user = User::create([
@@ -85,5 +88,18 @@ class AuthController extends Controller
                 'user' => $request->user(),
             ],
         ]);
+    }
+
+    public function updateProfile(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'name' => ['sometimes', 'string', 'max:100'],
+            'phone' => ['nullable', 'string', 'max:20'],
+        ]);
+
+        $user = $request->user();
+        $user->update($validated);
+
+        return $this->successResponse(new UserResource($user->fresh()), 'تم تحديث الملف الشخصي.');
     }
 }

@@ -36,7 +36,8 @@ onMounted(async () => {
             <h2 class="mb-1">{{ hotel.name }}</h2>
             <div class="head-meta">📍 {{ hotel.city }} · {{ '★'.repeat(hotel.star_rating) }}</div>
           </div>
-          <span v-if="hotel.review_score" class="review-pill-big">{{ hotel.review_score }}</span>
+          <span v-if="hotel.review_score > 0" class="review-pill-big">{{ hotel.review_score }}</span>
+          <span v-else class="new-pill-big">جديد</span>
         </div>
       </div>
     </section>
@@ -54,6 +55,7 @@ onMounted(async () => {
         <div class="col-lg-8">
           <section class="info-card">
             <h5>عن الفندق</h5>
+            <div v-if="hotel.phone" class="mt-2 small">📞 للتواصل: <span dir="ltr">{{ hotel.phone }}</span></div>
             <p class="text-muted mb-0">{{ hotel.description || 'لا وصف متاح حالياً.' }}</p>
           </section>
 
@@ -165,4 +167,6 @@ onMounted(async () => {
   position: sticky;
   top: 90px;
 }
+
+.new-pill-big { background: #e6f4ea; color: #006c35; font-weight: 800; padding: 6px 16px; border-radius: 24px; font-size: 1rem; }
 </style>

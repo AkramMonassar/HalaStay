@@ -91,6 +91,7 @@ async function rejectBooking(b) {
             </div>
             <div class="small text-muted">
               الضيف: {{ b.guest_name }} | {{ b.check_in }} → {{ b.check_out }} | {{ b.rooms_count }} غرف | {{ b.total_price }} {{ b.currency_code }}
+               | جوال الضيف: <span dir="ltr">{{ b.guest_phone || 'غير مضاف' }}</span>
             </div>
           </div>
           <div v-if="b.booking_status === 'pending_confirmation'" class="d-flex gap-1">

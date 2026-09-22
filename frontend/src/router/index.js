@@ -21,6 +21,8 @@ const routes = [
   { path: '/admin/bookings', name: 'admin-bookings', component: () => import('../views/admin/AdminBookingsView.vue'), meta: { requiresAuth: true, requiresRole: 'admin', title: 'الحجوزات' } },
   { path: '/admin/payments', name: 'admin-payments', component: () => import('../views/admin/AdminPaymentsView.vue'), meta: { requiresAuth: true, requiresRole: 'admin', title: 'الدفعات' } },
   { path: '/admin/settings', name: 'admin-settings', component: () => import('../views/admin/AdminSettingsView.vue'), meta: { requiresAuth: true, requiresRole: 'admin', title: 'الإعدادات' } },
+
+  { path: '/profile', name: 'profile', component: () => import('../views/ProfileView.vue'), meta: { requiresAuth: true, title: 'ملفي' } },
  
   { path: '/login', name: 'login', component: () => import('../views/LoginView.vue'), meta: { guest: true, title: 'تسجيل الدخول' } },
   { path: '/register', name: 'register', component: () => import('../views/RegisterView.vue'), meta: { guest: true, title: 'حساب جديد' } },

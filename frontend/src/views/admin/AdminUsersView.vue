@@ -75,6 +75,7 @@ async function toggle(u) {
               <span class="badge ms-1" :class="u.is_active ? 'bg-success' : 'bg-danger'">{{ u.is_active ? 'نشط' : 'موقوف' }}</span>
             </div>
             <div class="small text-muted">{{ u.email }}</div>
+            <div v-if="u.phone" class="small text-muted">📞 <span dir="ltr">{{ u.phone }}</span></div>
           </div>
           <button v-if="u.id !== auth.user?.id" class="btn btn-outline-secondary btn-sm" @click="toggle(u)">
             {{ u.is_active ? 'إيقاف' : 'تفعيل' }}
