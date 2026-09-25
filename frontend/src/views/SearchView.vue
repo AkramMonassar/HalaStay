@@ -1,128 +1,52 @@
 <script setup>
-import { ref, computed, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { ref, onMounted, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import api from '../services/api'
-import FilterSidebar from '../components/FilterSidebar.vue'
 import HotelCard from '../components/HotelCard.vue'
-import SearchForm from '../components/SearchForm.vue'
+import FilterSidebar from '../components/FilterSidebar.vue'
 import AppSkeleton from '../components/AppSkeleton.vue'
 
 const route = useRoute()
-const router = useRouter()
-
+const hotels = ref([])
 const loading = ref(false)
-const results = ref([])
-const meta = ref(null)
-const message = ref('')
-const filters = ref({})
-
-const highCapacityDemand = computed(() => {
-  const guests = Number(filters.value.adults || 0) + Number(filters.value.children || 0)
-  const rooms = Number(filters.value.rooms || 1)
-  return guests > rooms * 4
-})
-
-function readQuery() {
-  const q = route.query
-  filters.value = {
-    city_id: q.city_id || '',
-    check_in: q.check_in || '',
-    check_out: q.check_out || '',
-    adults: q.adults || 2,
-    children: q.children || 0,
-    rooms: q.rooms || 1,
-    stay_type: q.stay_type ? (Array.isArray(q.stay_type) ? q.stay_type : [q.stay_type]) : [],
-    star_rating: q.star_rating ? (Array.isArray(q.star_rating) ? q.star_rating : [q.star_rating]) : [],
-    min_review: q.min_review || '',
-    page: q.page || 1,
-  }
-}
-
-function clean(obj) {
-  const out = {}
-  Object.entries(obj).forEach(([k, v]) => {
-    if (v === '' || v === null || v === undefined) return
-    if (Array.isArray(v) && v.length === 0) return
-    out[k] = v
-  })
-  return out
-}
 
 async function fetchResults() {
-  if (!filters.value.city_id || !filters.value.check_in || !filters.value.check_out) return
   loading.value = true
   try {
-    const { data } = await api.get('/search', { params: clean(filters.value) })
-    results.value = data.data
-    meta.value = data.meta
-    message.value = data.message
-  } catch (e) {
-    message.value = e.response?.data?.message || 'تعذر تنفيذ البحث.'
-    results.value = []
+    const { data } = await api.get('/search', { params: route.query })
+    hotels.value = data.data
   } finally {
     loading.value = false
   }
 }
 
-function applyFilters(next) {
-  router.push({ name: 'search', query: clean({ ...route.query, ...next, page: undefined }) })
-}
-
-function goPage(p) {
-  router.push({ name: 'search', query: { ...route.query, page: p } })
-}
-
-watch(() => route.query, () => { readQuery(); fetchResults() }, { immediate: true })
+onMounted(fetchResults)
+watch(() => route.query, fetchResults)
 </script>
 
 <template>
   <div class="container py-4">
-    <div class="card shadow-sm mb-3">
-      <div class="card-body">
-        <SearchForm :initial="filters" />
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-lg-3 mb-3">
-        <FilterSidebar :filters="filters" @update="applyFilters" />
+    <div class="row g-4">
+      <div class="col-lg-3">
+        <FilterSidebar />
       </div>
       <div class="col-lg-9">
-        <p class="text-muted mb-3">{{ message }}</p>
-
         <div v-if="loading" class="row g-3">
           <div v-for="i in 3" :key="i" class="col-md-4">
             <AppSkeleton variant="card" />
           </div>
         </div>
 
-        <div v-else-if="results.length" class="row g-3">
-          <div v-for="h in results" :key="h.id" class="col-md-6 col-xl-4">
-            <HotelCard :hotel="h" />
-          </div>
-        </div>
+        <template v-else>
+          <div v-if="hotels.length" class="mb-3">{{ $t('search.resultsFound') }}</div>
+          <div v-else class="alert alert-info">{{ $t('search.noResults') }}</div>
 
-        <div v-else class="alert alert-info">
-          لا توجد نتائج مطابقة — جرّب تعديل المعايير.
-          <div v-if="highCapacityDemand" class="small mt-2">
-            💡 عدد الأفراد كبير مقارنة بعدد الغرف — معظم المنشآت لا تستوعب هذا العدد في غرفة واحدة؛ جرّب زيادة عدد
-            الغرف.
+          <div class="row g-3">
+            <div v-for="h in hotels" :key="h.id" class="col-md-4">
+              <HotelCard :hotel="h" />
+            </div>
           </div>
-        </div>
-
-        <nav v-if="meta && meta.last_page > 1" class="mt-4">
-          <ul class="pagination justify-content-center">
-            <li class="page-item" :class="{ disabled: meta.current_page === 1 }">
-              <button class="page-link" @click="goPage(meta.current_page - 1)">السابق</button>
-            </li>
-            <li v-for="p in meta.last_page" :key="p" class="page-item" :class="{ active: p === meta.current_page }">
-              <button class="page-link" @click="goPage(p)">{{ p }}</button>
-            </li>
-            <li class="page-item" :class="{ disabled: meta.current_page === meta.last_page }">
-              <button class="page-link" @click="goPage(meta.current_page + 1)">التالي</button>
-            </li>
-          </ul>
-        </nav>
+        </template>
       </div>
     </div>
   </div>

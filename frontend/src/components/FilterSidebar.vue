@@ -1,67 +1,69 @@
 <script setup>
-const props = defineProps({ filters: Object })
-const emit = defineEmits(['update'])
+import { computed } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 
-const stayTypes = [
-  { key: 'room', label: 'غرف' },
-  { key: 'apartment', label: 'شقق' },
-  { key: 'suite', label: 'أجنحة' },
-  { key: 'hall', label: 'قاعات' },
-]
+const route = useRoute()
+const router = useRouter()
+
+const stayTypes = ['room', 'apartment', 'suite', 'hall']
 const stars = [5, 4, 3, 2, 1]
 
-function toggleStay(key) {
-  const list = [...(props.filters.stay_type || [])]
-  const i = list.indexOf(key)
-  i >= 0 ? list.splice(i, 1) : list.push(key)
-  emit('update', { ...props.filters, stay_type: list })
+function asArray(v) {
+  if (!v) return []
+  return Array.isArray(v) ? v : [v]
+}
+
+const selectedTypes = computed(() => asArray(route.query.stay_types))
+const selectedStars = computed(() => asArray(route.query.stars).map(Number))
+const minRating = computed(() => route.query.min_rating || '')
+
+function push(patch) {
+  router.push({ query: { ...route.query, ...patch } })
+}
+
+function toggleType(t) {
+  const arr = [...selectedTypes.value]
+  const i = arr.indexOf(t)
+  i >= 0 ? arr.splice(i, 1) : arr.push(t)
+  push({ stay_types: arr.length ? arr : undefined })
 }
 
 function toggleStar(s) {
-  const list = [...(props.filters.star_rating || [])]
-  const i = list.indexOf(String(s))
-  i >= 0 ? list.splice(i, 1) : list.push(String(s))
-  emit('update', { ...props.filters, star_rating: list })
+  const arr = [...selectedStars.value]
+  const i = arr.indexOf(s)
+  i >= 0 ? arr.splice(i, 1) : arr.push(s)
+  push({ stars: arr.length ? arr : undefined })
 }
 
-function setMinReview(v) {
-  emit('update', { ...props.filters, min_review: v || undefined })
+function setMinRating(v) {
+  push({ min_rating: v || undefined })
 }
 </script>
 
 <template>
   <div class="card shadow-sm">
+    <div class="card-header bg-white fw-semibold">{{ $t('search.filters') }}</div>
     <div class="card-body">
-      <h6 class="mb-3">تصفية النتائج</h6>
-
       <div class="mb-3">
-        <div class="form-label fw-semibold">نوع الإقامة</div>
-        <div v-for="t in stayTypes" :key="t.key" class="form-check">
-          <input
-            class="form-check-input" type="checkbox" :id="'stay-' + t.key"
-            :checked="(filters.stay_type || []).includes(t.key)"
-            @change="toggleStay(t.key)"
-          />
-          <label class="form-check-label" :for="'stay-' + t.key">{{ t.label }}</label>
+        <div class="fw-semibold mb-2">{{ $t('search.stayType') }}</div>
+        <div v-for="t in stayTypes" :key="t" class="form-check">
+          <input :id="'st-' + t" type="checkbox" class="form-check-input" :checked="selectedTypes.includes(t)" @change="toggleType(t)" />
+          <label class="form-check-label" :for="'st-' + t">{{ $t('search.stayTypes.' + t) }}</label>
         </div>
       </div>
 
       <div class="mb-3">
-        <div class="form-label fw-semibold">التصنيف</div>
+        <div class="fw-semibold mb-2">{{ $t('search.stars') }}</div>
         <div v-for="s in stars" :key="s" class="form-check">
-          <input
-            class="form-check-input" type="checkbox" :id="'star-' + s"
-            :checked="(filters.star_rating || []).includes(String(s))"
-            @change="toggleStar(s)"
-          />
-          <label class="form-check-label" :for="'star-' + s">{{ s }} نجوم</label>
+          <input :id="'star-' + s" type="checkbox" class="form-check-input" :checked="selectedStars.includes(s)" @change="toggleStar(s)" />
+          <label class="form-check-label" :for="'star-' + s">{{ s }} {{ $t('search.starsWord') }}</label>
         </div>
       </div>
 
-      <div class="mb-2">
-        <label class="form-label fw-semibold">أدنى تقييم</label>
-        <select class="form-select" :value="filters.min_review || ''" @change="setMinReview($event.target.value)">
-          <option value="">الكل</option>
+      <div>
+        <label class="form-label">{{ $t('search.minRating') }}</label>
+        <select :value="minRating" class="form-select" @change="setMinRating($event.target.value)">
+          <option value="">{{ $t('search.all') }}</option>
           <option value="7">7+</option>
           <option value="8">8+</option>
           <option value="9">9+</option>

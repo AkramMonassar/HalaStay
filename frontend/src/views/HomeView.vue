@@ -20,8 +20,8 @@ onMounted(async () => {
     <section class="hero">
       <div class="container">
         <div class="hero-text">
-          <h1>وجهتك التالية تبدأ من هنا</h1>
-          <p>فنادق وشقق وقاعات في السعودية واليمن — ابحث، قارن، واحجز بثقة مع توفر لحظي ودفع مرن.</p>
+          <h1>{{ $t('home.heroTitle') }}</h1>
+          <p>{{ $t('home.heroSub') }}</p>
         </div>
         <div class="hero-form">
           <SearchForm />
@@ -30,12 +30,12 @@ onMounted(async () => {
     </section>
 
     <section class="container py-5">
-      <h3 class="mb-4">وجهات مميزة</h3>
+      <h3 class="mb-4">{{ $t('home.destinations') }}</h3>
       <div class="row g-3">
         <div v-for="c in cities" :key="c.id" class="col-6 col-md-3">
           <router-link :to="{ name: 'search', query: { city_id: c.id } }" class="city-card">
             <span class="city-name">{{ c.name }}</span>
-            <span class="city-hint">استكشف الفنادق</span>
+            <span class="city-hint">{{ $t('home.explore') }}</span>
           </router-link>
         </div>
       </div>
@@ -46,18 +46,18 @@ onMounted(async () => {
         <div class="row g-4 text-center">
           <div class="col-md-4">
             <div class="feature-icon">🔍</div>
-            <h5>بحث ذكي</h5>
-            <p class="text-muted small mb-0">فلاتر حية حسب النوع والنجوم والتقييم مع توفر لحظي.</p>
+            <h5>{{ $t('home.feat1Title') }}</h5>
+            <p class="text-muted small mb-0">{{ $t('home.feat1Sub') }}</p>
           </div>
           <div class="col-md-4">
             <div class="feature-icon">🔒</div>
-            <h5>حجز بلا تعارض</h5>
-            <p class="text-muted small mb-0">وحداتك تُحجز لحظة إنشاء الحجز — لا ازدواج ولا مفاجآت.</p>
+            <h5>{{ $t('home.feat2Title') }}</h5>
+            <p class="text-muted small mb-0">{{ $t('home.feat2Sub') }}</p>
           </div>
           <div class="col-md-4">
             <div class="feature-icon">💳</div>
-            <h5>دفع مرن</h5>
-            <p class="text-muted small mb-0">محفظة، تحويل بنكي، أو عند الوصول — ومراجعة شفافة.</p>
+            <h5>{{ $t('home.feat3Title') }}</h5>
+            <p class="text-muted small mb-0">{{ $t('home.feat3Sub') }}</p>
           </div>
         </div>
       </div>

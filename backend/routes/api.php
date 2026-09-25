@@ -40,6 +40,7 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
 
     // 🧾 Booking & Payment APIs (Auth Required)
     Route::middleware('auth:sanctum')->group(function () {
+        Route::get('/bookings', [BookingController::class, 'index']);
         Route::post('/bookings', [BookingController::class, 'store']);
         Route::get('/user/bookings', [BookingController::class, 'userBookings']);
         Route::get('/bookings/{booking}', [BookingController::class, 'show']);
@@ -105,6 +106,8 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
         Route::post('/login', [AuthController::class, 'login']);
 
         Route::middleware('auth:sanctum')->group(function () {
+            Route::get('/bookings', [BookingController::class, 'index']);  
+            Route::post('/bookings', [BookingController::class, 'store']);
             Route::post('/logout', [AuthController::class, 'logout']);
             Route::get('/me', [AuthController::class, 'me']);
             Route::patch('/profile', [AuthController::class, 'updateProfile']);

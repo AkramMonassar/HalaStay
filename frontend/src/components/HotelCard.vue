@@ -29,7 +29,7 @@ const carryQuery = computed(() => {
 <template>
   <div class="hotel-card">
     <div class="hotel-media">
-      <img v-if="cover" :src="cover" alt="" />
+      <img v-if="cover" :src="cover" alt="" loading="lazy" />
       <span v-else class="hotel-placeholder">🏨</span>
       <span class="hotel-stars">{{ '★'.repeat(hotel.star_rating) }}</span>
     </div>
