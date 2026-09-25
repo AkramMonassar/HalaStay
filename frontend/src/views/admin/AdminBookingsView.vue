@@ -7,21 +7,9 @@ const loading = ref(true)
 const statusFilter = ref('')
 const search = ref('')
 
-const statusLabels = {
-  pending_payment: 'بانتظار الدفع',
-  pending_confirmation: 'بانتظار التأكيد',
-  confirmed: 'مؤكد',
-  cancelled: 'ملغي',
-  completed: 'مكتمل',
-  expired: 'منتهي',
-}
 const statusClasses = {
-  pending_payment: 'bg-warning',
-  pending_confirmation: 'bg-info',
-  confirmed: 'bg-success',
-  cancelled: 'bg-danger',
-  completed: 'bg-primary',
-  expired: 'bg-secondary',
+  pending_payment: 'bg-warning', pending_confirmation: 'bg-info', confirmed: 'bg-success',
+  cancelled: 'bg-danger', completed: 'bg-primary', expired: 'bg-secondary',
 }
 
 async function fetchBookings() {
@@ -50,32 +38,31 @@ const filtered = computed(() => {
 <template>
   <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4 gap-2 flex-wrap">
-      <h4 class="mb-0">🧾 كل الحجوزات</h4>
+      <h4 class="mb-0">🧾 {{ $t('admin.allBookings') }}</h4>
       <div class="d-flex gap-2">
-        <input v-model="search" class="form-control" placeholder="بحث برقم الحجز أو الضيف..." style="width: 220px" />
+        <input v-model="search" class="form-control" :placeholder="$t('bookings.searchPh')" style="width: 220px" />
         <select v-model="statusFilter" class="form-select" style="width: auto">
-          <option value="">كل الحالات</option>
-          <option value="pending_payment">بانتظار الدفع</option>
-          <option value="pending_confirmation">بانتظار التأكيد</option>
-          <option value="confirmed">مؤكدة</option>
-          <option value="cancelled">ملغية</option>
+          <option value="">{{ $t('bookings.allStatuses') }}</option>
+          <option value="pending_payment">{{ $t('statuses.pending_payment') }}</option>
+          <option value="pending_confirmation">{{ $t('statuses.pending_confirmation') }}</option>
+          <option value="confirmed">{{ $t('statuses.confirmed') }}</option>
+          <option value="cancelled">{{ $t('statuses.cancelled') }}</option>
         </select>
       </div>
     </div>
 
-    <div v-if="loading" class="text-center py-5">جارِ التحميل...</div>
-
+    <div v-if="loading" class="text-center py-5">{{ $t('common.loading') }}</div>
     <div v-else class="card shadow-sm">
       <div class="table-responsive">
         <table class="table table-hover align-middle mb-0">
           <thead class="table-light">
             <tr>
-              <th>رقم الحجز</th>
-              <th>الفندق</th>
-              <th>الضيف</th>
-              <th>التواريخ</th>
-              <th>الإجمالي</th>
-              <th>الحالة</th>
+              <th>{{ $t('bookings.thNumber') }}</th>
+              <th>{{ $t('bookings.thHotel') }}</th>
+              <th>{{ $t('bookings.thGuest') }}</th>
+              <th>{{ $t('bookings.thDates') }}</th>
+              <th>{{ $t('bookings.thTotal') }}</th>
+              <th>{{ $t('bookings.thStatus') }}</th>
             </tr>
           </thead>
           <tbody>
@@ -85,10 +72,10 @@ const filtered = computed(() => {
               <td>{{ b.guest_name }}</td>
               <td class="small">{{ b.check_in }} → {{ b.check_out }}</td>
               <td>{{ b.total_price }} {{ b.currency_code }}</td>
-              <td><span class="badge" :class="statusClasses[b.booking_status]">{{ statusLabels[b.booking_status] }}</span></td>
+              <td><span class="badge" :class="statusClasses[b.booking_status]">{{ $t('statuses.' + b.booking_status) }}</span></td>
             </tr>
             <tr v-if="!filtered.length">
-              <td colspan="6" class="text-center text-muted py-4">لا نتائج مطابقة.</td>
+              <td colspan="6" class="text-center text-muted py-4">{{ $t('bookings.noResults') }}</td>
             </tr>
           </tbody>
         </table>

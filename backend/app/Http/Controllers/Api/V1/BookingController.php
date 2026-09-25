@@ -15,9 +15,7 @@ class BookingController extends Controller
 {
     use ApiResponse;
 
-    public function __construct(protected BookingService $bookingService)
-    {
-    }
+    public function __construct(protected BookingService $bookingService) {}
 
     public function store(StoreBookingRequest $request): JsonResponse
     {
@@ -80,5 +78,14 @@ class BookingController extends Controller
         $booking->load(['hotel', 'accommodationType']);
 
         return $this->successResponse(new BookingResource($booking), 'تم إلغاء الحجز بنجاح.');
+    }
+    public function index(Request $request): JsonResponse
+    {
+        $bookings = Booking::with(['accommodationType.hotel', 'user'])
+            ->where('user_id', $request->user()->id)
+            ->latest()
+            ->get();
+
+        return $this->successResponse(BookingResource::collection($bookings), 'حجوزاتك.');
     }
 }

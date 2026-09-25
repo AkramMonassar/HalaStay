@@ -1,16 +1,20 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import api from '../../services/api'
 import { useAuthStore } from '../../stores/auth'
+import { useToastStore } from '../../stores/toast'
 
+const { t } = useI18n()
 const auth = useAuthStore()
+const toast = useToastStore()
+
 const users = ref([])
 const loading = ref(true)
 const roleFilter = ref('')
 const search = ref('')
-const message = ref('')
 
-const roleLabels = { tourist: 'سائح', hotel_owner: 'صاحب فندق', admin: 'أدمن' }
+const roleKey = { tourist: 'admin.tourists', hotel_owner: 'admin.owners', admin: 'admin.admins' }
 
 async function fetchUsers() {
   loading.value = true
@@ -35,14 +39,13 @@ watch(search, () => {
 })
 
 async function toggle(u) {
-  message.value = ''
   try {
     const { data } = await api.patch(`/admin/users/${u.id}/toggle-active`)
     const idx = users.value.findIndex((x) => x.id === u.id)
     if (idx >= 0) users.value[idx] = data.data
-    message.value = data.message
+    toast.push(data.message)
   } catch (e) {
-    message.value = e.response?.data?.message || 'تعذر التبديل.'
+    toast.push(e.response?.data?.message || t('auth.loginFailed'), 'danger')
   }
 }
 </script>
@@ -50,37 +53,38 @@ async function toggle(u) {
 <template>
   <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4 gap-2 flex-wrap">
-      <h4 class="mb-0">👥 المستخدمون</h4>
+      <h4 class="mb-0">👥 {{ $t('admin.usersTitle') }}</h4>
       <div class="d-flex gap-2">
-        <input v-model="search" class="form-control" placeholder="بحث بالاسم أو البريد..." style="width: 220px" />
+        <input v-model="search" class="form-control" :placeholder="$t('users.searchPh')" style="width: 220px" />
         <select v-model="roleFilter" class="form-select" style="width: auto">
-          <option value="">كل الأدوار</option>
-          <option value="tourist">سياح</option>
-          <option value="hotel_owner">ملاك</option>
-          <option value="admin">أدمن</option>
+          <option value="">{{ $t('users.allRoles') }}</option>
+          <option value="tourist">{{ $t('admin.tourists') }}</option>
+          <option value="hotel_owner">{{ $t('admin.owners') }}</option>
+          <option value="admin">{{ $t('admin.admins') }}</option>
         </select>
       </div>
     </div>
 
-    <div v-if="message" class="alert alert-info py-2">{{ message }}</div>
-    <div v-if="loading" class="text-center py-5">جارِ التحميل...</div>
-
+    <div v-if="loading" class="text-center py-5">{{ $t('common.loading') }}</div>
     <div v-else class="d-flex flex-column gap-2">
       <div v-for="u in users" :key="u.id" class="card shadow-sm">
         <div class="card-body d-flex justify-content-between align-items-center flex-wrap gap-2">
           <div>
             <div class="fw-semibold">
               {{ u.name }}
-              <span class="badge ms-1 bg-primary">{{ roleLabels[u.role] }}</span>
-              <span class="badge ms-1" :class="u.is_active ? 'bg-success' : 'bg-danger'">{{ u.is_active ? 'نشط' : 'موقوف' }}</span>
+              <span class="badge ms-1 bg-primary">{{ $t(roleKey[u.role]) }}</span>
+              <span class="badge ms-1" :class="u.is_active ? 'bg-success' : 'bg-danger'">
+                {{ u.is_active ? $t('users.active') : $t('users.inactive') }}
+              </span>
             </div>
-            <div class="small text-muted">{{ u.email }}</div>
-            <div v-if="u.phone" class="small text-muted">📞 <span dir="ltr">{{ u.phone }}</span></div>
+            <div class="small text-muted">
+              {{ u.email }} <span v-if="u.phone">· <span dir="ltr">{{ u.phone }}</span></span>
+            </div>
           </div>
           <button v-if="u.id !== auth.user?.id" class="btn btn-outline-secondary btn-sm" @click="toggle(u)">
-            {{ u.is_active ? 'إيقاف' : 'تفعيل' }}
+            {{ u.is_active ? $t('users.disable') : $t('users.enable') }}
           </button>
-          <span v-else class="small text-muted">(حسابك الحالي)</span>
+          <span v-else class="small text-muted">{{ $t('users.self') }}</span>
         </div>
       </div>
     </div>

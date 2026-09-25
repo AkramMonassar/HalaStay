@@ -1,10 +1,13 @@
 <script setup>
 import { useAuthStore } from './stores/auth'
+import { useThemeStore } from './stores/theme'
+import { useLangStore } from './stores/lang'
 import { useRouter } from 'vue-router'
 import ToastContainer from './components/ToastContainer.vue'
-import { useThemeStore } from './stores/theme'
-const theme = useThemeStore()
+
 const auth = useAuthStore()
+const theme = useThemeStore()
+const lang = useLangStore()
 const router = useRouter()
 
 async function logout() {
@@ -16,42 +19,45 @@ async function logout() {
 <template>
   <nav class="navbar navbar-expand-lg">
     <div class="container">
-      <router-link class="navbar-brand" to="/">🏨 هلا ستاي</router-link>
+      <router-link class="navbar-brand" to="/">🏨 {{ $t('nav.brand') }}</router-link>
       <div class="d-flex align-items-center gap-2 flex-wrap">
         <template v-if="auth.isAuthenticated">
           <template v-if="auth.role === 'hotel_owner'">
-            <router-link class="btn btn-outline-success btn-sm" to="/owner">لوحة المالك</router-link>
-            <router-link class="btn btn-outline-success btn-sm" to="/owner/hotels">فنادقي</router-link>
-            <router-link class="btn btn-outline-success btn-sm" to="/owner/bookings">حجوزات فنادقي</router-link>
-            <router-link class="btn btn-outline-success btn-sm" to="/owner/payments">مراجعة الدفعات</router-link>
-            <router-link class="btn btn-outline-primary btn-sm" to="/bookings">حجوزاتي</router-link>
+            <router-link class="btn btn-outline-success btn-sm" to="/owner">{{ $t('nav.ownerPanel') }}</router-link>
+            <router-link class="btn btn-outline-success btn-sm" to="/owner/hotels">{{ $t('nav.myHotels') }}</router-link>
+            <router-link class="btn btn-outline-success btn-sm" to="/owner/bookings">{{ $t('nav.ownerBookings') }}</router-link>
+            <router-link class="btn btn-outline-success btn-sm" to="/owner/payments">{{ $t('nav.paymentReview') }}</router-link>
+            <router-link class="btn btn-outline-primary btn-sm" to="/bookings">{{ $t('nav.myBookings') }}</router-link>
           </template>
           <template v-else-if="auth.role === 'admin'">
-            <router-link class="btn btn-outline-dark btn-sm" to="/admin">لوحة الأدمن</router-link>
-            <router-link class="btn btn-outline-dark btn-sm" to="/admin/hotels">الفنادق</router-link>
-            <router-link class="btn btn-outline-dark btn-sm" to="/admin/users">المستخدمون</router-link>
-            <router-link class="btn btn-outline-dark btn-sm" to="/admin/settings">الإعدادات</router-link>
+            <router-link class="btn btn-outline-dark btn-sm" to="/admin">{{ $t('nav.adminPanel') }}</router-link>
+            <router-link class="btn btn-outline-dark btn-sm" to="/admin/hotels">{{ $t('nav.hotels') }}</router-link>
+            <router-link class="btn btn-outline-dark btn-sm" to="/admin/users">{{ $t('nav.users') }}</router-link>
+            <router-link class="btn btn-outline-dark btn-sm" to="/admin/settings">{{ $t('nav.settings') }}</router-link>
           </template>
           <template v-else>
-            <router-link class="btn btn-outline-primary btn-sm" to="/bookings">حجوزاتي</router-link>
-            <router-link class="btn btn-outline-primary btn-sm" to="/dashboard">لوحتي</router-link>
+            <router-link class="btn btn-outline-primary btn-sm" to="/bookings">{{ $t('nav.myBookings') }}</router-link>
+            <router-link class="btn btn-outline-primary btn-sm" to="/dashboard">{{ $t('nav.myDashboard') }}</router-link>
           </template>
 
-          <router-link class="btn btn-outline-secondary btn-sm" to="/profile">👤 ملفي</router-link>
+          <router-link class="btn btn-outline-secondary btn-sm" to="/profile">👤 {{ $t('nav.profile') }}</router-link>
           <span class="nav-divider" aria-hidden="true"></span>
-          <button class="btn btn-outline-danger btn-sm" @click="logout">خروج</button>
+          <button class="btn btn-outline-danger btn-sm" @click="logout">{{ $t('nav.logout') }}</button>
         </template>
         <template v-else>
-          <router-link class="btn btn-outline-primary btn-sm" to="/login">دخول</router-link>
-          <router-link class="btn btn-primary btn-sm" to="/register">حساب جديد</router-link>
+          <router-link class="btn btn-outline-primary btn-sm" to="/login">{{ $t('nav.login') }}</router-link>
+          <router-link class="btn btn-primary btn-sm" to="/register">{{ $t('nav.register') }}</router-link>
         </template>
 
         <button
           class="btn btn-light btn-sm theme-toggle"
-          :title="theme.mode === 'light' ? 'الوضع الليلي' : 'الوضع النهاري'"
+          :title="theme.mode === 'light' ? $t('nav.themeToDark') : $t('nav.themeToLight')"
           @click="theme.toggle"
         >
           {{ theme.mode === 'light' ? '🌙' : '☀️' }}
+        </button>
+        <button class="btn btn-light btn-sm theme-toggle" @click="lang.toggle">
+          {{ lang.locale === 'ar' ? 'EN' : 'ع' }}
         </button>
       </div>
     </div>

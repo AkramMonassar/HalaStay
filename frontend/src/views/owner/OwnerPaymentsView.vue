@@ -1,19 +1,18 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import api from '../../services/api'
 import AppModal from '../../components/AppModal.vue'
 import AppSkeleton from '../../components/AppSkeleton.vue'
 import { useToastStore } from '../../stores/toast'
 
+const { t } = useI18n()
 const toast = useToastStore()
 
 const payments = ref([])
 const loading = ref(true)
 const statusFilter = ref('under_review')
 const modal = ref(null)
-
-const statusLabels = { pending: 'قيد الانتظار', under_review: 'قيد المراجعة', success: 'ناجحة', failed: 'مرفوضة', refunded: 'مستردة' }
-const statusClasses = { pending: 'bg-warning', under_review: 'bg-info', success: 'bg-success', failed: 'bg-danger', refunded: 'bg-secondary' }
 
 async function fetchPayments() {
   loading.value = true
@@ -39,12 +38,12 @@ async function confirmReview(note) {
   try {
     await api.patch(`/owner/payments/${payment.id}/review`, { action, admin_note: note || null })
     toast.push(
-      action === 'approve' ? 'تم اعتماد الدفعة وتأكيد الحجز.' : 'تم رفض الدفعة وإعادة الحجز لانتظار الدفع.',
+      action === 'approve' ? t('owner.confirmedToast') : t('owner.rejectedToast'),
       action === 'approve' ? 'success' : 'warning'
     )
     fetchPayments()
   } catch (e) {
-    toast.push(e.response?.data?.message || 'تعذرت المراجعة.', 'danger')
+    toast.push(e.response?.data?.message || t('auth.loginFailed'), 'danger')
   }
 }
 </script>
@@ -52,14 +51,14 @@ async function confirmReview(note) {
 <template>
   <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-      <h4 class="mb-0">💳 مراجعة الدفعات</h4>
+      <h4 class="mb-0">💳 {{ $t('owner.paymentsTitle') }}</h4>
       <select v-model="statusFilter" class="form-select" style="width: auto">
-        <option value="under_review">قيد المراجعة</option>
-        <option value="">الكل</option>
-        <option value="success">ناجحة</option>
-        <option value="failed">مرفوضة</option>
-        <option value="pending">قيد الانتظار</option>
-        <option value="refunded">مستردة</option>
+        <option value="under_review">{{ $t('statuses.under_review') }}</option>
+        <option value="">{{ $t('bookings.allStatuses') }}</option>
+        <option value="success">{{ $t('statuses.success') }}</option>
+        <option value="failed">{{ $t('statuses.failed') }}</option>
+        <option value="pending">{{ $t('statuses.pending') }}</option>
+        <option value="refunded">{{ $t('statuses.refunded') }}</option>
       </select>
     </div>
 
@@ -73,29 +72,29 @@ async function confirmReview(note) {
           <div>
             <div class="fw-semibold">
               {{ p.payment_number }} — {{ p.hotel_name }}
-              <span class="badge ms-1" :class="statusClasses[p.payment_status]">{{ statusLabels[p.payment_status] }}</span>
+              <span class="badge ms-1">{{ $t('statuses.' + p.payment_status) }}</span>
             </div>
             <div class="small text-muted">
-              الضيف: {{ p.guest_name }} | الحجز: {{ p.booking_number }} | {{ p.payment_method }} | {{ p.amount }} {{ p.currency_code }}
+              {{ $t('bookings.thGuest') }}: {{ p.guest_name }} | {{ $t('bookings.bookingNo') }}: {{ p.booking_number }} | {{ p.amount }} {{ p.currency_code }}
             </div>
             <a v-if="p.receipt_image" :href="p.receipt_image" target="_blank" class="btn btn-outline-secondary btn-sm mt-2">
-              عرض الإشعار
+              {{ $t('owner.receipt') }}
             </a>
           </div>
           <div v-if="p.payment_status === 'under_review'" class="d-flex gap-1">
-            <button class="btn btn-success btn-sm" @click="askReview(p, 'approve')">اعتماد</button>
-            <button class="btn btn-outline-danger btn-sm" @click="askReview(p, 'reject')">رفض</button>
+            <button class="btn btn-success btn-sm" @click="askReview(p, 'approve')">{{ $t('owner.approve') }}</button>
+            <button class="btn btn-outline-danger btn-sm" @click="askReview(p, 'reject')">{{ $t('owner.reject') }}</button>
           </div>
         </div>
       </div>
     </div>
 
-    <div v-else class="alert alert-success">لا توجد دفعات بهذه الحالة — الطابور نظيف ✔</div>
+    <div v-else class="alert alert-success">{{ $t('owner.emptyPayments') }}</div>
 
     <AppModal
       :show="!!modal"
-      :title="modal?.action === 'approve' ? 'اعتماد الدفعة' : 'رفض الدفعة'"
-      :message="modal ? `الدفعة ${modal.payment.payment_number} بمبلغ ${modal.payment.amount} ريال.` : ''"
+      :title="modal?.action === 'approve' ? $t('owner.approve') : $t('owner.reject')"
+      :message="modal ? `${modal.payment.payment_number} — ${modal.payment.amount}` : ''"
       :with-note="modal?.action === 'reject'"
       :tone="modal?.action === 'approve' ? 'success' : 'danger'"
       @confirm="confirmReview"
