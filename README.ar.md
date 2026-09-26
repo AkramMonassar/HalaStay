@@ -1,9 +1,3 @@
-
----
-
-## 📁 `README.ar.md` — استبدل كاملاً
-
-```md
 # 🏨 هلا ستاي — منصة حجز الفنادق والشقق والقاعات
 
 [English](README.md) | [العربية](README.ar.md)
@@ -50,36 +44,36 @@
 |---|---|
 | ![الرئيسية عربي](docs/screenshots/home-ar.png) | ![الرئيسية إنجليزي ليلي](docs/screenshots/home-en-dark.png) |
 
-| البحث والفلاتر الحية | صفحة الفندق: معرض + ودجت الحجز اللاصق |
+| نتائج البحث والفلاتر الحية | صفحة الفندق: رأس + معرض فسيفسائي + شارة التقييم |
 |---|---|
-| ![البحث](docs/screenshots/search.png) | ![الفندق](docs/screenshots/hotel.png) |
+| ![البحث](docs/screenshots/search.png) | ![معرض الفندق](docs/screenshots/hotel.png) |
 
-| صفحة الفندق: التقويم العربي | تفاصيل الحجز ولوحة إتمام الدفع |
+| ودجت الحجز: تقويمان عربيان + الأنواع | قائمة حجوزاتي بشارات الحالات |
 |---|---|
-| ![تقويم الفندق](docs/screenshots/hotel2.png) | ![تفاصيل الحجز](docs/screenshots/booking.png) |
+| ![تقويم الحجز](docs/screenshots/hotel2.png) | ![حجوزاتي](docs/screenshots/booking.png) |
 
 | لوحة السائح (إحصاءات + إقامة قادمة) | ملفي (الاسم والجوال) |
 |---|---|
 | ![لوحة السائح](docs/screenshots/dashboardUser.png) | ![ملفي](docs/screenshots/profileUser.png) |
 
 ### عمليات المالك والأدمن — جنباً إلى جنب
-| لوحة تحليلات المالك | لوحة تحليلات الأدمن |
+| لوحة تحليلات المالك (دونات الحالات + الإيراد الشهري) | لوحة تحليلات الأدمن (4 بطاقات + 3 رسوم) |
 |---|---|
 | ![لوحة المالك](docs/screenshots/dashboardOwner.png) | ![لوحة الأدمن](docs/screenshots/dashboardAdmin.png) |
 
-| قائمة فنادقي | إدارة المستخدمين |
+| قائمة فنادقي مع شارات الاعتماد | إدارة المستخدمين (عربي · نهاري) |
 |---|---|
 | ![فنادقي](docs/screenshots/hotelOner.png) | ![المستخدمون](docs/screenshots/AdminUsers.png) |
 
-| إدارة الفندق (بيانات، صور، أنواع) | إعدادات المنصة (المدن وطرق الدفع) |
+| إدارة الفندق (بيانات، أنواع، صور) | إعدادات المنصة (المدن وطرق الدفع) |
 |---|---|
 | ![إدارة الفندق](docs/screenshots/hotelOwnerAdminstration.png) | ![الإعدادات](docs/screenshots/settingsAdmin.png) |
 
-| طابور حجوزات المالك (تأكيد / رفض) | جدول كل الحجوزات (بحث وفلتر حالات) |
+| طابور حجوزات المالك (مع جوال الضيف) | جدول كل الحجوزات (بحث وفلتر حالات) |
 |---|---|
 | ![حجوزات المالك](docs/screenshots/bookingOwner.png) | ![كل الحجوزات](docs/screenshots/allBookingAdmin.png) |
 
-| طابور مراجعة دفعات المالك | إشراف الأدمن على كل الدفعات |
+| مراجعة دفعات المالك (اعتماد/رفض + إشعار) | إشراف الأدمن على كل الدفعات |
 |---|---|
 | ![دفعات المالك](docs/screenshots/paymentOwner.png) | ![دفعات الأدمن](docs/screenshots/paymentAdmin.png) |
 
@@ -126,3 +120,4 @@ halastay/
 ## 🧪 الاختبارات
 ```bash
 cd backend && php artisan test
+

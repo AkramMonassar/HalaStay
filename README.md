@@ -53,36 +53,36 @@ A modern, secure hotel management and online reservation platform built for the 
 |---|---|
 | ![Home AR](docs/screenshots/home-ar.png) | ![Home EN dark](docs/screenshots/home-en-dark.png) |
 
-| Search & live filters | Hotel page: gallery + sticky booking widget |
+| Search results & live filters | Hotel page: head + mosaic gallery + rating badge |
 |---|---|
-| ![Search](docs/screenshots/search.png) | ![Hotel](docs/screenshots/hotel.png) |
+| ![Search](docs/screenshots/search.png) | ![Hotel gallery](docs/screenshots/hotel.png) |
 
-| Hotel page: Arabic calendar picker | Booking details & payment panel |
+| Booking widget: dual Arabic calendars + types | My Bookings list with status badges |
 |---|---|
-| ![Hotel calendar](docs/screenshots/hotel2.png) | ![Booking details](docs/screenshots/booking.png) |
+| ![Hotel calendar](docs/screenshots/hotel2.png) | ![Tourist bookings](docs/screenshots/booking.png) |
 
-| Tourist dashboard (stats + upcoming stay) | My profile (phone & name) |
+| Tourist dashboard (stats + upcoming stay) | My Profile (name & phone) |
 |---|---|
 | ![Tourist dashboard](docs/screenshots/dashboardUser.png) | ![Profile](docs/screenshots/profileUser.png) |
 
 ### Owner & Admin Operations — side by side
-| Owner analytics dashboard | Admin analytics dashboard |
+| Owner analytics (status donut + monthly revenue) | Admin analytics (4 cards + 3 charts) |
 |---|---|
 | ![Owner dashboard](docs/screenshots/dashboardOwner.png) | ![Admin dashboard](docs/screenshots/dashboardAdmin.png) |
 
-| My hotels list | Users management |
+| My hotels list with approval badges | Users management (AR · light) |
 |---|---|
 | ![My hotels](docs/screenshots/hotelOner.png) | ![Users](docs/screenshots/AdminUsers.png) |
 
-| Hotel management (data, images, types) | Platform settings (cities & payment methods) |
+| Hotel management (data, types, images) | Platform settings (cities & payment methods) |
 |---|---|
 | ![Hotel management](docs/screenshots/hotelOwnerAdminstration.png) | ![Settings](docs/screenshots/settingsAdmin.png) |
 
-| Owner bookings queue (confirm / reject) | All bookings table (search & status filter) |
+| Owner bookings queue (guest phone visible) | All bookings table (search & status filter) |
 |---|---|
 | ![Owner bookings](docs/screenshots/bookingOwner.png) | ![All bookings](docs/screenshots/allBookingAdmin.png) |
 
-| Owner payment review queue | All payments oversight |
+| Owner payment review (approve/reject + receipt) | All payments oversight with receipts |
 |---|---|
 | ![Owner payments](docs/screenshots/paymentOwner.png) | ![Admin payments](docs/screenshots/paymentAdmin.png) |
 
