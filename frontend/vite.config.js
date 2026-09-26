@@ -30,9 +30,4 @@ export default defineConfig({
     }),
   ],
   resolve: { alias: { '@': '/src' } },
-  build: {
-    rollupOptions: {
-      output: { manualChunks: { apexcharts: ['apexcharts', 'vue3-apexcharts'] } },
-    },
-  },
 })
