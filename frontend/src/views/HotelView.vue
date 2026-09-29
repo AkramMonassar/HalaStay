@@ -4,6 +4,7 @@ import { useRoute } from 'vue-router'
 import api from '../services/api'
 import BookingWidget from '../components/BookingWidget.vue'
 import { useAuthStore } from '../stores/auth'
+import ReviewList from '../components/ReviewList.vue'
 
 const route = useRoute()
 const auth = useAuthStore()
@@ -55,7 +56,8 @@ onMounted(async () => {
           <section class="info-card">
             <h5>{{ $t('hotel.about') }}</h5>
             <p class="text-muted mb-0">{{ hotel.description || '—' }}</p>
-            <div v-if="hotel.phone" class="mt-2 small">📞 {{ $t('hotel.contact') }}: <span dir="ltr">{{ hotel.phone }}</span></div>
+            <div v-if="hotel.phone" class="mt-2 small">📞 {{ $t('hotel.contact') }}: <span dir="ltr">{{ hotel.phone
+                }}</span></div>
           </section>
 
           <section class="mt-4">
@@ -77,6 +79,7 @@ onMounted(async () => {
             </div>
             <div v-else class="alert alert-info mb-0">{{ $t('hotel.noTypes') }}</div>
           </section>
+          <ReviewList :hotel-id="hotel.id" />
         </div>
 
         <div class="col-lg-4">
@@ -95,24 +98,111 @@ onMounted(async () => {
 </template>
 
 <style lang="scss" scoped>
-.hotel-head { background: linear-gradient(135deg, #006c35, #004d26); color: #fff; padding: 2rem 0; }
-.hotel-head h2 { color: #fff; }
-.head-meta { color: #d3e9dc; }
-.review-pill-big { background: #ffc107; color: #212529; font-weight: 800; padding: 6px 16px; border-radius: 24px; font-size: 1.1rem; }
-.new-pill-big { background: #e6f4ea; color: #006c35; font-weight: 800; padding: 6px 16px; border-radius: 24px; font-size: 1rem; }
-.gallery-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; grid-template-rows: 160px 160px; gap: 8px; }
-.gallery-grid.count-1 { grid-template-columns: 1fr; grid-template-rows: 320px; }
-.gallery-grid.count-2 { grid-template-columns: 1fr 1fr; grid-template-rows: 260px; }
-.gallery-grid.count-3 { grid-template-columns: 2fr 1fr; }
+.hotel-head {
+  background: linear-gradient(135deg, #006c35, #004d26);
+  color: #fff;
+  padding: 2rem 0;
+}
+
+.hotel-head h2 {
+  color: #fff;
+}
+
+.head-meta {
+  color: #d3e9dc;
+}
+
+.review-pill-big {
+  background: #ffc107;
+  color: #212529;
+  font-weight: 800;
+  padding: 6px 16px;
+  border-radius: 24px;
+  font-size: 1.1rem;
+}
+
+.new-pill-big {
+  background: #e6f4ea;
+  color: #006c35;
+  font-weight: 800;
+  padding: 6px 16px;
+  border-radius: 24px;
+  font-size: 1rem;
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  grid-template-rows: 160px 160px;
+  gap: 8px;
+}
+
+.gallery-grid.count-1 {
+  grid-template-columns: 1fr;
+  grid-template-rows: 320px;
+}
+
+.gallery-grid.count-2 {
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 260px;
+}
+
+.gallery-grid.count-3 {
+  grid-template-columns: 2fr 1fr;
+}
+
 .gallery-grid.count-1 .gallery-item.main,
-.gallery-grid.count-2 .gallery-item.main { grid-row: auto; }
-.gallery-item { border-radius: 12px; overflow: hidden; }
-.gallery-item.main { grid-row: span 2; }
-.gallery-item img { width: 100%; height: 100%; object-fit: cover; }
-.info-card { background: #fff; border: 1px solid #e9ecef; border-radius: 14px; padding: 1.4rem; }
-.type-card { background: #fff; border: 1px solid #e9ecef; border-radius: 14px; padding: 1rem 1.2rem; }
-.type-name { font-weight: 700; }
-.type-price { font-size: 1.2rem; font-weight: 800; color: #006c35; }
-.type-price span { font-size: 0.72rem; color: #6c757d; font-weight: 500; }
-.sticky-widget { position: sticky; top: 90px; }
+.gallery-grid.count-2 .gallery-item.main {
+  grid-row: auto;
+}
+
+.gallery-item {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.gallery-item.main {
+  grid-row: span 2;
+}
+
+.gallery-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.info-card {
+  background: #fff;
+  border: 1px solid #e9ecef;
+  border-radius: 14px;
+  padding: 1.4rem;
+}
+
+.type-card {
+  background: #fff;
+  border: 1px solid #e9ecef;
+  border-radius: 14px;
+  padding: 1rem 1.2rem;
+}
+
+.type-name {
+  font-weight: 700;
+}
+
+.type-price {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #006c35;
+}
+
+.type-price span {
+  font-size: 0.72rem;
+  color: #6c757d;
+  font-weight: 500;
+}
+
+.sticky-widget {
+  position: sticky;
+  top: 90px;
+}
 </style>

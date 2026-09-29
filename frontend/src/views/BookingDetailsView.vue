@@ -4,6 +4,8 @@ import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import api from '../services/api'
 import { useToastStore } from '../stores/toast'
+import ReviewModal from '../components/ReviewModal.vue'
+const showReview = ref(false)
 
 const { t } = useI18n()
 const toast = useToastStore()
@@ -14,6 +16,7 @@ const methods = ref([])
 const loading = ref(true)
 const paying = ref(false)
 const payForm = ref({ payment_method_id: '', receipt_image: null })
+
 
 const statusClasses = {
   pending_payment: 'bg-warning', pending_confirmation: 'bg-info', confirmed: 'bg-success',
@@ -90,51 +93,59 @@ async function cancel() {
         <div class="text-muted">{{ booking.hotel }} — {{ booking.accommodation_type }}</div>
         <div class="small text-muted">{{ $t('bookings.bookingNo') }}: {{ booking.booking_number }}</div>
       </div>
-      <span class="badge" :class="statusClasses[booking.booking_status]">{{ $t('statuses.' + booking.booking_status) }}</span>
+      <span class="badge" :class="statusClasses[booking.booking_status]">{{ $t('statuses.' + booking.booking_status)
+      }}</span>
     </div>
 
     <div class="row g-4">
       <div class="col-lg-8">
-        <div class="card shadow-sm mb-4"><div class="card-body">
-          <div class="row g-3">
-            <div class="col-6 col-md-3">
-              <div class="small text-muted">{{ $t('details.checkIn') }}</div>
-              <div class="fw-semibold">{{ booking.check_in }}</div>
-            </div>
-            <div class="col-6 col-md-3">
-              <div class="small text-muted">{{ $t('details.checkOut') }}</div>
-              <div class="fw-semibold">{{ booking.check_out }}</div>
-            </div>
-            <div class="col-6 col-md-3">
-              <div class="small text-muted">{{ $t('details.nights') }}</div>
-              <div class="fw-semibold">{{ nights }}</div>
-            </div>
-            <div class="col-6 col-md-3">
-              <div class="small text-muted">{{ $t('details.rooms') }}</div>
-              <div class="fw-semibold">{{ booking.rooms }}</div>
-            </div>
-            <div class="col-6 col-md-3">
-              <div class="small text-muted">{{ $t('details.guests') }}</div>
-              <div class="fw-semibold">{{ booking.adults }} {{ $t('details.adults') }} + {{ booking.children }} {{ $t('details.children') }}</div>
-            </div>
-            <div class="col-6 col-md-3">
-              <div class="small text-muted">{{ $t('details.total') }}</div>
-              <div class="fw-bold text-primary">{{ booking.total_price }} {{ booking.currency_code }}</div>
+        <div class="card shadow-sm mb-4">
+          <div class="card-body">
+            <div class="row g-3">
+              <div class="col-6 col-md-3">
+                <div class="small text-muted">{{ $t('details.checkIn') }}</div>
+                <div class="fw-semibold">{{ booking.check_in }}</div>
+              </div>
+              <div class="col-6 col-md-3">
+                <div class="small text-muted">{{ $t('details.checkOut') }}</div>
+                <div class="fw-semibold">{{ booking.check_out }}</div>
+              </div>
+              <div class="col-6 col-md-3">
+                <div class="small text-muted">{{ $t('details.nights') }}</div>
+                <div class="fw-semibold">{{ nights }}</div>
+              </div>
+              <div class="col-6 col-md-3">
+                <div class="small text-muted">{{ $t('details.rooms') }}</div>
+                <div class="fw-semibold">{{ booking.rooms }}</div>
+              </div>
+              <div class="col-6 col-md-3">
+                <div class="small text-muted">{{ $t('details.guests') }}</div>
+                <div class="fw-semibold">{{ booking.adults }} {{ $t('details.adults') }} + {{ booking.children }} {{
+                  $t('details.children') }}</div>
+              </div>
+              <div class="col-6 col-md-3">
+                <div class="small text-muted">{{ $t('details.total') }}</div>
+                <div class="fw-bold text-primary">{{ booking.total_price }} {{ booking.currency_code }}</div>
+              </div>
             </div>
           </div>
-        </div></div>
+        </div>
 
         <h5 class="mb-3">{{ $t('details.paymentsTitle') }}</h5>
         <div v-if="booking.payments?.length" class="d-flex flex-column gap-2 mb-4">
-          <div v-for="p in booking.payments" :key="p.id" class="card shadow-sm"><div class="card-body d-flex justify-content-between align-items-center flex-wrap gap-2">
-            <div>
-              <div class="fw-semibold">{{ p.payment_method }}</div>
-              <div class="small text-muted">{{ p.payment_number }}</div>
-              <div class="small">{{ $t('details.amount') }}: {{ p.amount }} {{ p.currency_code }}</div>
-              <a v-if="p.receipt_image" :href="p.receipt_image" target="_blank" class="btn btn-outline-secondary btn-sm mt-1">{{ $t('details.receipt') }}</a>
+          <div v-for="p in booking.payments" :key="p.id" class="card shadow-sm">
+            <div class="card-body d-flex justify-content-between align-items-center flex-wrap gap-2">
+              <div>
+                <div class="fw-semibold">{{ p.payment_method }}</div>
+                <div class="small text-muted">{{ p.payment_number }}</div>
+                <div class="small">{{ $t('details.amount') }}: {{ p.amount }} {{ p.currency_code }}</div>
+                <a v-if="p.receipt_image" :href="p.receipt_image" target="_blank"
+                  class="btn btn-outline-secondary btn-sm mt-1">{{ $t('details.receipt') }}</a>
+              </div>
+              <span class="badge" :class="statusClasses[p.payment_status]">{{ $t('statuses.' + p.payment_status)
+              }}</span>
             </div>
-            <span class="badge" :class="statusClasses[p.payment_status]">{{ $t('statuses.' + p.payment_status) }}</span>
-          </div></div>
+          </div>
         </div>
         <div v-else class="alert alert-info">{{ $t('bookings.noResults') }}</div>
 
@@ -149,39 +160,46 @@ async function cancel() {
       </div>
 
       <div class="col-lg-4">
-        <div class="card shadow-sm sticky-side"><div class="card-body">
-          <h5 class="mb-3">💳 {{ $t('details.payTitle') }}</h5>
-          <template v-if="booking.booking_status === 'pending_payment'">
-            <div class="mb-2">
-              <label class="form-label">{{ $t('details.method') }}</label>
-              <select v-model="payForm.payment_method_id" class="form-select">
-                <option value="" disabled>{{ $t('details.method') }}</option>
-                <option v-for="m in methods" :key="m.id" :value="m.id">{{ m.name }}</option>
-              </select>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">{{ $t('details.receiptFile') }}</label>
-              <input type="file" class="form-control" @change="onFile" />
-            </div>
-            <button class="btn btn-primary w-100" :disabled="paying || !payForm.payment_method_id" @click="pay">
-              {{ paying ? $t('common.loading') : $t('details.payNow') }}
-            </button>
-          </template>
-          <div v-else class="alert alert-info mb-0">{{ $t('details.payBlocked') }}</div>
+        <div class="card shadow-sm sticky-side">
+          <div class="card-body">
+            <h5 class="mb-3">💳 {{ $t('details.payTitle') }}</h5>
+            <template v-if="booking.booking_status === 'pending_payment'">
+              <div class="mb-2">
+                <label class="form-label">{{ $t('details.method') }}</label>
+                <select v-model="payForm.payment_method_id" class="form-select">
+                  <option value="" disabled>{{ $t('details.method') }}</option>
+                  <option v-for="m in methods" :key="m.id" :value="m.id">{{ m.name }}</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">{{ $t('details.receiptFile') }}</label>
+                <input type="file" class="form-control" @change="onFile" />
+              </div>
+              <button class="btn btn-primary w-100" :disabled="paying || !payForm.payment_method_id" @click="pay">
+                {{ paying ? $t('common.loading') : $t('details.payNow') }}
+              </button>
+            </template>
+            <div v-else class="alert alert-info mb-0">{{ $t('details.payBlocked') }}</div>
 
-          <button
-            v-if="['pending_payment', 'pending_confirmation'].includes(booking.booking_status)"
-            class="btn btn-outline-danger w-100 mt-3"
-            @click="cancel"
-          >
-            {{ $t('details.cancelBtn') }}
-          </button>
-        </div></div>
+            <button v-if="['pending_payment', 'pending_confirmation'].includes(booking.booking_status)"
+              class="btn btn-outline-danger w-100 mt-3" @click="cancel">
+              {{ $t('details.cancelBtn') }}
+            </button>
+            <button v-if="booking.booking_status === 'completed'" class="btn btn-warning w-100 mt-3"
+              @click="showReview = true">
+              ⭐ {{ $t('reviews.rateStay') }}
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
+  <ReviewModal :show="showReview" :booking-id="booking.id" @close="showReview = false" @saved="showReview = false" />
 </template>
 
 <style lang="scss" scoped>
-.sticky-side { position: sticky; top: 90px; }
+.sticky-side {
+  position: sticky;
+  top: 90px;
+}
 </style>

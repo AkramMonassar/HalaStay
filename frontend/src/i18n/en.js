@@ -266,6 +266,16 @@ export default {
     city: 'City',
     createBtn: 'Create Hotel',
   },
+  reviews: {
+    title: 'Guest Reviews',
+    empty: 'No reviews yet — be the first to rate this stay.',
+    rateStay: 'Rate Your Stay',
+    rating: 'Your Rating',
+    comment: 'Your comment (optional)',
+    submit: 'Publish Review',
+    thanks: 'Thank you! Your review has been published.',
+    denied: 'You are not allowed to review this booking.',
+  },
   // statuses:
   approved: 'A[pproved',
   rejected: 'Rejected',
