@@ -20,6 +20,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\NotificationController;
 use App\Http\Controllers\Api\V1\OwnerStatsController;
+use App\Http\Controllers\Api\V1\ReviewController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -38,6 +39,8 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
     Route::get('/hotels/{hotel}/rooms', [HotelController::class, 'rooms']);
     Route::get('/hotels/{hotel}/availability', [HotelController::class, 'availability']);
 
+    Route::get('/hotels/{hotel}/reviews', [ReviewController::class, 'indexForHotel']);
+
     // 🧾 Booking & Payment APIs (Auth Required)
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('/bookings', [BookingController::class, 'index']);
@@ -53,6 +56,8 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
         Route::get('/notifications', [NotificationController::class, 'index']);
         Route::post('/notifications/read-all', [NotificationController::class, 'markAllRead']);
         Route::post('/notifications/{notification}/read', [NotificationController::class, 'markRead']);
+
+        Route::post('/bookings/{booking}/review', [ReviewController::class, 'storeForBooking']);
     });
 
     // 🏨 Owner Dashboard APIs (hotel_owner Role Required)
