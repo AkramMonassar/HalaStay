@@ -194,7 +194,7 @@ async function cancel() {
       </div>
     </div>
   </div>
-  <ReviewModal :show="showReview" :booking-id="booking.id" @close="showReview = false" @saved="showReview = false" />
+  <ReviewModal v-if="booking" :show="showReview" :booking-id="booking.id" @close="showReview = false" @saved="showReview = false" />
 </template>
 
 <style lang="scss" scoped>
