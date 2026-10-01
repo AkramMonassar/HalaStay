@@ -31,16 +31,17 @@ watch(() => route.query, fetchResults)
         <FilterSidebar />
       </div>
       <div class="col-lg-9">
+        <div v-if="!route.query.check_in" class="alert alert-info py-2 small mb-3">
+          {{ $t('search.browseHint') }}
+        </div>
         <div v-if="loading" class="row g-3">
           <div v-for="i in 3" :key="i" class="col-md-4">
             <AppSkeleton variant="card" />
           </div>
         </div>
-
         <template v-else>
           <div v-if="hotels.length" class="mb-3">{{ $t('search.resultsFound') }}</div>
           <div v-else class="alert alert-info">{{ $t('search.noResults') }}</div>
-
           <div class="row g-3">
             <div v-for="h in hotels" :key="h.id" class="col-md-4">
               <HotelCard :hotel="h" />

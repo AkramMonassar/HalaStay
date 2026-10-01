@@ -52,8 +52,8 @@ export default {
     chooseCity: 'اختر المدينة',
     stayTypes: { room: 'غرف', apartment: 'شقق', suite: 'أجنحة', hall: 'قاعات' },
     starsWord: 'نجوم',
-    stayTypes: { room: 'غرف', apartment: 'شقق', suite: 'أجنحة', hall: 'قاعات' },
-    starsWord: 'نجوم',
+    browseHint: 'وضع الاستعراض: كل فنادق المدينة ظاهرة — أضف التواريخ من صفحة الفندق لفحص التوفر الفوري.',
+    
   },
   auth: {
     loginTitle: 'تسجيل الدخول',
@@ -122,6 +122,8 @@ export default {
     reject: 'رفض',
     receipt: 'عرض الإشعار',
     emptyPayments: 'لا توجد دفعات بهذه الحالة — الطابور نظيف ✔',
+    confirmedToast: 'تم تأكيد الحجز.',
+    rejectedToast: 'تم رفض الحجز.',
   },
   admin: {
     panelTitle: 'لوحة الأدمن',
@@ -175,6 +177,7 @@ export default {
     phoneHint: 'يستخدمه الفندق للتواصل معك عند تأكيد الحجز.',
     save: 'حفظ التغييرات',
     saving: 'جارِ الحفظ...',
+    saved: 'تم حفظ الملف الشخصي.',
   },
   hotel: {
     about: 'عن الفندق',
@@ -281,13 +284,5 @@ export default {
     thanks: 'شكراً لك! تم نشر مراجعتك.',
     denied: 'لا تملك صلاحية مراجعة هذا الحجز.',
   },
-  // داخل statuses أضف:
-  approved: 'معتمد',
-  rejected: 'مرفوض',
-  suspended: 'موقوف',
-  // داخل profile أضف:
-  saved: 'تم حفظ الملف الشخصي.',
-  // داخل owner أضف:
-  confirmedToast: 'تم تأكيد الحجز.',
-  rejectedToast: 'تم رفض الحجز.',
+
 }

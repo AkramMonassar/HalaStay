@@ -53,8 +53,7 @@ export default {
     chooseCity: 'Choose a city',
     stayTypes: { room: 'Rooms', apartment: 'Apartments', suite: 'Suites', hall: 'Halls' },
     starsWord: 'stars',
-    stayTypes: { room: 'Rooms', apartment: 'Apartments', suite: 'Suites', hall: 'Halls' },
-    starsWord: 'stars',
+    browseHint: 'Browse mode: showing all hotels in the city — add dates on the hotel page to check live availability.',
   },
   auth: {
     loginTitle: 'Sign In',
@@ -123,6 +122,8 @@ export default {
     reject: 'Reject',
     receipt: 'View Receipt',
     emptyPayments: 'No payments in this status — queue is clean ✔',
+    confirmedToast: 'Booking confirmed.',
+    rejectedToast: 'Booking rejected.',
   },
   admin: {
     panelTitle: 'Admin Panel',
@@ -176,6 +177,7 @@ export default {
     phoneHint: 'Used by the hotel to contact you upon confirmation.',
     save: 'Save Changes',
     saving: 'Saving...',
+    saved: 'Profile saved.',
   },
   hotel: {
     about: 'About the Hotel',
@@ -284,13 +286,5 @@ export default {
     thanks: 'Thank you! Your review has been published.',
     denied: 'You are not allowed to review this booking.',
   },
-  // statuses:
-  approved: 'A[pproved',
-  rejected: 'Rejected',
-  suspended: 'Suspended',
-  // profile:
-  saved: 'Profile saved.',
-  // owner:
-  confirmedToast: 'Booking confirmed.',
-  rejectedToast: 'Booking rejected.',
+
 }
