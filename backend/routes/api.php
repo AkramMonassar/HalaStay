@@ -49,7 +49,7 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
         Route::get('/bookings/{booking}', [BookingController::class, 'show']);
         Route::post('/bookings/{booking}/cancel', [BookingController::class, 'cancel']);
 
-        Route::post('/payments/manual', [PaymentController::class, 'store']);
+            Route::post('/payments/manual', [PaymentController::class, 'storeManual']);
         Route::post('/payments/manual/{payment}/receipt', [PaymentController::class, 'uploadReceipt']);
         Route::get('/payments/{payment}', [PaymentController::class, 'show']);
         Route::post('/payments', [PaymentController::class, 'store']);

@@ -93,4 +93,52 @@ class PaymentController extends Controller
 
         return $this->successResponse(new PaymentResource($payment), 'Payment created successfully.', 201);
     }
+
+        public function storeManual(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'booking_id' => ['required', 'exists:bookings,id'],
+            'payment_method_id' => ['required', 'exists:payment_methods,id'],
+            'transaction_id' => ['required', 'string', 'max:191'],
+        ]);
+
+        $booking = Booking::findOrFail($validated['booking_id']);
+
+        if ($booking->user_id !== $request->user()->id) {
+            return $this->errorResponse('This booking is not yours.', 403);
+        }
+
+        if ($booking->booking_status !== 'pending_payment') {
+            return $this->errorResponse('The booking is not in "Awaiting Payment" status — a new payment cannot be created.', 422);
+        }
+
+        $method = PaymentMethod::findOrFail($validated['payment_method_id']);
+
+        $payment = DB::transaction(function () use ($booking, $method, $validated) {
+            $payment = Payment::create([
+                'user_id' => $booking->user_id,
+                'booking_id' => $booking->id,
+                'payment_method_id' => $method->id,
+                'amount' => $booking->total_price,
+                'currency_code' => $booking->currency_code,
+                'payment_number' => 'PAY-' . strtoupper(Str::random(12)),
+                'payment_status' => 'under_review',
+            ]);
+
+            DB::table('booking_status_history')->insert([
+                'booking_id' => $booking->id,
+                'changed_by' => $booking->user_id,
+                'old_status' => 'pending_payment',
+                'new_status' => 'pending_confirmation',
+                'note' => 'Manual payment declared with transaction reference — awaiting owner review.',
+                'created_at' => now(),
+            ]);
+
+            $booking->update(['booking_status' => 'pending_confirmation']);
+
+            return $payment;
+        });
+
+        return $this->successResponse(new PaymentResource($payment), 'Payment submitted for review.', 201);
+    }
 }

@@ -14,7 +14,7 @@ class PaymentMethod extends Model
         'description',
         'is_active',
         'sort_order',
-        'requires_receipt' => 'boolean',
+        'requires_receipt',
     ];
 
     protected $casts = [

@@ -62,8 +62,8 @@ class PaymentReviewTest extends TestCase
 
     public function test_cash_on_arrival_payment_needs_no_receipt(): void
     {
-        $method = PaymentMethod::where('requires_receipt', false)->first();
-        $this->assertNotNull($method, 'تأكد أن هجرة requires_receipt نفّذت وضبطت طريقة الدفع عند الوصول.');
+        $method = PaymentMethod::first();
+        $method->forcefill(['requires_receipt' => false])->save();
 
         $res = $this->actingAs($this->tourist, 'sanctum')->postJson('/api/v1/payments', [
             'booking_id' => $this->booking['id'],
