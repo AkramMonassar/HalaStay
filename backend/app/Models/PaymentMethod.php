@@ -14,10 +14,12 @@ class PaymentMethod extends Model
         'description',
         'is_active',
         'sort_order',
+        'requires_receipt',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
+        'requires_receipt' => 'boolean',
     ];
 
     public function country()

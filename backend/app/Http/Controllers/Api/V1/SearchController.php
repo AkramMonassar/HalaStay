@@ -13,20 +13,18 @@ class SearchController extends Controller
     public function index(SearchHotelsRequest $request, SearchService $searchService): JsonResponse
     {
         $filters = $request->validated();
-
         $hotels = $searchService->search($filters);
 
-        $rooms = (int) $filters['rooms'];
+        $hasDates = ! empty($filters['check_in']) && ! empty($filters['check_out']);
+        $rooms = (int) ($filters['rooms'] ?? 1);
+        $guests = (int) ($filters['adults'] ?? 2) + (int) ($filters['children'] ?? 0);
+
         foreach ($hotels as $hotel) {
             $hotel->setAttribute(
                 'available_types',
-                $searchService->availableTypesFor(
-                    $hotel,
-                    $filters['check_in'],
-                    $filters['check_out'],
-                    $rooms,
-                    (int) $filters['adults'] + (int) ($filters['children'] ?? 0)
-                )
+                $hasDates
+                    ? $searchService->availableTypesFor($hotel, $filters['check_in'], $filters['check_out'], $rooms, $guests)
+                    : $hotel->accommodationTypes()->where('is_active', true)->get()
             );
         }
 

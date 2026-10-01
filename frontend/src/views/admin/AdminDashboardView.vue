@@ -11,37 +11,47 @@ const stats = ref(null)
 const ink = computed(() => (theme.mode === 'dark' ? '#e9ecef' : '#373d3f'))
 const sub = computed(() => (theme.mode === 'dark' ? '#adb5bd' : '#6c757d'))
 
+// 🔒 حراس آمنة: كل مسار عبر stats محمي بـ ?. ومصفوفة/كائن احتياطي
+const bookingsByStatus = computed(() => stats.value?.bookings?.by_status ?? {})
+const months = computed(() => stats.value?.months ?? [])
+const monthlyRevenue = computed(() => stats.value?.monthly_revenue ?? [])
+const monthlyBookings = computed(() => stats.value?.monthly_bookings ?? [])
+
 const donutOptions = computed(() => ({
   chart: { type: 'donut', fontFamily: 'Tajawal, sans-serif', foreColor: sub.value },
-  labels: Object.keys(stats.value?.bookings?.by_status || {}).map((k) => t(`statuses.${k}`)),
+  labels: Object.keys(bookingsByStatus.value).map((k) => t(`statuses.${k}`)),
   legend: { position: 'bottom', labels: { colors: ink.value } },
   tooltip: { theme: theme.mode },
 }))
-const donutSeries = computed(() => Object.values(stats.value?.bookings?.by_status || {}))
+const donutSeries = computed(() => Object.values(bookingsByStatus.value))
 
 const revenueOptions = computed(() => ({
   chart: { type: 'bar', fontFamily: 'Tajawal, sans-serif', foreColor: sub.value },
-  xaxis: { categories: stats.value?.months || [] },
+  xaxis: { categories: months.value },
   legend: { labels: { colors: ink.value } },
   tooltip: { theme: theme.mode },
   colors: ['#006c35'],
   plotOptions: { bar: { borderRadius: 5 } },
 }))
-const revenueSeries = computed(() => [{ name: t('admin.totalRevenue'), data: stats.value?.monthly_revenue || [] }])
+const revenueSeries = computed(() => [{ name: t('admin.totalRevenue'), data: monthlyRevenue.value }])
 
 const growthOptions = computed(() => ({
   chart: { type: 'line', fontFamily: 'Tajawal, sans-serif', foreColor: sub.value },
-  xaxis: { categories: stats.value?.months || [] },
+  xaxis: { categories: months.value },
   legend: { labels: { colors: ink.value } },
   tooltip: { theme: theme.mode },
   colors: ['#1a5490'],
   stroke: { width: 3, curve: 'smooth' },
 }))
-const growthSeries = computed(() => [{ name: t('admin.bookings'), data: stats.value?.monthly_bookings || [] }])
+const growthSeries = computed(() => [{ name: t('admin.bookings'), data: monthlyBookings.value }])
 
 onMounted(async () => {
-  const { data } = await api.get('/admin/stats')
-  stats.value = data.data
+  try {
+    const { data } = await api.get('/admin/stats')
+    stats.value = data.data
+  } catch {
+    stats.value = null
+  }
 })
 </script>
 
@@ -53,35 +63,35 @@ onMounted(async () => {
       <div class="row g-3 mb-4">
         <div class="col-md-3">
           <div class="card shadow-sm text-center"><div class="card-body">
-            <div class="fs-3 fw-bold text-primary">{{ stats.users.total }}</div>
+            <div class="fs-3 fw-bold text-primary">{{ stats.users?.total ?? 0 }}</div>
             <div class="text-muted">{{ $t('admin.users') }}</div>
             <div class="small">
-              {{ $t('admin.tourists') }} {{ stats.users.tourists }} —
-              {{ $t('admin.owners') }} {{ stats.users.owners }} —
-              {{ $t('admin.admins') }} {{ stats.users.admins }}
+              {{ $t('admin.tourists') }} {{ stats.users?.tourists ?? 0 }} —
+              {{ $t('admin.owners') }} {{ stats.users?.owners ?? 0 }} —
+              {{ $t('admin.admins') }} {{ stats.users?.admins ?? 0 }}
             </div>
           </div></div>
         </div>
         <div class="col-md-3">
           <div class="card shadow-sm text-center"><div class="card-body">
-            <div class="fs-3 fw-bold text-success">{{ stats.hotels.total }}</div>
+            <div class="fs-3 fw-bold text-success">{{ stats.hotels?.total ?? 0 }}</div>
             <div class="text-muted">{{ $t('admin.hotels') }}</div>
             <div class="small">
-              {{ $t('admin.approved') }} {{ stats.hotels.approved }} –
-              {{ $t('admin.pendingApproval') }} {{ stats.hotels.pending }}
+              {{ $t('admin.approved') }} {{ stats.hotels?.approved ?? 0 }} –
+              {{ $t('admin.pendingApproval') }} {{ stats.hotels?.pending ?? 0 }}
             </div>
           </div></div>
         </div>
         <div class="col-md-3">
           <div class="card shadow-sm text-center"><div class="card-body">
-            <div class="fs-3 fw-bold text-info">{{ stats.bookings.total }}</div>
+            <div class="fs-3 fw-bold text-info">{{ stats.bookings?.total ?? 0 }}</div>
             <div class="text-muted">{{ $t('admin.bookings') }}</div>
-            <div class="small">{{ $t('admin.totalRevenue') }}: {{ stats.payments.total_success_amount }}</div>
+            <div class="small">{{ $t('admin.totalRevenue') }}: {{ stats.payments?.total_success_amount ?? 0 }}</div>
           </div></div>
         </div>
         <div class="col-md-3">
           <div class="card shadow-sm text-center"><div class="card-body">
-            <div class="fs-3 fw-bold text-warning">{{ stats.payments.under_review }}</div>
+            <div class="fs-3 fw-bold text-warning">{{ stats.payments?.under_review ?? 0 }}</div>
             <div class="text-muted">{{ $t('admin.underReview') }}</div>
           </div></div>
         </div>

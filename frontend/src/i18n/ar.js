@@ -52,8 +52,8 @@ export default {
     chooseCity: 'اختر المدينة',
     stayTypes: { room: 'غرف', apartment: 'شقق', suite: 'أجنحة', hall: 'قاعات' },
     starsWord: 'نجوم',
-    stayTypes: { room: 'غرف', apartment: 'شقق', suite: 'أجنحة', hall: 'قاعات' },
-    starsWord: 'نجوم',
+    browseHint: 'وضع الاستعراض: كل فنادق المدينة ظاهرة — أضف التواريخ من صفحة الفندق لفحص التوفر الفوري.',
+    
   },
   auth: {
     loginTitle: 'تسجيل الدخول',
@@ -73,6 +73,8 @@ export default {
     loginNow: 'ادخل',
     loginFailed: 'فشل تسجيل الدخول.',
     checkErrors: 'تحقق من الأخطاء أدناه.',
+    loginToBook: 'سجّل الدخول لإتمام حجزك — سيُكمل تلقائياً بعد الدخول.',
+    bookingCompleted: 'تم إنشاء حجزك بنجاح.',
   },
   common: { loading: 'جارِ التحميل...', save: 'حفظ', cancel: 'إلغاء', confirm: 'تأكيد' },
   statuses: {
@@ -120,6 +122,8 @@ export default {
     reject: 'رفض',
     receipt: 'عرض الإشعار',
     emptyPayments: 'لا توجد دفعات بهذه الحالة — الطابور نظيف ✔',
+    confirmedToast: 'تم تأكيد الحجز.',
+    rejectedToast: 'تم رفض الحجز.',
   },
   admin: {
     panelTitle: 'لوحة الأدمن',
@@ -173,6 +177,7 @@ export default {
     phoneHint: 'يستخدمه الفندق للتواصل معك عند تأكيد الحجز.',
     save: 'حفظ التغييرات',
     saving: 'جارِ الحفظ...',
+    saved: 'تم حفظ الملف الشخصي.',
   },
   hotel: {
     about: 'عن الفندق',
@@ -239,6 +244,12 @@ export default {
     payNow: 'ادفع الآن',
     adults: 'بالغين',
     children: 'أطفال',
+    receiptNotNeeded: '💵 ستدفع في الفندق — لا حاجة لرفع إشعار الآن.',
+    receiptRequired: 'صورة الإشعار مطلوبة لطريقة الدفع هذه.',
+    receiptMustBeImage: 'يجب أن يكون الملف صورة.',
+    receiptTooLarge: 'حجم الصورة كبير جداً (الحد 5 ميغا).',
+    invalidMethod: 'طريقة الدفع غير صالحة.',
+    notYourBooking: 'هذا الحجز ليس لك.',
   },
   ownerHotel: {
     manageTitle: 'إدارة: {name}',
@@ -263,13 +274,15 @@ export default {
     city: 'المدينة',
     createBtn: 'إنشاء الفندق',
   },
-  // داخل statuses أضف:
-  approved: 'معتمد',
-  rejected: 'مرفوض',
-  suspended: 'موقوف',
-  // داخل profile أضف:
-  saved: 'تم حفظ الملف الشخصي.',
-  // داخل owner أضف:
-  confirmedToast: 'تم تأكيد الحجز.',
-  rejectedToast: 'تم رفض الحجز.',
+  reviews: {
+    title: 'آراء الضيوف',
+    empty: 'لا مراجعات بعد — كن أول من يقيّم هذه الإقامة.',
+    rateStay: 'قيّم إقامتك',
+    rating: 'تقييمك',
+    comment: 'تعليقك (اختياري)',
+    submit: 'نشر المراجعة',
+    thanks: 'شكراً لك! تم نشر مراجعتك.',
+    denied: 'لا تملك صلاحية مراجعة هذا الحجز.',
+  },
+
 }

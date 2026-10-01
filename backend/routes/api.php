@@ -20,6 +20,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\NotificationController;
 use App\Http\Controllers\Api\V1\OwnerStatsController;
+use App\Http\Controllers\Api\V1\ReviewController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -38,6 +39,8 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
     Route::get('/hotels/{hotel}/rooms', [HotelController::class, 'rooms']);
     Route::get('/hotels/{hotel}/availability', [HotelController::class, 'availability']);
 
+    Route::get('/hotels/{hotel}/reviews', [ReviewController::class, 'indexForHotel']);
+
     // 🧾 Booking & Payment APIs (Auth Required)
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('/bookings', [BookingController::class, 'index']);
@@ -46,13 +49,16 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
         Route::get('/bookings/{booking}', [BookingController::class, 'show']);
         Route::post('/bookings/{booking}/cancel', [BookingController::class, 'cancel']);
 
-        Route::post('/payments/manual', [PaymentController::class, 'store']);
+            Route::post('/payments/manual', [PaymentController::class, 'storeManual']);
         Route::post('/payments/manual/{payment}/receipt', [PaymentController::class, 'uploadReceipt']);
         Route::get('/payments/{payment}', [PaymentController::class, 'show']);
+        Route::post('/payments', [PaymentController::class, 'store']);
 
         Route::get('/notifications', [NotificationController::class, 'index']);
         Route::post('/notifications/read-all', [NotificationController::class, 'markAllRead']);
         Route::post('/notifications/{notification}/read', [NotificationController::class, 'markRead']);
+
+        Route::post('/bookings/{booking}/review', [ReviewController::class, 'storeForBooking']);
     });
 
     // 🏨 Owner Dashboard APIs (hotel_owner Role Required)
@@ -106,7 +112,7 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
         Route::post('/login', [AuthController::class, 'login']);
 
         Route::middleware('auth:sanctum')->group(function () {
-            Route::get('/bookings', [BookingController::class, 'index']);  
+            Route::get('/bookings', [BookingController::class, 'index']);
             Route::post('/bookings', [BookingController::class, 'store']);
             Route::post('/logout', [AuthController::class, 'logout']);
             Route::get('/me', [AuthController::class, 'me']);

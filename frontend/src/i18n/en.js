@@ -53,8 +53,7 @@ export default {
     chooseCity: 'Choose a city',
     stayTypes: { room: 'Rooms', apartment: 'Apartments', suite: 'Suites', hall: 'Halls' },
     starsWord: 'stars',
-    stayTypes: { room: 'Rooms', apartment: 'Apartments', suite: 'Suites', hall: 'Halls' },
-    starsWord: 'stars',
+    browseHint: 'Browse mode: showing all hotels in the city — add dates on the hotel page to check live availability.',
   },
   auth: {
     loginTitle: 'Sign In',
@@ -74,6 +73,8 @@ export default {
     loginNow: 'Login',
     loginFailed: 'Login failed.',
     checkErrors: 'Please check the errors below.',
+    loginToBook: 'Sign in to complete your booking — it will finish automatically after login.',
+    bookingCompleted: 'Your booking has been created successfully.',
   },
   common: { loading: 'Loading...', save: 'Save', cancel: 'Cancel', confirm: 'Confirm' },
   statuses: {
@@ -121,6 +122,8 @@ export default {
     reject: 'Reject',
     receipt: 'View Receipt',
     emptyPayments: 'No payments in this status — queue is clean ✔',
+    confirmedToast: 'Booking confirmed.',
+    rejectedToast: 'Booking rejected.',
   },
   admin: {
     panelTitle: 'Admin Panel',
@@ -174,6 +177,7 @@ export default {
     phoneHint: 'Used by the hotel to contact you upon confirmation.',
     save: 'Save Changes',
     saving: 'Saving...',
+    saved: 'Profile saved.',
   },
   hotel: {
     about: 'About the Hotel',
@@ -242,6 +246,12 @@ export default {
     payNow: 'Pay Now',
     adults: 'adults',
     children: 'children',
+    receiptNotNeeded: '💵 You will pay at the hotel — no receipt needed now.',
+    receiptRequired: 'Receipt image is required for this payment method.',
+    receiptMustBeImage: 'The file must be an image.',
+    receiptTooLarge: 'Image is too large (max 5MB).',
+    invalidMethod: 'Invalid payment method.',
+    notYourBooking: 'This booking is not yours.',
   },
   ownerHotel: {
     manageTitle: 'Managing: {name}',
@@ -266,13 +276,15 @@ export default {
     city: 'City',
     createBtn: 'Create Hotel',
   },
-  // statuses:
-  approved: 'A[pproved',
-  rejected: 'Rejected',
-  suspended: 'Suspended',
-  // profile:
-  saved: 'Profile saved.',
-  // owner:
-  confirmedToast: 'Booking confirmed.',
-  rejectedToast: 'Booking rejected.',
+  reviews: {
+    title: 'Guest Reviews',
+    empty: 'No reviews yet — be the first to rate this stay.',
+    rateStay: 'Rate Your Stay',
+    rating: 'Your Rating',
+    comment: 'Your comment (optional)',
+    submit: 'Publish Review',
+    thanks: 'Thank you! Your review has been published.',
+    denied: 'You are not allowed to review this booking.',
+  },
+
 }

@@ -5,6 +5,7 @@ namespace App\Policies;
 use App\Models\Booking;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
+use App\Models\Review;
 
 class BookingPolicy
 {
@@ -27,5 +28,11 @@ class BookingPolicy
         return $booking->hotel?->owner_id === $user->id
             ? Response::allow()
             : Response::deny('لا يمكنك إدارة حجوزات فندق لا تملكه.');
+    }
+    public function createForBooking(User $user, Booking $booking): bool
+    {
+        return $booking->user_id === $user->id
+            && $booking->booking_status === 'completed'
+            && ! Review::where('booking_id', $booking->id)->exists();
     }
 }
