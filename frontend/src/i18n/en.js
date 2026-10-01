@@ -74,6 +74,8 @@ export default {
     loginNow: 'Login',
     loginFailed: 'Login failed.',
     checkErrors: 'Please check the errors below.',
+    loginToBook: 'Sign in to complete your booking — it will finish automatically after login.',
+    bookingCompleted: 'Your booking has been created successfully.',
   },
   common: { loading: 'Loading...', save: 'Save', cancel: 'Cancel', confirm: 'Confirm' },
   statuses: {
@@ -242,6 +244,12 @@ export default {
     payNow: 'Pay Now',
     adults: 'adults',
     children: 'children',
+    receiptNotNeeded: '💵 You will pay at the hotel — no receipt needed now.',
+    receiptRequired: 'Receipt image is required for this payment method.',
+    receiptMustBeImage: 'The file must be an image.',
+    receiptTooLarge: 'Image is too large (max 5MB).',
+    invalidMethod: 'Invalid payment method.',
+    notYourBooking: 'This booking is not yours.',
   },
   ownerHotel: {
     manageTitle: 'Managing: {name}',

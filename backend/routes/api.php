@@ -52,6 +52,7 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
         Route::post('/payments/manual', [PaymentController::class, 'store']);
         Route::post('/payments/manual/{payment}/receipt', [PaymentController::class, 'uploadReceipt']);
         Route::get('/payments/{payment}', [PaymentController::class, 'show']);
+        Route::post('/payments', [PaymentController::class, 'store']);
 
         Route::get('/notifications', [NotificationController::class, 'index']);
         Route::post('/notifications/read-all', [NotificationController::class, 'markAllRead']);
@@ -111,7 +112,7 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
         Route::post('/login', [AuthController::class, 'login']);
 
         Route::middleware('auth:sanctum')->group(function () {
-            Route::get('/bookings', [BookingController::class, 'index']);  
+            Route::get('/bookings', [BookingController::class, 'index']);
             Route::post('/bookings', [BookingController::class, 'store']);
             Route::post('/logout', [AuthController::class, 'logout']);
             Route::get('/me', [AuthController::class, 'me']);

@@ -17,6 +17,9 @@ const loading = ref(true)
 const paying = ref(false)
 const payForm = ref({ payment_method_id: '', receipt_image: null })
 
+const selectedMethod = computed(() => methods.value.find((m) => m.id === Number(payForm.value.payment_method_id)) || null)
+const receiptRequired = computed(() => (selectedMethod.value ? selectedMethod.value.requires_receipt !== false : true))
+
 
 const statusClasses = {
   pending_payment: 'bg-warning', pending_confirmation: 'bg-info', confirmed: 'bg-success',
@@ -66,8 +69,18 @@ async function pay() {
     toast.push(t('details.payTitle') + ' ✔', 'success')
     await refresh()
   } catch (e) {
+    const errorMap = {
+      'The receipt image field is required.': t('details.receiptRequired'),
+      'The receipt image must be an image.': t('details.receiptMustBeImage'),
+      'The receipt image may not be greater than 5120 kilobytes.': t('details.receiptTooLarge'),
+      'The selected payment method id is invalid.': t('details.invalidMethod'),
+      'This booking is not yours.': t('details.notYourBooking'),
+      'The booking is not in "Awaiting Payment" status — a new payment cannot be created.': t('details.payBlocked'),
+      'This payment method is not available right now.': t('details.invalidMethod'),
+    }
     const errors = e.response?.data?.errors
-    toast.push(errors ? Object.values(errors).flat()[0] : (e.response?.data?.message || t('auth.loginFailed')), 'danger')
+    const raw = errors ? Object.values(errors).flat()[0] : (e.response?.data?.message || t('auth.loginFailed'))
+    toast.push(errorMap[raw] || raw, 'danger')
   } finally {
     paying.value = false
   }
@@ -94,7 +107,7 @@ async function cancel() {
         <div class="small text-muted">{{ $t('bookings.bookingNo') }}: {{ booking.booking_number }}</div>
       </div>
       <span class="badge" :class="statusClasses[booking.booking_status]">{{ $t('statuses.' + booking.booking_status)
-      }}</span>
+        }}</span>
     </div>
 
     <div class="row g-4">
@@ -139,11 +152,12 @@ async function cancel() {
                 <div class="fw-semibold">{{ p.payment_method }}</div>
                 <div class="small text-muted">{{ p.payment_number }}</div>
                 <div class="small">{{ $t('details.amount') }}: {{ p.amount }} {{ p.currency_code }}</div>
-                <a v-if="p.receipt_image" :href="p.receipt_image" target="_blank"
+                <a v-if="receiptRequired" :href="p.receipt_image" target="_blank"
                   class="btn btn-outline-secondary btn-sm mt-1">{{ $t('details.receipt') }}</a>
+                <div v-else class="alert alert-success py-2 small mb-2">{{ $t('details.receiptNotNeeded') }}</div>
               </div>
               <span class="badge" :class="statusClasses[p.payment_status]">{{ $t('statuses.' + p.payment_status)
-              }}</span>
+                }}</span>
             </div>
           </div>
         </div>
@@ -152,7 +166,10 @@ async function cancel() {
         <h5 class="mb-3">{{ $t('details.historyTitle') }}</h5>
         <div v-if="histories.length" class="d-flex flex-column gap-2">
           <div v-for="h in histories" :key="h.id" class="border rounded p-2 small d-flex justify-content-between">
-            <span>{{ $t('statuses.' + h.status) }}</span>
+            <span>
+              {{ $t('statuses.' + (h.new_status || h.status)) }}
+              <span v-if="h.note" class="text-muted">— {{ h.note }}</span>
+            </span>
             <span class="text-muted">{{ h.created_at }}</span>
           </div>
         </div>

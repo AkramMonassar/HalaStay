@@ -4,10 +4,12 @@ import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import api from '../services/api'
 import { useAuthStore } from '../stores/auth'
+import { useToastStore } from '../stores/toast'
 
 const { t } = useI18n()
 const auth = useAuthStore()
 const router = useRouter()
+const toast = useToastStore()
 
 const form = ref({
   name: '',
@@ -19,13 +21,33 @@ const form = ref({
 const error = ref('')
 const loading = ref(false)
 
+async function resumeJourney() {
+  const pending = sessionStorage.getItem('halastay-pending-booking')
+  const intended = sessionStorage.getItem('halastay-intended')
+  sessionStorage.removeItem('halastay-intended')
+
+  if (pending) {
+    sessionStorage.removeItem('halastay-pending-booking')
+    try {
+      const { data } = await api.post('/bookings', JSON.parse(pending))
+      toast.push(t('auth.bookingCompleted'), 'success')
+      router.push({ name: 'booking', params: { id: data.data.id } })
+      return
+    } catch {
+      /* تعذر الإكمال التلقائي — نعود للصفحة المحفوظة */
+    }
+  }
+
+  router.push(intended || '/')
+}
+
 async function submit() {
   error.value = ''
   loading.value = true
   try {
     await api.post('/auth/register', form.value)
     await auth.login({ email: form.value.email, password: form.value.password })
-    router.push('/')
+    await resumejourney()
   } catch (e) {
     const errors = e.response?.data?.errors
     error.value = errors

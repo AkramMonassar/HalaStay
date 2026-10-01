@@ -4,6 +4,9 @@ import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import api from '../services/api'
 import AppDate from './AppDate.vue'
+import { useRoute } from 'vue-router'
+
+const route = useRoute()
 
 const { t } = useI18n()
 const props = defineProps({ hotel: { type: Object, required: true } })
@@ -45,6 +48,16 @@ async function book(ty) {
     const { data } = await api.post('/bookings', { ...form.value, accommodation_type_id: ty.id })
     router.push({ name: 'booking', params: { id: data.data.id } })
   } catch (e) {
+    if (e.response?.status === 401) {
+      sessionStorage.setItem(
+        'halastay-pending-booking',
+        JSON.stringify({ ...form.value, accommodation_type_id: ty.id })
+      )
+      sessionStorage.setItem('halastay-intended', route.fullPath)
+      toast.push(t('auth.loginToBook'), 'warning')
+      router.push('/login')
+      return
+    }
     const errors = e.response?.data?.errors
     error.value = errors ? Object.values(errors).flat()[0] : (e.response?.data?.message || t('auth.loginFailed'))
   } finally {
@@ -97,7 +110,8 @@ async function book(ty) {
 
       <div v-if="types.length" class="mt-3">
         <div class="small text-muted mb-2">{{ $t('widget.available') }}</div>
-        <div v-for="ty in types" :key="ty.id" class="border rounded p-2 mb-2 d-flex justify-content-between align-items-center">
+        <div v-for="ty in types" :key="ty.id"
+          class="border rounded p-2 mb-2 d-flex justify-content-between align-items-center">
           <div>
             <div class="fw-semibold small">{{ ty.name }}</div>
             <div class="small text-muted">
@@ -113,6 +127,16 @@ async function book(ty) {
 </template>
 
 <style lang="scss" scoped>
-.stepper { display: flex; align-items: center; justify-content: space-between; border: 1px solid #dee2e6; border-radius: 8px; padding: 2px 6px; }
-.stepper span { font-weight: 600; }
+.stepper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 2px 6px;
+}
+
+.stepper span {
+  font-weight: 600;
+}
 </style>

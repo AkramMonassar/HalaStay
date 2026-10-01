@@ -73,6 +73,8 @@ export default {
     loginNow: 'ادخل',
     loginFailed: 'فشل تسجيل الدخول.',
     checkErrors: 'تحقق من الأخطاء أدناه.',
+    loginToBook: 'سجّل الدخول لإتمام حجزك — سيُكمل تلقائياً بعد الدخول.',
+    bookingCompleted: 'تم إنشاء حجزك بنجاح.',
   },
   common: { loading: 'جارِ التحميل...', save: 'حفظ', cancel: 'إلغاء', confirm: 'تأكيد' },
   statuses: {
@@ -239,6 +241,12 @@ export default {
     payNow: 'ادفع الآن',
     adults: 'بالغين',
     children: 'أطفال',
+    receiptNotNeeded: '💵 ستدفع في الفندق — لا حاجة لرفع إشعار الآن.',
+    receiptRequired: 'صورة الإشعار مطلوبة لطريقة الدفع هذه.',
+    receiptMustBeImage: 'يجب أن يكون الملف صورة.',
+    receiptTooLarge: 'حجم الصورة كبير جداً (الحد 5 ميغا).',
+    invalidMethod: 'طريقة الدفع غير صالحة.',
+    notYourBooking: 'هذا الحجز ليس لك.',
   },
   ownerHotel: {
     manageTitle: 'إدارة: {name}',

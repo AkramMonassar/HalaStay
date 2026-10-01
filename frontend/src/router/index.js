@@ -46,7 +46,9 @@ router.beforeEach(async (to) => {
   }
 
   if (to.meta.requiresAuth && !auth.isAuthenticated) {
-    return { name: 'login', query: { redirect: to.fullPath } }
+    sessionStorage.setItem('halastay-intended', to.fullPath)
+    next({ path: '/login' })
+    return
   }
 
   if (to.meta.requiresRole && auth.user?.role !== to.meta.requiresRole) {

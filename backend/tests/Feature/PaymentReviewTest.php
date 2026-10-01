@@ -60,6 +60,27 @@ class PaymentReviewTest extends TestCase
         ])->json('data');
     }
 
+    public function test_cash_on_arrival_payment_needs_no_receipt(): void
+    {
+        $method = PaymentMethod::where('requires_receipt', false)->first();
+        $this->assertNotNull($method, 'تأكد أن هجرة requires_receipt نفّذت وضبطت طريقة الدفع عند الوصول.');
+
+        $res = $this->actingAs($this->tourist, 'sanctum')->postJson('/api/v1/payments', [
+            'booking_id' => $this->booking['id'],
+            'payment_method_id' => $method->id,
+        ]);
+
+        $res->assertCreated();
+        $this->assertDatabaseHas('payments', [
+            'booking_id' => $this->booking['id'],
+            'payment_status' => 'pending',
+        ]);
+        $this->assertDatabaseHas('bookings', [
+            'id' => $this->booking['id'],
+            'booking_status' => 'pending_confirmation',
+        ]);
+    }
+    
     protected function createManualPayment(string $methodKey): array
     {
         $method = PaymentMethod::where('method_key', $methodKey)->first();
@@ -122,4 +143,5 @@ class PaymentReviewTest extends TestCase
             ->patchJson("/api/v1/owner/payments/{$payment['id']}/review", ['action' => 'approve'])
             ->assertStatus(403);
     }
+    
 }
