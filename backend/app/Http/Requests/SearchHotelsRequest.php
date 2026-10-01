@@ -43,4 +43,22 @@ class SearchHotelsRequest extends FormRequest
             'rooms.min' => 'يجب أن يكون عدد الغرف واحداً على الأقل.',
         ];
     }
+
+    protected function prepareForValidation(): void
+    {
+        $stay = $this->input('stay_type', $this->input('stay_types'));
+        if ($stay !== null) {
+            $this->merge(['stay_type' => is_array($stay) ? $stay : explode(',', (string) $stay)]);
+        }
+
+        $stars = $this->input('star_rating', $this->input('stars'));
+        if ($stars !== null) {
+            $this->merge(['star_rating' => is_array($stars) ? $stars : explode(',', (string) $stars)]);
+        }
+
+        $min = $this->input('min_review', $this->input('min_rating'));
+        if ($min !== null) {
+            $this->merge(['min_review' => $min]);
+        }
+    }
 }
