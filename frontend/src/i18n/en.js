@@ -53,7 +53,8 @@ export default {
     chooseCity: 'Choose a city',
     stayTypes: { room: 'Rooms', apartment: 'Apartments', suite: 'Suites', hall: 'Halls' },
     starsWord: 'stars',
-    browseHint: 'Browse mode: showing all hotels in the city — add dates on the hotel page to check live availability.',
+    browseHint:
+      'Browse mode: showing all hotels in the city — add dates on the hotel page to check live availability.',
   },
   auth: {
     loginTitle: 'Sign In',
@@ -252,6 +253,8 @@ export default {
     receiptTooLarge: 'Image is too large (max 5MB).',
     invalidMethod: 'Invalid payment method.',
     notYourBooking: 'This booking is not yours.',
+    expiryHint:
+      'Payment deadline expires in {h} hours — the booking will then expire automatically.',
   },
   ownerHotel: {
     manageTitle: 'Managing: {name}',
@@ -286,5 +289,4 @@ export default {
     thanks: 'Thank you! Your review has been published.',
     denied: 'You are not allowed to review this booking.',
   },
-
 }

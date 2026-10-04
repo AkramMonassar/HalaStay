@@ -95,6 +95,16 @@ async function cancel() {
     toast.push(e.response?.data?.message || t('auth.loginFailed'), 'danger')
   }
 }
+
+const EXPIRY_HOURS = 24 // مطابق لافتراضي config/halastay.php
+
+const expiryHours = computed(() => {
+  if (!booking.value || booking.value.booking_status !== 'pending_payment') return null
+  if (!booking.value.created_at) return null
+  const deadline = new Date(new Date(booking.value.created_at).getTime() + EXPIRY_HOURS * 3600 * 1000)
+  return Math.max(0, Math.round((deadline - Date.now()) / 3600000))
+})
+
 </script>
 
 <template>
@@ -107,7 +117,7 @@ async function cancel() {
         <div class="small text-muted">{{ $t('bookings.bookingNo') }}: {{ booking.booking_number }}</div>
       </div>
       <span class="badge" :class="statusClasses[booking.booking_status]">{{ $t('statuses.' + booking.booking_status)
-        }}</span>
+      }}</span>
     </div>
 
     <div class="row g-4">
@@ -157,7 +167,7 @@ async function cancel() {
                 <div v-else class="alert alert-success py-2 small mb-2">{{ $t('details.receiptNotNeeded') }}</div>
               </div>
               <span class="badge" :class="statusClasses[p.payment_status]">{{ $t('statuses.' + p.payment_status)
-                }}</span>
+              }}</span>
             </div>
           </div>
         </div>
@@ -180,6 +190,9 @@ async function cancel() {
         <div class="card shadow-sm sticky-side">
           <div class="card-body">
             <h5 class="mb-3">💳 {{ $t('details.payTitle') }}</h5>
+            <div v-if="expiryHours !== null" class="alert alert-warning py-2 small mb-2">
+              ⏳ {{ $t('details.expiryHint', { h: expiryHours }) }}
+            </div>
             <template v-if="booking.booking_status === 'pending_payment'">
               <div class="mb-2">
                 <label class="form-label">{{ $t('details.method') }}</label>

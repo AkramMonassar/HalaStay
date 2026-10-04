@@ -52,8 +52,8 @@ export default {
     chooseCity: 'اختر المدينة',
     stayTypes: { room: 'غرف', apartment: 'شقق', suite: 'أجنحة', hall: 'قاعات' },
     starsWord: 'نجوم',
-    browseHint: 'وضع الاستعراض: كل فنادق المدينة ظاهرة — أضف التواريخ من صفحة الفندق لفحص التوفر الفوري.',
-    
+    browseHint:
+      'وضع الاستعراض: كل فنادق المدينة ظاهرة — أضف التواريخ من صفحة الفندق لفحص التوفر الفوري.',
   },
   auth: {
     loginTitle: 'تسجيل الدخول',
@@ -250,6 +250,7 @@ export default {
     receiptTooLarge: 'حجم الصورة كبير جداً (الحد 5 ميغا).',
     invalidMethod: 'طريقة الدفع غير صالحة.',
     notYourBooking: 'هذا الحجز ليس لك.',
+    expiryHint: 'تنتهي مهلة الدفع خلال {h} ساعة — بعدها ينتهي الحجز تلقائياً.',
   },
   ownerHotel: {
     manageTitle: 'إدارة: {name}',
@@ -284,5 +285,4 @@ export default {
     thanks: 'شكراً لك! تم نشر مراجعتك.',
     denied: 'لا تملك صلاحية مراجعة هذا الحجز.',
   },
-
 }
