@@ -17,6 +17,7 @@ export default {
     settings: 'الإعدادات',
     themeToDark: 'الوضع الليلي',
     themeToLight: 'الوضع النهاري',
+    notifications: 'الإشعارات',
   },
   home: {
     heroTitle: 'وجهتك التالية تبدأ من هنا',

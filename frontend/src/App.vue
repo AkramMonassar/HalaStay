@@ -1,14 +1,34 @@
 <script setup>
+import { ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import { useAuthStore } from './stores/auth'
 import { useThemeStore } from './stores/theme'
 import { useLangStore } from './stores/lang'
-import { useRouter } from 'vue-router'
+import { useToastStore } from './stores/toast'
+import { initEcho, disconnectEcho } from './services/echo'
 import ToastContainer from './components/ToastContainer.vue'
 
 const auth = useAuthStore()
 const theme = useThemeStore()
 const lang = useLangStore()
+const toast = useToastStore()
 const router = useRouter()
+const liveBadge = ref(0)
+
+watch(() => auth.user, (user) => {
+  if (!user) {
+    disconnectEcho()
+    liveBadge.value = 0
+    return
+  }
+
+  initEcho(auth.token)
+    .private(`user.${user.id}`)
+    .listen('.NotificationCreated', (payload) => {
+      toast.push(payload.title, 'success')
+      liveBadge.value++
+    })
+}, { immediate: true })
 
 async function logout() {
   await auth.logout()
@@ -39,8 +59,14 @@ async function logout() {
             <router-link class="btn btn-outline-primary btn-sm" to="/bookings">{{ $t('nav.myBookings') }}</router-link>
             <router-link class="btn btn-outline-primary btn-sm" to="/dashboard">{{ $t('nav.myDashboard') }}</router-link>
           </template>
-
           <router-link class="btn btn-outline-secondary btn-sm" to="/profile">👤 {{ $t('nav.profile') }}</router-link>
+          <router-link class="btn btn-outline-secondary btn-sm position-relative" to="/notifications">
+            🔔
+            <span
+              v-if="liveBadge"
+              class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+            >{{ liveBadge }}</span>
+          </router-link>
           <span class="nav-divider" aria-hidden="true"></span>
           <button class="btn btn-outline-danger btn-sm" @click="logout">{{ $t('nav.logout') }}</button>
         </template>
@@ -48,7 +74,6 @@ async function logout() {
           <router-link class="btn btn-outline-primary btn-sm" to="/login">{{ $t('nav.login') }}</router-link>
           <router-link class="btn btn-primary btn-sm" to="/register">{{ $t('nav.register') }}</router-link>
         </template>
-
         <button
           class="btn btn-light btn-sm theme-toggle"
           :title="theme.mode === 'light' ? $t('nav.themeToDark') : $t('nav.themeToLight')"
@@ -62,7 +87,6 @@ async function logout() {
       </div>
     </div>
   </nav>
-
   <main class="main-content">
     <router-view v-slot="{ Component }">
       <transition name="page-fade" mode="out-in">

@@ -17,6 +17,7 @@ export default {
     settings: 'Settings',
     themeToDark: 'Dark Mode',
     themeToLight: 'Light Mode',
+    notifications: 'Notifications',
   },
   home: {
     heroTitle: 'Your Next Destination Starts Here',
