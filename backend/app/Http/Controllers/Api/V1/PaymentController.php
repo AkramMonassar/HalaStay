@@ -71,8 +71,8 @@ class PaymentController extends Controller
                 'old_status' => 'pending_payment',
                 'new_status' => 'pending_confirmation',
                 'note' => $method->requires_receipt === false
-                    ? 'Cash-on-arrival booking — awaiting owner confirmation.'
-                    : 'Payment receipt uploaded — awaiting owner review.',
+                    ? 'حجز بالدفع عند الوصول — بانتظار تأكيد المالك.'
+                    : 'تم رفع إشعار الدفع — بانتظار مراجعة المالك.',
                 'created_at' => now(),
             ]);
 
@@ -83,15 +83,15 @@ class PaymentController extends Controller
                 Notification::create([
                     'user_id' => $owner->id,
                     'type' => 'payment_submitted',
-                    'title' => 'A new payment awaits your action',
-                    'body' => "Booking {$booking->booking_number} — {$method->name}.",
+                    'title' => 'دفعة جديدة بانتظار إجرائك',
+                    'body' => "الحجز {$booking->booking_number} — {$method->name}.",
                 ]);
             }
 
             return $payment;
         });
 
-        return $this->successResponse(new PaymentResource($payment), 'Payment created successfully.', 201);
+        return $this->successResponse(new PaymentResource($payment), 'تم إنشاء الدفعة بنجاح.', 201);
     }
 
         public function storeManual(Request $request): JsonResponse

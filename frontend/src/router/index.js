@@ -57,6 +57,10 @@ const routes = [
     meta: { requiresAuth: true, requiresRole: 'hotel_owner', title: 'إضافة فندق' },
   },
   {
+    path: '/owner/hotels/create',
+    redirect: { name: 'owner-hotel-create' },
+  },
+  {
     path: '/owner/hotels/:id',
     name: 'owner-hotel-details',
     component: () => import('../views/owner/OwnerHotelDetailsView.vue'),
@@ -154,7 +158,7 @@ router.beforeEach(async (to) => {
 
   if (to.meta.requiresAuth && !auth.isAuthenticated) {
     sessionStorage.setItem('halastay-intended', to.fullPath)
-    return { path: '/login' }   
+    return { path: '/login' }
   }
 
   if (to.meta.requiresRole && auth.user?.role !== to.meta.requiresRole) {
