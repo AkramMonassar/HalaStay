@@ -84,7 +84,10 @@ class BookingController extends Controller
             ->update(['payment_status' => 'cancelled']);
 
         // إشعار المالك بالإلغاء — والـ Observer يبثه لحظياً
-        $owner = $booking->accommodationType?->hotel?->owner;
+        $owner = $booking->hotel?->owner ?? $booking->accommodationType?->hotel?->owner;
+        if (! $owner) {
+            \Illuminate\Support\Facades\Log::warning('إشعار دفعة بلا مالك: الحجز ' . $booking->booking_number);
+        }
         if ($owner) {
             Notification::create([
                 'user_id' => $owner->id,

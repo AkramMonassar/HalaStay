@@ -13,6 +13,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
 
 class PaymentController extends Controller
 {
@@ -78,7 +79,7 @@ class PaymentController extends Controller
 
             $booking->update(['booking_status' => 'pending_confirmation']);
 
-            $owner = $booking->accommodationType?->hotel?->owner;
+            $owner = $booking->hotel?->owner ?? $booking->accommodationType?->hotel?->owner;
             if ($owner) {
                 Notification::create([
                     'user_id' => $owner->id,
@@ -86,6 +87,8 @@ class PaymentController extends Controller
                     'title' => 'دفعة جديدة بانتظار إجرائك',
                     'body' => "الحجز {$booking->booking_number} — {$method->name}.",
                 ]);
+            } else {
+                Log::warning('إشعار دفعة بلا مالك: الحجز ' . $booking->booking_number);
             }
 
             return $payment;
@@ -94,7 +97,7 @@ class PaymentController extends Controller
         return $this->successResponse(new PaymentResource($payment), 'تم إنشاء الدفعة بنجاح.', 201);
     }
 
-        public function storeManual(Request $request): JsonResponse
+    public function storeManual(Request $request): JsonResponse
     {
         $validated = $request->validate([
             'booking_id' => ['required', 'exists:bookings,id'],
@@ -135,6 +138,18 @@ class PaymentController extends Controller
             ]);
 
             $booking->update(['booking_status' => 'pending_confirmation']);
+
+            $owner = $booking->hotel?->owner ?? $booking->accommodationType?->hotel?->owner;
+            if ($owner) {
+                Notification::create([
+                    'user_id' => $owner->id,
+                    'type' => 'payment_submitted',
+                    'title' => 'دفعة جديدة بانتظار إجرائك',
+                    'body' => "الحجز {$booking->booking_number} — {$method->name}.",
+                ]);
+            } else {
+                Log::warning('إشعار دفعة بلا مالك: الحجز ' . $booking->booking_number);
+            }
 
             return $payment;
         });
