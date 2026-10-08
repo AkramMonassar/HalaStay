@@ -10,6 +10,8 @@ use App\Services\BookingService;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Models\Notification;
+use App\Models\Payment;
 
 class BookingController extends Controller
 {
@@ -76,6 +78,23 @@ class BookingController extends Controller
         );
 
         $booking->load(['hotel', 'accommodationType']);
+        // إبطال أي دفعة مفتوحة مرتبطة بالحجز الملغى
+        $voided = Payment::where('booking_id', $booking->id)
+            ->whereIn('payment_status', ['pending', 'under_review'])
+            ->update(['payment_status' => 'cancelled']);
+
+        // إشعار المالك بالإلغاء — والـ Observer يبثه لحظياً
+        $owner = $booking->accommodationType?->hotel?->owner;
+        if ($owner) {
+            Notification::create([
+                'user_id' => $owner->id,
+                'type' => 'booking_cancelled',
+                'title' => 'تم إلغاء الحجز ' . $booking->booking_number,
+                'body' => $voided
+                    ? 'ألغى الضيف الحجز بعد رفع دفعة — تم إبطال الدفعة المفتوحة المرتبطة.'
+                    : 'ألغى الضيف الحجز قبل اكتماله.',
+            ]);
+        }
 
         return $this->successResponse(new BookingResource($booking), 'تم إلغاء الحجز بنجاح.');
     }

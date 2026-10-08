@@ -243,6 +243,8 @@ export default {
     receipt: 'View Receipt',
     historyTitle: 'Status History',
     cancelBtn: 'Cancel Booking',
+    cancelSuccess: 'Booking cancelled successfully.',
+    cancelFailed: 'Could not cancel booking.',
     method: 'Payment Method',
     receiptFile: 'Receipt Image',
     payNow: 'Pay Now',
@@ -256,6 +258,7 @@ export default {
     notYourBooking: 'This booking is not yours.',
     expiryHint:
       'Payment deadline expires in {h} hours — the booking will then expire automatically.',
+    payCancelled: 'Cancelled',
   },
   ownerHotel: {
     manageTitle: 'Managing: {name}',
@@ -289,5 +292,12 @@ export default {
     submit: 'Publish Review',
     thanks: 'Thank you! Your review has been published.',
     denied: 'You are not allowed to review this booking.',
+  },
+  notif: {
+    title: 'Notifications',
+    empty: 'No notifications yet — when something important happens, you will see it here first.',
+    deleteOne: 'Delete',
+    clearAll: 'Clear all',
+    clearConfirm: 'Confirm clear?',
   },
 }

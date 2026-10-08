@@ -59,6 +59,7 @@ async function confirmReview(note) {
         <option value="failed">{{ $t('statuses.failed') }}</option>
         <option value="pending">{{ $t('statuses.pending') }}</option>
         <option value="refunded">{{ $t('statuses.refunded') }}</option>
+        <option value="cancelled">{{ $t('statuses.cancelled') }}</option>
       </select>
     </div>
 
@@ -75,15 +76,18 @@ async function confirmReview(note) {
               <span class="badge ms-1">{{ $t('statuses.' + p.payment_status) }}</span>
             </div>
             <div class="small text-muted">
-              {{ $t('bookings.thGuest') }}: {{ p.guest_name }} | {{ $t('bookings.bookingNo') }}: {{ p.booking_number }} | {{ p.amount }} {{ p.currency_code }}
+              {{ $t('bookings.thGuest') }}: {{ p.guest_name }} | {{ $t('bookings.bookingNo') }}: {{ p.booking_number }}
+              | {{ p.amount }} {{ p.currency_code }}
             </div>
-            <a v-if="p.receipt_image" :href="p.receipt_image" target="_blank" class="btn btn-outline-secondary btn-sm mt-2">
+            <a v-if="p.receipt_image" :href="p.receipt_image" target="_blank"
+              class="btn btn-outline-secondary btn-sm mt-2">
               {{ $t('owner.receipt') }}
             </a>
           </div>
           <div v-if="p.payment_status === 'under_review'" class="d-flex gap-1">
             <button class="btn btn-success btn-sm" @click="askReview(p, 'approve')">{{ $t('owner.approve') }}</button>
-            <button class="btn btn-outline-danger btn-sm" @click="askReview(p, 'reject')">{{ $t('owner.reject') }}</button>
+            <button class="btn btn-outline-danger btn-sm" @click="askReview(p, 'reject')">{{ $t('owner.reject')
+              }}</button>
           </div>
         </div>
       </div>
@@ -91,14 +95,9 @@ async function confirmReview(note) {
 
     <div v-else class="alert alert-success">{{ $t('owner.emptyPayments') }}</div>
 
-    <AppModal
-      :show="!!modal"
-      :title="modal?.action === 'approve' ? $t('owner.approve') : $t('owner.reject')"
+    <AppModal :show="!!modal" :title="modal?.action === 'approve' ? $t('owner.approve') : $t('owner.reject')"
       :message="modal ? `${modal.payment.payment_number} — ${modal.payment.amount}` : ''"
-      :with-note="modal?.action === 'reject'"
-      :tone="modal?.action === 'approve' ? 'success' : 'danger'"
-      @confirm="confirmReview"
-      @cancel="modal = null"
-    />
+      :with-note="modal?.action === 'reject'" :tone="modal?.action === 'approve' ? 'success' : 'danger'"
+      @confirm="confirmReview" @cancel="modal = null" />
   </div>
 </template>

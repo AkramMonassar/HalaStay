@@ -6,6 +6,7 @@ import { useThemeStore } from './stores/theme'
 import { useLangStore } from './stores/lang'
 import { useToastStore } from './stores/toast'
 import { initEcho, disconnectEcho } from './services/echo'
+import api from './services/api'
 import ToastContainer from './components/ToastContainer.vue'
 
 const auth = useAuthStore()
@@ -22,6 +23,15 @@ watch(() => auth.user, (user) => {
     return
   }
 
+  // بذر العداد من المخزون: ما فاتك وأنت غائب
+  api.get('/notifications')
+    .then(({ data }) => {
+      const list = data.data ?? data
+      liveBadge.value = list.filter((n) => !n.is_read).length
+    })
+    .catch(() => {})
+
+  // الاصغاء الحي: ما سيولد وأنت حاضر
   initEcho(auth.token)
     .private(`user.${user.id}`)
     .listen('.NotificationCreated', (payload) => {
@@ -29,6 +39,11 @@ watch(() => auth.user, (user) => {
       liveBadge.value++
     })
 }, { immediate: true })
+
+// حين تُزار صفحة الإشعارات وتُعلَّم كمقروءة — تصفر الشارة
+window.addEventListener('halastay:notifications-read', () => {
+  liveBadge.value = 0
+})
 
 async function logout() {
   await auth.logout()

@@ -39,12 +39,6 @@ class Booking extends Model
     {
         return $this->belongsTo(Hotel::class);
     }
-
-    public function accommodationType()
-    {
-        return $this->belongsTo(AccommodationType::class);
-    }
-
     public function payments()
     {
         return $this->hasMany(Payment::class);
@@ -58,5 +52,9 @@ class Booking extends Model
     public function review()
     {
         return $this->hasOne(Review::class);
+    }
+    public function accommodationType()
+    {
+        return $this->belongsTo(\App\Models\AccommodationType::class, 'hotel_id');
     }
 }

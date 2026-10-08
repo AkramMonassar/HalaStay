@@ -15,9 +15,7 @@ class OwnerPaymentController extends Controller
 {
     use ApiResponse;
 
-    public function __construct(protected PaymentService $paymentService)
-    {
-    }
+    public function __construct(protected PaymentService $paymentService) {}
 
     public function index(Request $request): JsonResponse
     {
@@ -28,8 +26,8 @@ class OwnerPaymentController extends Controller
         $hotelIds = $request->user()->ownedHotels()->pluck('id');
 
         $payments = Payment::with(['paymentMethod', 'booking', 'user'])
-            ->whereHas('booking', fn ($q) => $q->whereIn('hotel_id', $hotelIds))
-            ->when(!empty($validated['status']), fn ($q) => $q->where('payment_status', $validated['status']))
+            ->whereHas('booking', fn($q) => $q->whereIn('hotel_id', $hotelIds))
+            ->when(!empty($validated['status']), fn($q) => $q->where('payment_status', $validated['status']))
             ->latest()
             ->paginate(10)
             ->withQueryString();
@@ -50,6 +48,10 @@ class OwnerPaymentController extends Controller
     public function review(ReviewPaymentRequest $request, Payment $payment): JsonResponse
     {
         $this->authorize('review', $payment);
+        
+        if ($payment->booking->booking_status === 'cancelled') {
+            return $this->errorResponse('لا يمكن مراجعة دفعة لحجز ملغى.', 422);
+        }
 
         $payment = $this->paymentService->reviewPaymentByOwner(
             $request->user(),

@@ -89,10 +89,11 @@ async function pay() {
 async function cancel() {
   try {
     await api.post(`/bookings/${booking.value.id}/cancel`)
-    toast.push(t('details.cancelBtn') + ' ✔', 'warning')
-    await refresh()
+    toast.push(t('details.cancelSuccess'), 'success')
   } catch (e) {
-    toast.push(e.response?.data?.message || t('auth.loginFailed'), 'danger')
+    toast.push(e.response?.data?.message || t('details.cancelFailed'), 'danger')
+  } finally {
+    try { await refresh() } catch {}
   }
 }
 

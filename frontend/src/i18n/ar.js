@@ -55,6 +55,8 @@ export default {
     starsWord: 'نجوم',
     browseHint:
       'وضع الاستعراض: كل فنادق المدينة ظاهرة — أضف التواريخ من صفحة الفندق لفحص التوفر الفوري.',
+    cancelSuccess: 'تم إلغاء الحجز بنجاح.',
+    cancelFailed: 'تعذر إلغاء الحجز.',
   },
   auth: {
     loginTitle: 'تسجيل الدخول',
@@ -240,6 +242,8 @@ export default {
     receipt: 'عرض الإشعار',
     historyTitle: 'سجل الحالات',
     cancelBtn: 'إلغاء الحجز',
+    cancelSuccess: 'تم إلغاء الحجز بنجاح.',
+    cancelFailed: 'تعذر إلغاء الحجز.',
     method: 'طريقة الدفع',
     receiptFile: 'صورة الإشعار',
     payNow: 'ادفع الآن',
@@ -252,6 +256,7 @@ export default {
     invalidMethod: 'طريقة الدفع غير صالحة.',
     notYourBooking: 'هذا الحجز ليس لك.',
     expiryHint: 'تنتهي مهلة الدفع خلال {h} ساعة — بعدها ينتهي الحجز تلقائياً.',
+    payCancelled: 'ملغاة',
   },
   ownerHotel: {
     manageTitle: 'إدارة: {name}',
@@ -285,5 +290,12 @@ export default {
     submit: 'نشر المراجعة',
     thanks: 'شكراً لك! تم نشر مراجعتك.',
     denied: 'لا تملك صلاحية مراجعة هذا الحجز.',
+  },
+  notif: {
+    title: 'الإشعارات',
+    empty: 'لا إشعارات بعد — حين يحدث شيء مهم ستجده هنا أولاً.',
+    deleteOne: 'حذف',
+    clearAll: 'مسح الكل',
+    clearConfirm: 'تأكيد المسح؟',
   },
 }
