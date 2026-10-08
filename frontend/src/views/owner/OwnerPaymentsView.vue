@@ -5,13 +5,15 @@ import api from '../../services/api'
 import AppModal from '../../components/AppModal.vue'
 import AppSkeleton from '../../components/AppSkeleton.vue'
 import { useToastStore } from '../../stores/toast'
+import { useRoute } from 'vue-router'
 
 const { t } = useI18n()
 const toast = useToastStore()
 
 const payments = ref([])
 const loading = ref(true)
-const statusFilter = ref('under_review')
+const route = useRoute()
+const statusFilter = ref(route.query.status || 'under_review')
 const modal = ref(null)
 
 async function fetchPayments() {

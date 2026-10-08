@@ -1,10 +1,12 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue'
 import api from '../../services/api'
+import { useRoute } from 'vue-router'
 
 const bookings = ref([])
 const loading = ref(true)
-const statusFilter = ref('')
+const route = useRoute()
+const statusFilter = ref(route.query.status || '')
 const message = ref('')
 
 const statusLabels = {

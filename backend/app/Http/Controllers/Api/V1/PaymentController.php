@@ -130,7 +130,7 @@ class PaymentController extends Controller
                 'changed_by' => $booking->user_id,
                 'old_status' => 'pending_payment',
                 'new_status' => 'pending_confirmation',
-                'note' => 'Manual payment declared with transaction reference — awaiting owner review.',
+                'note' => 'دفعة يدوية المرجع — بانتظار مراجعة المالك.',
                 'created_at' => now(),
             ]);
 
@@ -139,6 +139,6 @@ class PaymentController extends Controller
             return $payment;
         });
 
-        return $this->successResponse(new PaymentResource($payment), 'Payment submitted for review.', 201);
+        return $this->successResponse(new PaymentResource($payment), 'تم إرسال الدفعة للمراجعة.', 201);
     }
 }

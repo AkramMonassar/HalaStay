@@ -20,7 +20,7 @@ class OwnerPaymentController extends Controller
     public function index(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'status' => ['nullable', 'string', 'in:pending,success,failed,under_review,refunded'],
+            'status' => ['nullable', 'string', 'in:pending,success,failed,under_review,refunded,cancelled'],
         ]);
 
         $hotelIds = $request->user()->ownedHotels()->pluck('id');
