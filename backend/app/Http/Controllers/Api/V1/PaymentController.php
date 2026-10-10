@@ -12,8 +12,8 @@ use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class PaymentController extends Controller
 {
@@ -29,17 +29,17 @@ class PaymentController extends Controller
         $booking = Booking::findOrFail($validated['booking_id']);
 
         if ($booking->user_id !== $request->user()->id) {
-            return $this->errorResponse('This booking is not yours.', 403);
+            return $this->errorResponse(__('messages.not_your_booking'), 403);
         }
 
         if ($booking->booking_status !== 'pending_payment') {
-            return $this->errorResponse('The booking is not in "Awaiting Payment" status — a new payment cannot be created.', 422);
+            return $this->errorResponse(__('messages.pay_blocked'), 422);
         }
 
         $method = PaymentMethod::findOrFail($validated['payment_method_id']);
 
         if (! $method->is_active) {
-            return $this->errorResponse('This payment method is not available right now.', 422);
+            return $this->errorResponse(__('messages.method_unavailable'), 422);
         }
 
         // القاعدة الفاشلة-بأمان: الإشعار إلزامي ما لم تصرّح الطريقة بعكسه صراحة
@@ -94,7 +94,7 @@ class PaymentController extends Controller
             return $payment;
         });
 
-        return $this->successResponse(new PaymentResource($payment), 'تم إنشاء الدفعة بنجاح.', 201);
+        return $this->successResponse(new PaymentResource($payment), __('messages.payment_created'), 201);
     }
 
     public function storeManual(Request $request): JsonResponse
@@ -108,11 +108,11 @@ class PaymentController extends Controller
         $booking = Booking::findOrFail($validated['booking_id']);
 
         if ($booking->user_id !== $request->user()->id) {
-            return $this->errorResponse('This booking is not yours.', 403);
+            return $this->errorResponse(__('messages.not_your_booking'), 403);
         }
 
         if ($booking->booking_status !== 'pending_payment') {
-            return $this->errorResponse('The booking is not in "Awaiting Payment" status — a new payment cannot be created.', 422);
+            return $this->errorResponse(__('messages.pay_blocked'), 422);
         }
 
         $method = PaymentMethod::findOrFail($validated['payment_method_id']);
@@ -154,6 +154,6 @@ class PaymentController extends Controller
             return $payment;
         });
 
-        return $this->successResponse(new PaymentResource($payment), 'تم إرسال الدفعة للمراجعة.', 201);
+        return $this->successResponse(new PaymentResource($payment), __('messages.payment_submitted_review'), 201);
     }
 }

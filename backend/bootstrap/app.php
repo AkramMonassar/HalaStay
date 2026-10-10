@@ -19,36 +19,35 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
-
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleMiddleware::class,
         ]);
+        $middleware->append(\App\Http\Middleware\SetLocale::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        $exceptions->render(
-            function (AuthorizationException $e, $request) {
-                if ($request->expectsJson()) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => $e->getMessage() ?: 'غير مصرح لك بهذا الإجراء.',
-                    ], 403);
-                }
-            },
-            $exceptions->render(function (\Illuminate\Auth\AuthenticationException $e, $request) {
-                if ($request->is('api/*')) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'غير مصادق — سجّل الدخول أولاً.',
-                    ], 401);
-                }
-            })
-        );
+        $exceptions->render(function (AuthorizationException $e, $request) {
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $e->getMessage() ?: __('messages.forbidden'),
+                ], 403);
+            }
+        });
+
+        $exceptions->render(function (\Illuminate\Auth\AuthenticationException $e, $request) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'success' => false,
+                    'message' => __('messages.unauthenticated'),
+                ], 401);
+            }
+        });
 
         $exceptions->render(function (ModelNotFoundException $e, $request) {
             if ($request->expectsJson()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'المورد المطلوب غير موجود.',
+                    'message' => __('messages.not_found'),
                 ], 404);
             }
         });

@@ -1,0 +1,10 @@
+{
+    "messages.unauthenticated": "غير مصادق — سجّل الدخول أولاً.",
+    "messages.forbidden": "غير مصرح لك بهذا الإجراء.",
+    "messages.not_found": "المورد المطلوب غير موجود.",
+    "messages.not_your_booking": "هذا الحجز ليس لك.",
+    "messages.pay_blocked": "الحجز ليس بحالة \"بانتظار الدفع\" — لا يمكن إنشاء دفعة جديدة.",
+    "messages.method_unavailable": "طريقة الدفع غير متاحة حالياً.",
+    "messages.payment_created": "تم إنشاء الدفعة بنجاح.",
+    "messages.payment_submitted_review": "تم إرسال الدفعة للمراجعة."
+}
