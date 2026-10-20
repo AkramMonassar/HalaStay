@@ -16,7 +16,9 @@ class StoreHotelRequest extends FormRequest
         return [
             'city_id' => ['required', 'exists:cities,id'],
             'name' => ['required', 'string', 'max:150'],
+            'name_en' => ['nullable', 'string', 'max:191'],
             'description' => ['nullable', 'string'],
+            'description_en' => ['nullable', 'string'],
             'address' => ['nullable', 'string', 'max:255'],
             'phone' => ['nullable', 'string', 'max:30'],
             'email' => ['nullable', 'email', 'max:150'],

@@ -63,7 +63,7 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
         Route::get('/hotels', [OwnerHotelController::class, 'index']);
         Route::post('/hotels', [OwnerHotelController::class, 'store']);
         Route::get('/hotels/{hotel}', [OwnerHotelController::class, 'show']);
-        Route::put('/hotels/{hotel}', [OwnerHotelController::class, 'update']);
+        Route::match(['put', 'patch'], '/hotels/{hotel}', [OwnerHotelController::class, 'update']);
         Route::post('/hotels/{hotel}/images', [OwnerHotelController::class, 'storeImages']);
         Route::get('/hotels/{hotel}/rooms', [OwnerHotelController::class, 'rooms']);
         Route::post('/hotels/{hotel}/rooms', [OwnerHotelController::class, 'storeRoom']);

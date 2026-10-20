@@ -10,7 +10,7 @@ const toast = useToastStore()
 const cities = ref([])
 const countries = ref([])
 const methods = ref([])
-const newCity = ref({ country_id: '', name: '' })
+const newCity = ref({ country_id: '', name: '', name_en: '' })
 
 async function fetchAll() {
   const [c, co, m] = await Promise.all([
@@ -28,7 +28,7 @@ onMounted(fetchAll)
 async function addCity() {
   try {
     await api.post('/admin/cities', newCity.value)
-    newCity.value = { country_id: '', name: '' }
+    newCity.value = { country_id: '', name: '', name_en: '' }
     toast.push(t('settings.addedCity'), 'success')
     fetchAll()
   } catch (e) {
@@ -66,17 +66,22 @@ async function toggleMethod(m) {
           <div class="card-header bg-white fw-semibold">{{ $t('settings.cities') }}</div>
           <div class="card-body">
             <div class="row g-2 mb-3">
-              <div class="col-5">
+              <div class="col-md-4">
                 <select v-model="newCity.country_id" class="form-select">
                   <option value="" disabled>{{ $t('settings.country') }}</option>
                   <option v-for="co in countries" :key="co.id" :value="co.id">{{ co.name }}</option>
                 </select>
               </div>
-              <div class="col-4"><input v-model="newCity.name" class="form-control" :placeholder="$t('settings.cityName')" /></div>
-              <div class="col-3"><button class="btn btn-primary w-100" @click="addCity">{{ $t('settings.addCity') }}</button></div>
+              <div class="col-md-4"><input v-model="newCity.name" class="form-control"
+                  :placeholder="$t('settings.cityName')" /></div>
+              <div class="col-md-4"><input v-model="newCity.name_en" class="form-control" dir="ltr"
+                  :placeholder="$t('settings.cityNameEn')" /></div>
+              <div class="col-12"><button class="btn btn-primary w-100" @click="addCity">{{ $t('settings.addCity')
+                  }}</button></div>
             </div>
 
-            <div v-for="c in cities" :key="c.id" class="d-flex justify-content-between align-items-center border rounded p-2 mb-1">
+            <div v-for="c in cities" :key="c.id"
+              class="d-flex justify-content-between align-items-center border rounded p-2 mb-1">
               <div>
                 {{ c.name }}
                 <span class="badge ms-1" :class="c.is_active ? 'bg-success' : 'bg-secondary'">
@@ -95,7 +100,8 @@ async function toggleMethod(m) {
         <div class="card shadow-sm">
           <div class="card-header bg-white fw-semibold">{{ $t('settings.methods') }}</div>
           <div class="card-body">
-            <div v-for="m in methods" :key="m.id" class="d-flex justify-content-between align-items-center border rounded p-2 mb-1">
+            <div v-for="m in methods" :key="m.id"
+              class="d-flex justify-content-between align-items-center border rounded p-2 mb-1">
               <div>
                 {{ m.name }}
                 <span class="badge ms-1 bg-light text-dark">{{ m.type }}</span>

@@ -13,7 +13,7 @@ class BookingResource extends JsonResource
             'id' => $this->id,
             'booking_number' => $this->booking_number,
             'guest_name' => $this->whenLoaded('user', fn () => $this->user->name),
-            'hotel' => $this->whenLoaded('hotel', fn () => $this->hotel->name),
+            'hotel' => $this->whenLoaded('hotel', fn () => (app()->getLocale() === 'en' && $this->hotel->name_en ? $this->hotel->name_en : $this->hotel->name)),
             'accommodation_type' => $this->whenLoaded('accommodationType', fn () => $this->accommodationType->name),
             'check_in' => $this->check_in->toDateString(),
             'check_out' => $this->check_out->toDateString(),

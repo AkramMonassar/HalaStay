@@ -11,7 +11,7 @@ class UserResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->name,
+            'name' => (app()->getLocale() === 'en' && $this->name_en ? $this->name_en : $this->name),
             'email' => $this->email,
             'phone' => $this->phone,
             'role' => $this->role,

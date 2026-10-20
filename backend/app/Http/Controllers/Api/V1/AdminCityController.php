@@ -37,6 +37,7 @@ class AdminCityController extends Controller
         $city = City::create([
             'country_id' => $request->validated('country_id'),
             'name' => $request->validated('name'),
+            'name_en' => $request->validated('name_en'),
             'is_active' => true,
         ]);
         Cache::forget('cities');
@@ -49,6 +50,7 @@ class AdminCityController extends Controller
 
         $city->update([
             'name' => $data['name'] ?? $city->name,
+            'name_en' => array_key_exists('name_en', $data) ? $data['name_en'] : $city->name_en,
             'is_active' => $data['is_active'] ?? $city->is_active,
         ]);
         Cache::forget('cities');

@@ -10,7 +10,7 @@ const toast = useToastStore()
 const router = useRouter()
 
 const cities = ref([])
-const form = ref({ city_id: '', name: '', description: '', address: '', phone: '', email: '', star_rating: 3 })
+const form = ref({ city_id: '', name: '', name_en: '', description_en: '', description: '', address: '', phone: '', email: '', star_rating: 3 })
 const saving = ref(false)
 
 onMounted(async () => {
@@ -42,6 +42,10 @@ async function submit() {
             <label class="form-label">{{ $t('ownerHotel.name') }}</label>
             <input v-model="form.name" class="form-control" />
           </div>
+          <div class="mb-2">
+            <label class="form-label">{{ $t('ownerHotel.nameEn') }}</label>
+            <input v-model="form.name_en" class="form-control" dir="ltr" />
+          </div>
           <div class="col-6">
             <label class="form-label">{{ $t('ownerHotel.city') }}</label>
             <select v-model="form.city_id" class="form-select">
@@ -52,6 +56,10 @@ async function submit() {
           <div class="col-12">
             <label class="form-label">{{ $t('ownerHotel.description') }}</label>
             <textarea v-model="form.description" class="form-control" rows="3"></textarea>
+          </div>
+          <div class="mb-2">
+            <label class="form-label">{{ $t('ownerHotel.descriptionEn') }}</label>
+            <textarea v-model="form.description_en" class="form-control" rows="2" dir="ltr"></textarea>
           </div>
           <div class="col-6">
             <label class="form-label">{{ $t('ownerHotel.address') }}</label>

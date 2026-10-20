@@ -8,6 +8,8 @@ import { useToastStore } from './stores/toast'
 import { initEcho, disconnectEcho } from './services/echo'
 import api from './services/api'
 import ToastContainer from './components/ToastContainer.vue'
+import { useI18n } from 'vue-i18n'
+const { locale } = useI18n()
 
 const auth = useAuthStore()
 const theme = useThemeStore()
@@ -105,7 +107,7 @@ async function logout() {
   <main class="main-content">
     <router-view v-slot="{ Component }">
       <transition name="page-fade" mode="out-in">
-        <component :is="Component" />
+        <component :is="Component" :key="locale" />
       </transition>
     </router-view>
     <ToastContainer />

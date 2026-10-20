@@ -16,7 +16,9 @@ class UpdateHotelRequest extends FormRequest
         return [
             'city_id' => ['sometimes', 'required', 'exists:cities,id'],
             'name' => ['sometimes', 'required', 'string', 'max:150'],
+            'name_en' => ['sometimes', 'nullable', 'string', 'max:191'],
             'description' => ['nullable', 'string'],
+            'description_en' => ['sometimes', 'nullable', 'string'],
             'address' => ['nullable', 'string', 'max:255'],
             'phone' => ['nullable', 'string', 'max:30'],
             'email' => ['nullable', 'email', 'max:150'],
