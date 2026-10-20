@@ -9,6 +9,7 @@ use App\Services\BookingService;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Models\Payment;
 
 class OwnerBookingController extends Controller
 {
@@ -68,15 +69,17 @@ class OwnerBookingController extends Controller
         $validated = $request->validate([
             'reason' => ['nullable', 'string', 'max:255'],
         ]);
-
         $booking = $this->bookingService->rejectBookingByOwner(
             $request->user(),
             $booking,
             $validated['reason'] ?? null
         );
+        // إبطال أي دفعة مفتوحة — لا يتامى بعد اليوم
+        Payment::where('booking_id', $booking->id)
+            ->whereIn('payment_status', ['pending', 'under_review'])
+            ->update(['payment_status' => 'cancelled']);
 
         $booking->load(['hotel', 'accommodationType']);
-
         return $this->successResponse(new BookingResource($booking), 'تم رفض الحجز وتحرير الوحدات.');
     }
 }

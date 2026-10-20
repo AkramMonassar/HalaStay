@@ -36,20 +36,20 @@ const carryQuery = computed(() => {
     <div class="hotel-body">
       <div class="d-flex justify-content-between align-items-start gap-2">
         <h6 class="hotel-name mb-1">{{ hotel.name }}</h6>
-        <span class="review-pill">{{ hotel.review_score > 0 ? hotel.review_score : 'جديد' }}</span>
+        <span class="review-pill">{{ hotel.review_score > 0 ? hotel.review_score : $t('search.newBadge') }}</span>
       </div>
       <div class="hotel-city">📍 {{ hotel.city }}</div>
       <div class="d-flex justify-content-between align-items-end mt-3">
         <div v-if="minPrice" class="hotel-price">
-          {{ minPrice }} <span class="price-unit">ريال / ليلة</span>
+          {{ minPrice }} <span class="price-unit">{{ $t('search.perNight') }}</span>
         </div>
-        <div v-else class="small text-muted">لا أنواع متاحة</div>
-        <span class="types-count">{{ hotel.available_types?.length || 0 }} أنواع</span>
+        <div v-else class="small text-muted">{{ $T('SEARCH.NOTYPES') }}</div>
+        <span class="types-count">{{ hotel.available_types?.length || 0 }} {{ $t('search.types') }}</span>
       </div>
     </div>
     <div class="hotel-footer">
       <router-link :to="{ name: 'hotel', params: { id: hotel.id }, query: carryQuery }" class="btn-details">
-        عرض التفاصيل
+        {{ $t('search.details') }}
       </router-link>
     </div>
   </div>

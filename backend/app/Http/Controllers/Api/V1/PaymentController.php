@@ -12,6 +12,7 @@ use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class PaymentController extends Controller
@@ -28,17 +29,17 @@ class PaymentController extends Controller
         $booking = Booking::findOrFail($validated['booking_id']);
 
         if ($booking->user_id !== $request->user()->id) {
-            return $this->errorResponse('This booking is not yours.', 403);
+            return $this->errorResponse(__('messages.not_your_booking'), 403);
         }
 
         if ($booking->booking_status !== 'pending_payment') {
-            return $this->errorResponse('The booking is not in "Awaiting Payment" status — a new payment cannot be created.', 422);
+            return $this->errorResponse(__('messages.pay_blocked'), 422);
         }
 
         $method = PaymentMethod::findOrFail($validated['payment_method_id']);
 
         if (! $method->is_active) {
-            return $this->errorResponse('This payment method is not available right now.', 422);
+            return $this->errorResponse(__('messages.method_unavailable'), 422);
         }
 
         // القاعدة الفاشلة-بأمان: الإشعار إلزامي ما لم تصرّح الطريقة بعكسه صراحة
@@ -71,30 +72,32 @@ class PaymentController extends Controller
                 'old_status' => 'pending_payment',
                 'new_status' => 'pending_confirmation',
                 'note' => $method->requires_receipt === false
-                    ? 'Cash-on-arrival booking — awaiting owner confirmation.'
-                    : 'Payment receipt uploaded — awaiting owner review.',
+                    ? 'حجز بالدفع عند الوصول — بانتظار تأكيد المالك.'
+                    : 'تم رفع إشعار الدفع — بانتظار مراجعة المالك.',
                 'created_at' => now(),
             ]);
 
             $booking->update(['booking_status' => 'pending_confirmation']);
 
-            $owner = $booking->accommodationType?->hotel?->owner;
+            $owner = $booking->hotel?->owner ?? $booking->accommodationType?->hotel?->owner;
             if ($owner) {
                 Notification::create([
                     'user_id' => $owner->id,
                     'type' => 'payment_submitted',
-                    'title' => 'A new payment awaits your action',
-                    'body' => "Booking {$booking->booking_number} — {$method->name}.",
+                    'title' => 'دفعة جديدة بانتظار إجرائك',
+                    'body' => "الحجز {$booking->booking_number} — {$method->name}.",
                 ]);
+            } else {
+                Log::warning('إشعار دفعة بلا مالك: الحجز ' . $booking->booking_number);
             }
 
             return $payment;
         });
 
-        return $this->successResponse(new PaymentResource($payment), 'Payment created successfully.', 201);
+        return $this->successResponse(new PaymentResource($payment), __('messages.payment_created'), 201);
     }
 
-        public function storeManual(Request $request): JsonResponse
+    public function storeManual(Request $request): JsonResponse
     {
         $validated = $request->validate([
             'booking_id' => ['required', 'exists:bookings,id'],
@@ -105,11 +108,11 @@ class PaymentController extends Controller
         $booking = Booking::findOrFail($validated['booking_id']);
 
         if ($booking->user_id !== $request->user()->id) {
-            return $this->errorResponse('This booking is not yours.', 403);
+            return $this->errorResponse(__('messages.not_your_booking'), 403);
         }
 
         if ($booking->booking_status !== 'pending_payment') {
-            return $this->errorResponse('The booking is not in "Awaiting Payment" status — a new payment cannot be created.', 422);
+            return $this->errorResponse(__('messages.pay_blocked'), 422);
         }
 
         $method = PaymentMethod::findOrFail($validated['payment_method_id']);
@@ -130,15 +133,27 @@ class PaymentController extends Controller
                 'changed_by' => $booking->user_id,
                 'old_status' => 'pending_payment',
                 'new_status' => 'pending_confirmation',
-                'note' => 'Manual payment declared with transaction reference — awaiting owner review.',
+                'note' => 'دفعة يدوية المرجع — بانتظار مراجعة المالك.',
                 'created_at' => now(),
             ]);
 
             $booking->update(['booking_status' => 'pending_confirmation']);
 
+            $owner = $booking->hotel?->owner ?? $booking->accommodationType?->hotel?->owner;
+            if ($owner) {
+                Notification::create([
+                    'user_id' => $owner->id,
+                    'type' => 'payment_submitted',
+                    'title' => 'دفعة جديدة بانتظار إجرائك',
+                    'body' => "الحجز {$booking->booking_number} — {$method->name}.",
+                ]);
+            } else {
+                Log::warning('إشعار دفعة بلا مالك: الحجز ' . $booking->booking_number);
+            }
+
             return $payment;
         });
 
-        return $this->successResponse(new PaymentResource($payment), 'Payment submitted for review.', 201);
+        return $this->successResponse(new PaymentResource($payment), __('messages.payment_submitted_review'), 201);
     }
 }

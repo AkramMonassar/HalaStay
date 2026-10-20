@@ -17,6 +17,7 @@ export default {
     settings: 'Settings',
     themeToDark: 'Dark Mode',
     themeToLight: 'Light Mode',
+    notifications: 'Notifications',
   },
   home: {
     heroTitle: 'Your Next Destination Starts Here',
@@ -48,12 +49,14 @@ export default {
     noResults: 'No matching results — try adjusting filters.',
     perNight: 'SAR / night',
     types: 'types',
+    noTypes: 'No types available',
     details: 'View Details',
     newBadge: 'New',
     chooseCity: 'Choose a city',
     stayTypes: { room: 'Rooms', apartment: 'Apartments', suite: 'Suites', hall: 'Halls' },
     starsWord: 'stars',
-    browseHint: 'Browse mode: showing all hotels in the city — add dates on the hotel page to check live availability.',
+    browseHint:
+      'Browse mode: showing all hotels in the city — add dates on the hotel page to check live availability.',
   },
   auth: {
     loginTitle: 'Sign In',
@@ -220,6 +223,7 @@ export default {
     addCity: 'Add',
     country: 'Country',
     cityName: 'City Name',
+    cityNameEn: 'City name (English)',
     activeF: 'Active',
     inactiveF: 'Inactive',
     approvedToast: 'Hotel approved.',
@@ -241,6 +245,8 @@ export default {
     receipt: 'View Receipt',
     historyTitle: 'Status History',
     cancelBtn: 'Cancel Booking',
+    cancelSuccess: 'Booking cancelled successfully.',
+    cancelFailed: 'Could not cancel booking.',
     method: 'Payment Method',
     receiptFile: 'Receipt Image',
     payNow: 'Pay Now',
@@ -252,13 +258,18 @@ export default {
     receiptTooLarge: 'Image is too large (max 5MB).',
     invalidMethod: 'Invalid payment method.',
     notYourBooking: 'This booking is not yours.',
+    expiryHint:
+      'Payment deadline expires in {h} hours — the booking will then expire automatically.',
+    payCancelled: 'Cancelled',
   },
   ownerHotel: {
     manageTitle: 'Managing: {name}',
     createTitle: 'Add New Hotel',
     dataTitle: 'Hotel Data',
     name: 'Name',
+    nameEn: 'Name (English)',
     description: 'Description',
+    descriptionEn: 'Description (English)',
     address: 'Address',
     phone: 'Phone',
     email: 'Email',
@@ -286,5 +297,11 @@ export default {
     thanks: 'Thank you! Your review has been published.',
     denied: 'You are not allowed to review this booking.',
   },
-
+  notif: {
+    title: 'Notifications',
+    empty: 'No notifications yet — when something important happens, you will see it here first.',
+    deleteOne: 'Delete',
+    clearAll: 'Clear all',
+    clearConfirm: 'Confirm clear?',
+  },
 }

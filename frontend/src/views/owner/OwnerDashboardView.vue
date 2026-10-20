@@ -3,10 +3,13 @@ import { ref, onMounted, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import api from '../../services/api'
 import { useThemeStore } from '../../stores/theme'
+import { useRouter } from 'vue-router'
 
 const { t } = useI18n()
 const theme = useThemeStore()
 const stats = ref(null)
+const router = useRouter()
+function go(path) { router.push(path) }
 
 const ink = computed(() => (theme.mode === 'dark' ? '#e9ecef' : '#373d3f'))
 const sub = computed(() => (theme.mode === 'dark' ? '#adb5bd' : '#6c757d'))
@@ -43,25 +46,25 @@ onMounted(async () => {
     <template v-else>
       <div class="row g-3 mb-4">
         <div class="col-md-3">
-          <div class="card shadow-sm text-center"><div class="card-body">
+          <div class="card shadow-sm text-center" role="button" style="cursor: pointer" @click="go('/owner/bookings')"><div class="card-body">
             <div class="fs-3 fw-bold text-primary">{{ stats.bookings_total }}</div>
             <div class="text-muted">{{ $t('owner.totalBookings') }}</div>
           </div></div>
         </div>
         <div class="col-md-3">
-          <div class="card shadow-sm text-center"><div class="card-body">
+          <div class="card shadow-sm text-center" role="button" style="cursor: pointer" @click="go('/owner/bookings?status=pending_confirmation')"><div class="card-body">
             <div class="fs-3 fw-bold text-info">{{ stats.pending_confirmation }}</div>
             <div class="text-muted">{{ $t('owner.awaitingConfirm') }}</div>
           </div></div>
         </div>
         <div class="col-md-3">
-          <div class="card shadow-sm text-center"><div class="card-body">
+          <div class="card shadow-sm text-center" role="button" style="cursor: pointer" @click="go('/owner/payments?status=under_review')"><div class="card-body">
             <div class="fs-3 fw-bold text-warning">{{ stats.under_review }}</div>
             <div class="text-muted">{{ $t('owner.awaitingReview') }}</div>
           </div></div>
         </div>
         <div class="col-md-3">
-          <div class="card shadow-sm text-center"><div class="card-body">
+          <div class="card shadow-sm text-center" role="button" style="cursor: pointer" @click="go('/owner/payments?status=success')"><div class="card-body">
             <div class="fs-3 fw-bold text-success">{{ stats.revenue_total }}</div>
             <div class="text-muted">{{ $t('owner.totalRevenue') }}</div>
           </div></div>

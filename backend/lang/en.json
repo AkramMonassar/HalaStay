@@ -1,0 +1,10 @@
+{
+    "messages.unauthenticated": "Unauthenticated — please sign in first.",
+    "messages.forbidden": "You are not allowed to perform this action.",
+    "messages.not_found": "The requested resource was not found.",
+    "messages.not_your_booking": "This booking is not yours.",
+    "messages.pay_blocked": "The booking is not in \"Awaiting Payment\" status — a new payment cannot be created.",
+    "messages.method_unavailable": "This payment method is not available right now.",
+    "messages.payment_created": "Payment created successfully.",
+    "messages.payment_submitted_review": "Payment submitted for review."
+}

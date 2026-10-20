@@ -13,8 +13,8 @@ class HotelSearchResource extends JsonResource
 
         return [
             'id' => $this->id,
-            'name' => $this->name,
-            'city' => $this->whenLoaded('city', fn () => $this->city->name),
+            'name' => (app()->getLocale() === 'en' && $this->name_en ? $this->name_en : $this->name),
+            'city' => $this->whenLoaded('city', fn () => (app()->getLocale() === 'en' && $this->city->name_en ? $this->city->name_en : $this->city->name)),
             'star_rating' => $this->star_rating,
             'review_score' => $this->review_score,
             'cover_image' => $cover?->image_path,

@@ -11,7 +11,7 @@ class AccommodationTypeResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->name,
+            'name' => (app()->getLocale() === 'en' && $this->name_en ? $this->name_en : $this->name),
             'stay_type' => $this->stay_type,
             'base_price' => $this->base_price,
             'currency_code' => $this->currency_code,

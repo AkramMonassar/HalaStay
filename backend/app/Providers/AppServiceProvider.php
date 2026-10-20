@@ -7,6 +7,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 
+
+use App\Models\Notification;
+use App\Observers\NotificationObserver;
+
 class AppServiceProvider extends ServiceProvider
 {
     public function register(): void
@@ -29,5 +33,8 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('search', function (Request $request) {
             return Limit::perMinute(30)->by($request->user()?->id ?: $request->ip());
         });
+
+        Notification::observe(NotificationObserver::class);
+
     }
 }

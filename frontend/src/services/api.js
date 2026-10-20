@@ -28,4 +28,11 @@ api.interceptors.response.use(
   }
 )
 
+import { useLangStore } from '../stores/lang'
+
+api.interceptors.request.use((config) => {
+  config.headers['Accept-Language'] = useLangStore().locale
+  return config
+})
+
 export default api

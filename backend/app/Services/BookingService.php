@@ -19,25 +19,24 @@ class BookingService
     /** الحالات التي يسمح لصاحب الفندق بتأكيدها أو رفضها */
     public const OWNER_PROCESSABLE = ['pending_confirmation'];
 
-    public function __construct(protected AvailabilityService $availabilityService)
-    {
-    }
+    public function __construct(protected AvailabilityService $availabilityService) {}
 
     public function createBooking(User $user, array $data): Booking
     {
         return DB::transaction(function () use ($user, $data) {
 
-            $type = AccommodationType::whereKey($data['accommodation_type_id'])
-                ->where('is_active', true)
-                ->lockForUpdate()
-                ->first();
-
+            $type = AccommodationType::whereKey($data['accommodation_type_id'])->where('is_active', true)->lockForUpdate()->first();
             if (!$type) {
-                throw ValidationException::withMessages([
-                    'accommodation_type_id' => 'نوع الإقامة غير موجود أو غير نشط.',
-                ]);
+                throw ValidationException::withMessages(['accommodation_type_id' => 'نوع الإقامة غير موجود أو غير نشط.',]);
             }
 
+            // 🔒 حارس الباب: إن أرسل الطلب hotel_id صريحاً، تأكد أنه يطابق فندق النوع
+            if (!empty($data['hotel_id']) && (int) $data['hotel_id'] !== (int) $type->hotel_id) {
+                throw ValidationException::withMessages([
+                    'accommodation_type_id' => 'نوع الإقامة لا يتبع الفندق المحدد.',
+                ]);
+            }
+            
             $hotel = Hotel::whereKey($type->hotel_id)
                 ->where('status', 'approved')
                 ->where('is_active', true)
@@ -49,10 +48,10 @@ class BookingService
                 ]);
             }
             if ($hotel->owner_id === $user->id) {
-            throw ValidationException::withMessages([
-                'accommodation_type_id' => 'لا يمكن إنشاء حجز في فندق تملكه.',
-            ]);
-        }
+                throw ValidationException::withMessages([
+                    'accommodation_type_id' => 'لا يمكن إنشاء حجز في فندق تملكه.',
+                ]);
+            }
             $checkIn = $data['check_in'];
             $checkOut = $data['check_out'];
             $nights = (int) Carbon::parse($checkIn)->diffInDays(Carbon::parse($checkOut));
@@ -238,7 +237,7 @@ class BookingService
                 'booking' => 'لا يمكنك إدارة حجوزات فندق لا تملكه.',
             ]);
         }
-        
+
         if ($user->role === 'admin') {
             throw ValidationException::withMessages([
                 'accommodation_type_id' => 'الحسابات الإدارية تستعرض المنصة ولا تنشئ حجوزات.',

@@ -34,11 +34,13 @@ class HotelService
     }
 
     public function updateHotel(Hotel $hotel, array $data): Hotel
-    {
+    {   
         $hotel->update([
             'city_id' => $data['city_id'] ?? $hotel->city_id,
             'name' => $data['name'] ?? $hotel->name,
+            'name_en' => array_key_exists('name_en', $data) ? $data['name_en'] : $hotel->name_en,
             'description' => array_key_exists('description', $data) ? $data['description'] : $hotel->description,
+            'description_en' => array_key_exists('description_en', $data) ? $data['description_en'] : $hotel->description_en,
             'address' => array_key_exists('address', $data) ? $data['address'] : $hotel->address,
             'phone' => array_key_exists('phone', $data) ? $data['phone'] : $hotel->phone,
             'email' => array_key_exists('email', $data) ? $data['email'] : $hotel->email,

@@ -11,7 +11,7 @@ class CountryResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->name,
+            'name' => (app()->getLocale() === 'en' && $this->name_en ? $this->name_en : $this->name),
             'code' => $this->code,
             'currency_code' => $this->currency_code,
         ];

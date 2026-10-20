@@ -19,7 +19,7 @@ class PaymentResource extends JsonResource
             'receipt_image' => $this->receipt_image ? asset('storage/' . $this->receipt_image) : null,
             'paid_at' => $this->paid_at,
             'booking_number' => $this->whenLoaded('booking', fn() => $this->booking->booking_number),
-            'hotel_name' => $this->whenLoaded('booking', fn() => $this->booking->hotel?->name),
+            'hotel_name' => $this->whenLoaded('booking', fn() => $this->booking->hotel ? (app()->getLocale() === 'en' && $this->booking->hotel->name_en ? $this->booking->hotel->name_en : $this->booking->hotel->name) : null),
             'guest_name' => $this->whenLoaded('user', fn() => $this->user->name),
             'created_at' => $this->created_at,
         ];

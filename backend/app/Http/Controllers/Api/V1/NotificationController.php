@@ -51,4 +51,21 @@ class NotificationController extends Controller
 
         return $this->successResponse(null, 'تم تعليم كل الإشعارات كمقروءة.');
     }
+    public function destroy(Request $request, Notification $notification): JsonResponse
+    {
+        if ($notification->user_id !== $request->user()->id) {
+            return $this->errorResponse('هذا الإشعار ليس لك.', 403);
+        }
+
+        $notification->delete();
+
+        return $this->successResponse(null, 'تم حذف الإشعار.');
+    }
+
+    public function destroyAll(Request $request): JsonResponse
+    {
+        Notification::where('user_id', $request->user()->id)->delete();
+
+        return $this->successResponse(null, 'تم مسح كل الإشعارات.');
+    }
 }
