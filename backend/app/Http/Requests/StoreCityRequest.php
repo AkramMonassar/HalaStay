@@ -16,6 +16,7 @@ class StoreCityRequest extends FormRequest
         return [
             'country_id' => ['required', 'exists:countries,id'],
             'name' => ['required', 'string', 'max:100'],
+            'name_en' => ['nullable', 'string', 'max:191'],
         ];
     }
 

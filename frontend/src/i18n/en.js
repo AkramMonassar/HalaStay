@@ -228,6 +228,11 @@ export default {
     inactiveF: 'Inactive',
     approvedToast: 'Hotel approved.',
     rejectedToast: 'Hotel rejected.',
+    cityNameEn: 'City name (English)',
+    editCity: 'Edit',
+    saveCity: 'Save changes',
+    cancelEdit: 'Cancel',
+    savedCity: 'City updated.',
   },
   details: {
     title: 'Booking Details',

@@ -40,7 +40,9 @@ class AdminCityController extends Controller
             'name_en' => $request->validated('name_en'),
             'is_active' => true,
         ]);
+
         Cache::forget('cities');
+
         return $this->successResponse(new CityResource($city->load('country')), 'تم إضافة المدينة.', 201);
     }
 
@@ -49,11 +51,14 @@ class AdminCityController extends Controller
         $data = $request->validated();
 
         $city->update([
+            'country_id' => $data['country_id'] ?? $city->country_id,
             'name' => $data['name'] ?? $city->name,
             'name_en' => array_key_exists('name_en', $data) ? $data['name_en'] : $city->name_en,
             'is_active' => $data['is_active'] ?? $city->is_active,
         ]);
+
         Cache::forget('cities');
+
         return $this->successResponse(new CityResource($city->load('country')), 'تم تحديث المدينة.');
     }
 }

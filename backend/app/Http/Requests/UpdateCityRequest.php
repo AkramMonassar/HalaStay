@@ -15,6 +15,7 @@ class UpdateCityRequest extends FormRequest
     {
         return [
             'name' => ['sometimes', 'required', 'string', 'max:100'],
+            'name_en' => ['sometimes','nullable','string','max:191'],
             'is_active' => ['nullable', 'boolean'],
         ];
     }

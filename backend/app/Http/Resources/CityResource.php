@@ -12,6 +12,9 @@ class CityResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => app()->getLocale() === 'en' && $this->name_en ? $this->name_en : $this->name,
+            'name_ar' => $this->name,
+            'name_en' => $this->name_en,
+            'country_id' => $this->country_id,
             'is_active' => $this->is_active,
             'country' => new CountryResource($this->whenLoaded('country')),
         ];

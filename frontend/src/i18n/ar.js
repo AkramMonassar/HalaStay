@@ -228,6 +228,11 @@ export default {
     inactiveF: 'موقوفة',
     approvedToast: 'تم اعتماد الفندق.',
     rejectedToast: 'تم رفض الفندق.',
+    cityNameEn: 'اسم المدينة (إنجليزي)',
+    editCity: 'تعديل',
+    saveCity: 'حفظ التعديل',
+    cancelEdit: 'إلغاء',
+    savedCity: 'تم تحديث المدينة.',
   },
   details: {
     title: 'تفاصيل الحجز',

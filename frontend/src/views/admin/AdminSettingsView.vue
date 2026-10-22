@@ -11,6 +11,7 @@ const cities = ref([])
 const countries = ref([])
 const methods = ref([])
 const newCity = ref({ country_id: '', name: '', name_en: '' })
+const editingCityId = ref(null)
 
 async function fetchAll() {
   const [c, co, m] = await Promise.all([
@@ -25,11 +26,34 @@ async function fetchAll() {
 
 onMounted(fetchAll)
 
-async function addCity() {
+function resetCity() {
+  newCity.value = { country_id: '', name: '', name_en: '' }
+  editingCityId.value = null
+}
+
+function startEdit(c) {
+  editingCityId.value = c.id
+  newCity.value = {
+    country_id: c.country_id ?? '',
+    name: c.name_ar ?? c.name,
+    name_en: c.name_en || '',
+  }
+}
+
+async function saveCity() {
+  const wasEditing = !!editingCityId.value
   try {
-    await api.post('/admin/cities', newCity.value)
-    newCity.value = { country_id: '', name: '', name_en: '' }
-    toast.push(t('settings.addedCity'), 'success')
+    if (wasEditing) {
+      await api.patch(`/admin/cities/${editingCityId.value}`, {
+        country_id: newCity.value.country_id,
+        name: newCity.value.name,
+        name_en: newCity.value.name_en || null,
+      })
+    } else {
+      await api.post('/admin/cities', newCity.value)
+    }
+    resetCity()
+    toast.push(wasEditing ? t('settings.savedCity') : t('settings.addedCity'), 'success')
     fetchAll()
   } catch (e) {
     const errors = e.response?.data?.errors
@@ -59,7 +83,6 @@ async function toggleMethod(m) {
 <template>
   <div class="container py-4">
     <h4 class="mb-4">⚙️ {{ $t('admin.settingsTitle') }}</h4>
-
     <div class="row g-4">
       <div class="col-lg-6">
         <div class="card shadow-sm">
@@ -72,36 +95,44 @@ async function toggleMethod(m) {
                   <option v-for="co in countries" :key="co.id" :value="co.id">{{ co.name }}</option>
                 </select>
               </div>
-              <div class="col-md-4"><input v-model="newCity.name" class="form-control"
-                  :placeholder="$t('settings.cityName')" /></div>
-              <div class="col-md-4"><input v-model="newCity.name_en" class="form-control" dir="ltr"
-                  :placeholder="$t('settings.cityNameEn')" /></div>
-              <div class="col-12"><button class="btn btn-primary w-100" @click="addCity">{{ $t('settings.addCity')
-                  }}</button></div>
+              <div class="col-md-4">
+                <input v-model="newCity.name" class="form-control" :placeholder="$t('settings.cityName')" />
+              </div>
+              <div class="col-md-4">
+                <input v-model="newCity.name_en" class="form-control" dir="ltr" :placeholder="$t('settings.cityNameEn')" />
+              </div>
+              <div class="col-12 d-flex gap-2">
+                <button class="btn btn-primary flex-grow-1" @click="saveCity">
+                  {{ editingCityId ? $t('settings.saveCity') : $t('settings.addCity') }}
+                </button>
+                <button v-if="editingCityId" class="btn btn-outline-secondary" @click="resetCity">
+                  {{ $t('settings.cancelEdit') }}
+                </button>
+              </div>
             </div>
-
-            <div v-for="c in cities" :key="c.id"
-              class="d-flex justify-content-between align-items-center border rounded p-2 mb-1">
+            <div v-for="c in cities" :key="c.id" class="d-flex justify-content-between align-items-center border rounded p-2 mb-1">
               <div>
                 {{ c.name }}
+                <span v-if="c.name_en" class="text-muted small">/ {{ c.name_en }}</span>
                 <span class="badge ms-1" :class="c.is_active ? 'bg-success' : 'bg-secondary'">
                   {{ c.is_active ? $t('settings.activeF') : $t('settings.inactiveF') }}
                 </span>
               </div>
-              <button class="btn btn-outline-secondary btn-sm" @click="toggleCity(c)">
-                {{ c.is_active ? $t('users.disable') : $t('users.enable') }}
-              </button>
+              <div class="d-flex gap-1">
+                <button class="btn btn-outline-primary btn-sm" @click="startEdit(c)">{{ $t('settings.editCity') }}</button>
+                <button class="btn btn-outline-secondary btn-sm" @click="toggleCity(c)">
+                  {{ c.is_active ? $t('users.disable') : $t('users.enable') }}
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </div>
-
       <div class="col-lg-6">
         <div class="card shadow-sm">
           <div class="card-header bg-white fw-semibold">{{ $t('settings.methods') }}</div>
           <div class="card-body">
-            <div v-for="m in methods" :key="m.id"
-              class="d-flex justify-content-between align-items-center border rounded p-2 mb-1">
+            <div v-for="m in methods" :key="m.id" class="d-flex justify-content-between align-items-center border rounded p-2 mb-1">
               <div>
                 {{ m.name }}
                 <span class="badge ms-1 bg-light text-dark">{{ m.type }}</span>
