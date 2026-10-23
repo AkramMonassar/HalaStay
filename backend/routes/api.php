@@ -21,6 +21,7 @@ use App\Http\Controllers\Api\V1\ReviewController;
 use App\Http\Controllers\Api\V1\SearchController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\V1\AdminCountryController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -88,11 +89,16 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
         Route::get('/bookings', [AdminDashboardController::class, 'bookings']);
         Route::get('/payments', [AdminDashboardController::class, 'payments']);
         Route::get('/cities', [AdminCityController::class, 'index']);
+        Route::get('/countries', [AdminCountryController::class, 'index']);
+        Route::post('/countries', [AdminCountryController::class, 'store']);
+        Route::patch('/countries/{country}', [AdminCountryController::class, 'update']);
         Route::post('/cities', [AdminCityController::class, 'store']);
         Route::patch('/cities/{city}', [AdminCityController::class, 'update']);
         Route::patch('/payment-methods/{method}/toggle', [AdminPaymentMethodController::class, 'toggle']);
         Route::get('/payment-methods', [AdminPaymentMethodController::class, 'index']);
     });
+
+
 
     // 🔐 Auth APIs
     Route::prefix('auth')->middleware('throttle:auth')->group(function () {

@@ -10,8 +10,12 @@ const toast = useToastStore()
 const cities = ref([])
 const countries = ref([])
 const methods = ref([])
+
 const newCity = ref({ country_id: '', name: '', name_en: '' })
 const editingCityId = ref(null)
+
+const newCountry = ref({ name: '', name_en: '' })
+const editingCountryId = ref(null)
 
 async function fetchAll() {
   const [c, co, m] = await Promise.all([
@@ -26,12 +30,12 @@ async function fetchAll() {
 
 onMounted(fetchAll)
 
+/* ---------- المدن (3.5-أ) ---------- */
 function resetCity() {
   newCity.value = { country_id: '', name: '', name_en: '' }
   editingCityId.value = null
 }
-
-function startEdit(c) {
+function startEditCity(c) {
   editingCityId.value = c.id
   newCity.value = {
     country_id: c.country_id ?? '',
@@ -39,7 +43,6 @@ function startEdit(c) {
     name_en: c.name_en || '',
   }
 }
-
 async function saveCity() {
   const wasEditing = !!editingCityId.value
   try {
@@ -60,7 +63,6 @@ async function saveCity() {
     toast.push(errors ? Object.values(errors).flat()[0] : t('auth.loginFailed'), 'danger')
   }
 }
-
 async function toggleCity(c) {
   try {
     await api.patch(`/admin/cities/${c.id}`, { is_active: !c.is_active })
@@ -70,6 +72,39 @@ async function toggleCity(c) {
   }
 }
 
+/* ---------- الدول (3.5-ب) ---------- */
+function resetCountry() {
+  newCountry.value = { name: '', name_en: '' }
+  editingCountryId.value = null
+}
+function startEditCountry(co) {
+  editingCountryId.value = co.id
+  newCountry.value = {
+    name: co.name_ar ?? co.name,
+    name_en: co.name_en || '',
+  }
+}
+async function saveCountry() {
+  const wasEditing = !!editingCountryId.value
+  try {
+    if (wasEditing) {
+      await api.patch(`/admin/countries/${editingCountryId.value}`, {
+        name: newCountry.value.name,
+        name_en: newCountry.value.name_en || null,
+      })
+    } else {
+      await api.post('/admin/countries', newCountry.value)
+    }
+    resetCountry()
+    toast.push(wasEditing ? t('settings.savedCountry') : t('settings.addedCountry'), 'success')
+    fetchAll()
+  } catch (e) {
+    const errors = e.response?.data?.errors
+    toast.push(errors ? Object.values(errors).flat()[0] : t('auth.loginFailed'), 'danger')
+  }
+}
+
+/* ---------- طرق الدفع ---------- */
 async function toggleMethod(m) {
   try {
     await api.patch(`/admin/payment-methods/${m.id}/toggle`)
@@ -83,7 +118,9 @@ async function toggleMethod(m) {
 <template>
   <div class="container py-4">
     <h4 class="mb-4">⚙️ {{ $t('admin.settingsTitle') }}</h4>
+
     <div class="row g-4">
+      <!-- المدن -->
       <div class="col-lg-6">
         <div class="card shadow-sm">
           <div class="card-header bg-white fw-semibold">{{ $t('settings.cities') }}</div>
@@ -119,7 +156,7 @@ async function toggleMethod(m) {
                 </span>
               </div>
               <div class="d-flex gap-1">
-                <button class="btn btn-outline-primary btn-sm" @click="startEdit(c)">{{ $t('settings.editCity') }}</button>
+                <button class="btn btn-outline-primary btn-sm" @click="startEditCity(c)">{{ $t('settings.editCity') }}</button>
                 <button class="btn btn-outline-secondary btn-sm" @click="toggleCity(c)">
                   {{ c.is_active ? $t('users.disable') : $t('users.enable') }}
                 </button>
@@ -128,6 +165,8 @@ async function toggleMethod(m) {
           </div>
         </div>
       </div>
+
+      <!-- طرق الدفع -->
       <div class="col-lg-6">
         <div class="card shadow-sm">
           <div class="card-header bg-white fw-semibold">{{ $t('settings.methods') }}</div>
@@ -143,6 +182,40 @@ async function toggleMethod(m) {
               <button class="btn btn-outline-secondary btn-sm" @click="toggleMethod(m)">
                 {{ m.is_active ? $t('users.disable') : $t('users.enable') }}
               </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- الدول (سطر جديد كامل العرض) -->
+    <div class="row g-4 mt-0">
+      <div class="col-12">
+        <div class="card shadow-sm">
+          <div class="card-header bg-white fw-semibold">{{ $t('settings.countries') }}</div>
+          <div class="card-body">
+            <div class="row g-2 mb-3">
+              <div class="col-md-4">
+                <input v-model="newCountry.name" class="form-control" :placeholder="$t('settings.countryName')" />
+              </div>
+              <div class="col-md-4">
+                <input v-model="newCountry.name_en" class="form-control" dir="ltr" :placeholder="$t('settings.countryNameEn')" />
+              </div>
+              <div class="col-md-4 d-flex gap-2">
+                <button class="btn btn-primary flex-grow-1" @click="saveCountry">
+                  {{ editingCountryId ? $t('settings.saveCountry') : $t('settings.addCountry') }}
+                </button>
+                <button v-if="editingCountryId" class="btn btn-outline-secondary" @click="resetCountry">
+                  {{ $t('settings.cancelEdit') }}
+                </button>
+              </div>
+            </div>
+            <div v-for="co in countries" :key="co.id" class="d-flex justify-content-between align-items-center border rounded p-2 mb-1">
+              <div>
+                {{ co.name }}
+                <span v-if="co.name_en" class="text-muted small">/ {{ co.name_en }}</span>
+              </div>
+              <button class="btn btn-outline-primary btn-sm" @click="startEditCountry(co)">{{ $t('settings.editCountry') }}</button>
             </div>
           </div>
         </div>
