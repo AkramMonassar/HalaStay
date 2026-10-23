@@ -100,7 +100,7 @@ async function saveCountry() {
     fetchAll()
   } catch (e) {
     const errors = e.response?.data?.errors
-    toast.push(errors ? Object.values(errors).flat()[0] : t('auth.loginFailed'), 'danger')
+    toast.push(errors ? Object.values(errors).flat()[0] : (e.response?.data?.message || 'خطأ غير متوقع.'), 'danger')
   }
 }
 
