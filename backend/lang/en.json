@@ -6,5 +6,20 @@
     "messages.pay_blocked": "The booking is not in \"Awaiting Payment\" status — a new payment cannot be created.",
     "messages.method_unavailable": "This payment method is not available right now.",
     "messages.payment_created": "Payment created successfully.",
-    "messages.payment_submitted_review": "Payment submitted for review."
+    "messages.payment_submitted_review": "Payment submitted for review.",
+
+    "notif.payment_submitted.title": "New payment awaiting your action",
+    "notif.payment_submitted.body": "Booking :booking_number — :method.",
+    "notif.booking_confirmed.title": "Your booking is confirmed",
+    "notif.booking_confirmed.body": "Your booking :booking_number is now confirmed. We wish you a pleasant stay!",
+    "notif.booking_rejected.title": "Update on your booking",
+    "notif.booking_rejected.body": "Your booking :booking_number was rejected by the hotel.",
+    "notif.booking_cancelled.title": "Booking :booking_number cancelled",
+    "notif.booking_cancelled.body": "The guest cancelled the booking before completion.",
+    "notif.booking_cancelled_paid.title": "Booking :booking_number cancelled",
+    "notif.booking_cancelled_paid.body": "The guest cancelled after submitting a payment — the open payment has been voided.",
+    "notif.hotel_approved.title": "Your hotel is approved",
+    "notif.hotel_approved.body": "Your hotel \":hotel_name\" is now approved and visible in search results.",
+    "notif.hotel_rejected.title": "Update on your hotel",
+    "notif.hotel_rejected.body": "Your hotel \":hotel_name\" was rejected by the administration."
 }

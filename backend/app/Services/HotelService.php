@@ -82,7 +82,9 @@ class HotelService
 
         $hotel->update(['status' => 'approved']);
 
-        NotificationService::send($hotel->owner, 'تم اعتماد فندقك', 'فندقك "' . $hotel->name . '" معتمد الآن وظاهر في نتائج البحث.', 'hotel');
+        NotificationService::send($hotel->owner, 'hotel_approved', [
+            'hotel_name' => $hotel->name,
+        ]);
         return $hotel->refresh();
     }
 
@@ -98,7 +100,9 @@ class HotelService
 
         $hotel->update(['status' => 'rejected']);
         
-        NotificationService::send($hotel->owner, 'تحديث على فندقك', 'فندقك "' . $hotel->name . '" مرفوض من الإدارة.', 'hotel');
+        NotificationService::send($hotel->owner, 'hotel_rejected', [
+            'hotel_name' => $hotel->name,
+        ]);
 
         return $hotel->refresh();
     }

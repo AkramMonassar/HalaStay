@@ -12,6 +12,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Models\Notification;
 use App\Models\Payment;
+use App\Services\NotificationService;
 
 class BookingController extends Controller
 {
@@ -84,20 +85,14 @@ class BookingController extends Controller
             ->update(['payment_status' => 'cancelled']);
 
         // إشعار المالك بالإلغاء — والـ Observer يبثه لحظياً
-        $owner = $booking->hotel?->owner ?? $booking->accommodationType?->hotel?->owner;
-        if (! $owner) {
-            \Illuminate\Support\Facades\Log::warning('إشعار دفعة بلا مالك: الحجز ' . $booking->booking_number);
-        }
-        if ($owner) {
-            Notification::create([
-                'user_id' => $owner->id,
-                'type' => 'booking_cancelled',
-                'title' => 'تم إلغاء الحجز ' . $booking->booking_number,
-                'body' => $voided
-                    ? 'ألغى الضيف الحجز بعد رفع دفعة — تم إبطال الدفعة المفتوحة المرتبطة.'
-                    : 'ألغى الضيف الحجز قبل اكتماله.',
-            ]);
-        }
+            $owner = $booking->hotel?->owner ?? $booking->accommodationType?->hotel?->owner;
+            if ($owner) {
+                NotificationService::send($owner, $voided ? 'booking_cancelled_paid' : 'booking_cancelled', [
+                    'booking_number' => $booking->booking_number,
+                ]);
+            } else {
+                \Illuminate\Support\Facades\Log::warning('إشعار إلغاء بلا مالك: الحجز ' . $booking->booking_number);
+            }
 
         return $this->successResponse(new BookingResource($booking), 'تم إلغاء الحجز بنجاح.');
     }

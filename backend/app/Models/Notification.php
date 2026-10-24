@@ -13,6 +13,7 @@ class Notification extends Model
         'title',
         'body',
         'type',
+        'params',
         'is_read',
         'created_at',
     ];
@@ -20,6 +21,7 @@ class Notification extends Model
     protected $casts = [
         'is_read' => 'boolean',
         'created_at' => 'datetime',
+        'params' => 'array',
     ];
 
     public function user()

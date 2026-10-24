@@ -8,6 +8,7 @@ use App\Models\Booking;
 use App\Models\Notification;
 use App\Models\Payment;
 use App\Models\PaymentMethod;
+use App\Services\NotificationService;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -81,11 +82,9 @@ class PaymentController extends Controller
 
             $owner = $booking->hotel?->owner ?? $booking->accommodationType?->hotel?->owner;
             if ($owner) {
-                Notification::create([
-                    'user_id' => $owner->id,
-                    'type' => 'payment_submitted',
-                    'title' => 'دفعة جديدة بانتظار إجرائك',
-                    'body' => "الحجز {$booking->booking_number} — {$method->name}.",
+                NotificationService::send($owner, 'payment_submitted', [
+                    'booking_number' => $booking->booking_number,
+                    'method' => $method->name,
                 ]);
             } else {
                 Log::warning('إشعار دفعة بلا مالك: الحجز ' . $booking->booking_number);
@@ -141,16 +140,13 @@ class PaymentController extends Controller
 
             $owner = $booking->hotel?->owner ?? $booking->accommodationType?->hotel?->owner;
             if ($owner) {
-                Notification::create([
-                    'user_id' => $owner->id,
-                    'type' => 'payment_submitted',
-                    'title' => 'دفعة جديدة بانتظار إجرائك',
-                    'body' => "الحجز {$booking->booking_number} — {$method->name}.",
+                NotificationService::send($owner, 'payment_submitted', [
+                    'booking_number' => $booking->booking_number,
+                    'method' => $method->name,
                 ]);
             } else {
                 Log::warning('إشعار دفعة بلا مالك: الحجز ' . $booking->booking_number);
             }
-
             return $payment;
         });
 
