@@ -6,13 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreBookingRequest;
 use App\Http\Resources\BookingResource;
 use App\Models\Booking;
+use App\Models\Payment;
 use App\Services\BookingService;
+use App\Services\NotificationService;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Models\Notification;
-use App\Models\Payment;
-use App\Services\NotificationService;
+use Illuminate\Support\Facades\Log;
 
 class BookingController extends Controller
 {
@@ -31,7 +31,7 @@ class BookingController extends Controller
 
         return $this->successResponse(
             new BookingResource($booking),
-            'تم إنشاء الحجز بنجاح، يرجى إتمام الدفع.',
+            __('messages.booking_created_pay'),
             201
         );
     }
@@ -46,7 +46,7 @@ class BookingController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'قائمة حجوزاتك.',
+            'message' => __('messages.my_bookings'),
             'data' => BookingResource::collection($bookings),
             'meta' => [
                 'current_page' => $bookings->currentPage(),
@@ -63,7 +63,7 @@ class BookingController extends Controller
 
         $booking->load(['hotel', 'accommodationType', 'payments.paymentMethod', 'statusHistory.changedBy']);
 
-        return $this->successResponse(new BookingResource($booking), 'تفاصيل الحجز.');
+        return $this->successResponse(new BookingResource($booking), __('messages.booking_details'));
     }
 
     public function cancel(Request $request, Booking $booking): JsonResponse
@@ -79,23 +79,25 @@ class BookingController extends Controller
         );
 
         $booking->load(['hotel', 'accommodationType']);
+
         // إبطال أي دفعة مفتوحة مرتبطة بالحجز الملغى
         $voided = Payment::where('booking_id', $booking->id)
             ->whereIn('payment_status', ['pending', 'under_review'])
             ->update(['payment_status' => 'cancelled']);
 
-        // إشعار المالك بالإلغاء — والـ Observer يبثه لحظياً
-            $owner = $booking->hotel?->owner ?? $booking->accommodationType?->hotel?->owner;
-            if ($owner) {
-                NotificationService::send($owner, $voided ? 'booking_cancelled_paid' : 'booking_cancelled', [
-                    'booking_number' => $booking->booking_number,
-                ]);
-            } else {
-                \Illuminate\Support\Facades\Log::warning('إشعار إلغاء بلا مالك: الحجز ' . $booking->booking_number);
-            }
+        // إشعار المالك بالإلغاء — والـ Observer يبثه لحظياَ
+        $owner = $booking->hotel?->owner ?? $booking->accommodationType?->hotel?->owner;
+        if ($owner) {
+            NotificationService::send($owner, $voided ? 'booking_cancelled_paid' : 'booking_cancelled', [
+                'booking_number' => $booking->booking_number,
+            ]);
+        } else {
+            Log::warning('إشعار إلغاء بلا مالك: الحجز ' . $booking->booking_number);
+        }
 
-        return $this->successResponse(new BookingResource($booking), 'تم إلغاء الحجز بنجاح.');
+        return $this->successResponse(new BookingResource($booking), __('messages.booking_cancelled_ok'));
     }
+
     public function index(Request $request): JsonResponse
     {
         $bookings = Booking::with(['accommodationType.hotel', 'user'])
@@ -103,6 +105,6 @@ class BookingController extends Controller
             ->latest()
             ->get();
 
-        return $this->successResponse(BookingResource::collection($bookings), 'حجوزاتك.');
+        return $this->successResponse(BookingResource::collection($bookings), __('messages.bookings_list'));
     }
 }

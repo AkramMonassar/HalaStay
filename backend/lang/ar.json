@@ -21,5 +21,15 @@
     "notif.hotel_approved.title": "تم اعتماد فندقك",
     "notif.hotel_approved.body": "فندقك \":hotel_name\" معتمد الآن وظاهر في نتائج البحث.",
     "notif.hotel_rejected.title": "تحديث على فندقك",
-    "notif.hotel_rejected.body": "فندقك \":hotel_name\" مرفوض من الإدارة."
+    "notif.hotel_rejected.body": "فندقك \":hotel_name\" مرفوض من الإدارة.",
+
+    "messages.booking_created_pay": "تم إنشاء الحجز بنجاح، يرجى إتمام الدفع.",
+    "messages.my_bookings": "قائمة حجوزاتك.",
+    "messages.booking_details": "تفاصيل الحجز.",
+    "messages.booking_cancelled_ok": "تم إلغاء الحجز بنجاح.",
+    "messages.bookings_list": "حجوزاتك.",
+
+    "messages.owner_bookings_list": "حجوزات فنادقك.",
+    "messages.booking_confirmed_ok": "تم تأكيد الحجز بنجاح.",
+    "messages.booking_rejected_ok": "تم رفض الحجز وتحرير الوحدات.",
 }

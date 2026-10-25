@@ -21,5 +21,15 @@
     "notif.hotel_approved.title": "Your hotel is approved",
     "notif.hotel_approved.body": "Your hotel \":hotel_name\" is now approved and visible in search results.",
     "notif.hotel_rejected.title": "Update on your hotel",
-    "notif.hotel_rejected.body": "Your hotel \":hotel_name\" was rejected by the administration."
+    "notif.hotel_rejected.body": "Your hotel \":hotel_name\" was rejected by the administration.",
+
+    "messages.booking_created_pay": "Booking created successfully — please complete the payment.",
+    "messages.my_bookings": "Your bookings list.",
+    "messages.booking_details": "Booking details.",
+    "messages.booking_cancelled_ok": "Booking cancelled successfully.",
+    "messages.bookings_list": "Your bookings.",
+
+    "messages.owner_bookings_list": "Your hotels' bookings.",
+    "messages.booking_confirmed_ok": "Booking confirmed successfully.",
+    "messages.booking_rejected_ok": "Booking rejected and units released."
 }

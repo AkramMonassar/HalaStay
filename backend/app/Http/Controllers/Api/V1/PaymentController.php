@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\PaymentResource;
 use App\Models\Booking;
-use App\Models\Notification;
 use App\Models\Payment;
 use App\Models\PaymentMethod;
 use App\Services\NotificationService;
@@ -147,6 +146,7 @@ class PaymentController extends Controller
             } else {
                 Log::warning('إشعار دفعة بلا مالك: الحجز ' . $booking->booking_number);
             }
+
             return $payment;
         });
 

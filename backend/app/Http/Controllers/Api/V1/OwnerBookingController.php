@@ -5,11 +5,11 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\BookingResource;
 use App\Models\Booking;
+use App\Models\Payment;
 use App\Services\BookingService;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Models\Payment;
 
 class OwnerBookingController extends Controller
 {
@@ -34,7 +34,7 @@ class OwnerBookingController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'حجوزات فنادقك.',
+            'message' => __('messages.owner_bookings_list'),
             'data' => BookingResource::collection($bookings),
             'meta' => [
                 'current_page' => $bookings->currentPage(),
@@ -48,6 +48,7 @@ class OwnerBookingController extends Controller
     public function confirm(Request $request, Booking $booking): JsonResponse
     {
         $this->authorize('process', $booking);
+
         $validated = $request->validate([
             'note' => ['nullable', 'string', 'max:255'],
         ]);
@@ -60,26 +61,30 @@ class OwnerBookingController extends Controller
 
         $booking->load(['hotel', 'accommodationType']);
 
-        return $this->successResponse(new BookingResource($booking), 'تم تأكيد الحجز بنجاح.');
+        return $this->successResponse(new BookingResource($booking), __('messages.booking_confirmed_ok'));
     }
 
     public function reject(Request $request, Booking $booking): JsonResponse
     {
         $this->authorize('process', $booking);
+
         $validated = $request->validate([
             'reason' => ['nullable', 'string', 'max:255'],
         ]);
+
         $booking = $this->bookingService->rejectBookingByOwner(
             $request->user(),
             $booking,
             $validated['reason'] ?? null
         );
+
         // إبطال أي دفعة مفتوحة — لا يتامى بعد اليوم
         Payment::where('booking_id', $booking->id)
             ->whereIn('payment_status', ['pending', 'under_review'])
             ->update(['payment_status' => 'cancelled']);
 
         $booking->load(['hotel', 'accommodationType']);
-        return $this->successResponse(new BookingResource($booking), 'تم رفض الحجز وتحرير الوحدات.');
+
+        return $this->successResponse(new BookingResource($booking), __('messages.booking_rejected_ok'));
     }
 }
