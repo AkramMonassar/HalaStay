@@ -31,8 +31,8 @@ class SearchController extends Controller
         return response()->json([
             'success' => true,
             'message' => $hotels->total() > 0
-                ? 'تم العثور على النتائج.'
-                : 'لا توجد فنادق مطابقة لمعايير البحث.',
+                ? __('messages.search_found')
+                : __('messages.search_none'),
             'data' => HotelSearchResource::collection($hotels),
             'meta' => [
                 'current_page' => $hotels->currentPage(),

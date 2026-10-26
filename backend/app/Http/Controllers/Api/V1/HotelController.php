@@ -20,7 +20,7 @@ class HotelController extends Controller
     public function show(Hotel $hotel): JsonResponse
     {
         if ($hotel->status !== 'approved' || !$hotel->is_active) {
-            return $this->errorResponse('الفندق غير موجود أو غير متاح حالياً.', 404);
+            return $this->errorResponse(__('messages.hotel_unavailable'), 404);
         }
 
         $hotel->load([
@@ -29,14 +29,15 @@ class HotelController extends Controller
             'accommodationTypes' => fn($q) => $q->where('is_active', true),
         ]);
 
-        return $this->successResponse(new HotelResource($hotel), 'تفاصيل الفندق.');
+        return $this->successResponse(new HotelResource($hotel), __('messages.hotel_details'));
     }
 
     public function rooms(Request $request, Hotel $hotel): JsonResponse
     {
         if ($hotel->status !== 'approved' || !$hotel->is_active) {
-            return $this->errorResponse('الفندق غير موجود أو غير متاح حالياً.', 404);
+            return $this->errorResponse(__('messages.hotel_unavailable'), 404);
         }
+
         $validated = $request->validate([
             'check_in' => ['nullable', 'date'],
             'check_out' => ['nullable', 'date', 'after:check_in'],
@@ -44,10 +45,10 @@ class HotelController extends Controller
             'adults' => ['nullable', 'integer', 'min:1'],
             'children' => ['nullable', 'integer', 'min:0'],
         ], [
-            'check_in.date' => 'صيغة تاريخ الدخول غير صحيحة.',
-            'check_out.date' => 'صيغة تاريخ الخروج غير صحيحة.',
-            'check_out.after' => 'تاريخ الخروج يجب أن يكون بعد تاريخ الدخول.',
-            'rooms.min' => 'يجب أن يكون عدد الغرف واحداً على الأقل.',
+            'check_in.date' => __('validation.date_format'),
+            'check_out.date' => __('validation.date_format'),
+            'check_out.after' => __('validation.check_out_after'),
+            'rooms.min' => __('validation.rooms_min'),
         ]);
 
         if (!empty($validated['check_in']) && !empty($validated['check_out'])) {
@@ -60,7 +61,7 @@ class HotelController extends Controller
 
             return $this->successResponse(
                 AccommodationTypeResource::collection($available),
-                'أنواع الإقامة المتاحة في التواريخ المحددة.'
+                __('messages.types_available_dates')
             );
         }
 
@@ -68,14 +69,14 @@ class HotelController extends Controller
 
         return $this->successResponse(
             AccommodationTypeResource::collection($types),
-            'أنواع الإقامة للفندق.'
+            __('messages.types_for_hotel')
         );
     }
 
     public function availability(Request $request, Hotel $hotel): JsonResponse
     {
         if ($hotel->status !== 'approved' || !$hotel->is_active) {
-            return $this->errorResponse('الفندق غير موجود أو غير متاح حالياً.', 404);
+            return $this->errorResponse(__('messages.hotel_unavailable'), 404);
         }
 
         $validated = $request->validate([
@@ -86,11 +87,11 @@ class HotelController extends Controller
             'adults' => ['nullable', 'integer', 'min:1'],
             'children' => ['nullable', 'integer', 'min:0'],
         ], [
-            'check_in.required' => 'تاريخ الدخول مطلوب.',
-            'check_out.required' => 'تاريخ الخروج مطلوب.',
-            'check_out.after' => 'تاريخ الخروج يجب أن يكون بعد تاريخ الدخول.',
-            'rooms.min' => 'يجب أن يكون عدد الغرف واحداً على الأقل.',
-            'accommodation_type_id.exists' => 'نوع الإقامة غير موجود في هذا الفندق.',
+            'check_in.required' => __('validation.check_in_required'),
+            'check_out.required' => __('validation.check_out_required'),
+            'check_out.after' => __('validation.check_out_after'),
+            'rooms.min' => __('validation.rooms_min'),
+            'accommodation_type_id.exists' => __('messages.type_not_in_hotel'),
         ]);
 
         $rooms = (int) ($validated['rooms'] ?? 1);
@@ -102,7 +103,7 @@ class HotelController extends Controller
                 ->first();
 
             if (!$type) {
-                return $this->errorResponse('نوع الإقامة غير موجود في هذا الفندق.', 404);
+                return $this->errorResponse(__('messages.type_not_in_hotel'), 404);
             }
 
             $availableUnits = $this->availabilityService->availableUnits(
@@ -118,7 +119,7 @@ class HotelController extends Controller
                 'available_units' => $availableUnits,
                 'requested_rooms' => $rooms,
                 'is_available' => $availableUnits >= $rooms,
-            ], 'حالة التوفر لنوع الإقامة المحدد.');
+            ], __('messages.availability_status'));
         }
 
         $available = $this->availabilityService->typesForHotel(
@@ -131,7 +132,7 @@ class HotelController extends Controller
 
         return $this->successResponse(
             AccommodationTypeResource::collection($available),
-            'الأنواع المتاحة في التواريخ المحددة.'
+            __('messages.types_available')
         );
     }
 }

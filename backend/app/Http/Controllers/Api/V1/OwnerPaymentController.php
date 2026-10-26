@@ -34,7 +34,7 @@ class OwnerPaymentController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'دفعات حجوزات فنادقك.',
+            'message' => __('messages.owner_payments_list'),
             'data' => PaymentResource::collection($payments),
             'meta' => [
                 'current_page' => $payments->currentPage(),
@@ -48,9 +48,9 @@ class OwnerPaymentController extends Controller
     public function review(ReviewPaymentRequest $request, Payment $payment): JsonResponse
     {
         $this->authorize('review', $payment);
-        
+
         if ($payment->booking->booking_status === 'cancelled') {
-            return $this->errorResponse('لا يمكن مراجعة دفعة لحجز ملغى.', 422);
+            return $this->errorResponse(__('messages.payment_review_cancelled'), 422);
         }
 
         $payment = $this->paymentService->reviewPaymentByOwner(
@@ -65,8 +65,8 @@ class OwnerPaymentController extends Controller
         return $this->successResponse(
             new PaymentResource($payment),
             $request->validated('action') === 'approve'
-                ? 'تم اعتماد الدفعة وتأكيد الحجز.'
-                : 'تم رفض الدفعة وإعادة الحجز إلى انتظار الدفع.'
+                ? __('messages.payment_approved_ok')
+                : __('messages.payment_rejected_ok')
         );
     }
 }
