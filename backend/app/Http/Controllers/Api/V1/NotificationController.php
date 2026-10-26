@@ -21,7 +21,7 @@ class NotificationController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'إشعاراتك.',
+            'message' => __('messages.notifications_list'),
             'data' => NotificationResource::collection($notifications),
             'meta' => [
                 'current_page' => $notifications->currentPage(),
@@ -35,12 +35,12 @@ class NotificationController extends Controller
     public function markRead(Request $request, Notification $notification): JsonResponse
     {
         if ($notification->user_id !== $request->user()->id) {
-            return $this->errorResponse('لا يمكنك تعديل إشعار لا يخصك.', 403);
+            return $this->errorResponse(__('messages.notif_not_mine'), 403);
         }
 
         $notification->update(['is_read' => true]);
 
-        return $this->successResponse(new NotificationResource($notification), 'تم تعليم الإشعار كمقروء.');
+        return $this->successResponse(new NotificationResource($notification), __('messages.notif_marked_read'));
     }
 
     public function markAllRead(Request $request): JsonResponse
@@ -49,23 +49,24 @@ class NotificationController extends Controller
             ->where('is_read', false)
             ->update(['is_read' => true]);
 
-        return $this->successResponse(null, 'تم تعليم كل الإشعارات كمقروءة.');
+        return $this->successResponse(null, __('messages.notif_all_read'));
     }
+
     public function destroy(Request $request, Notification $notification): JsonResponse
     {
         if ($notification->user_id !== $request->user()->id) {
-            return $this->errorResponse('هذا الإشعار ليس لك.', 403);
+            return $this->errorResponse(__('messages.notif_not_mine'), 403);
         }
 
         $notification->delete();
 
-        return $this->successResponse(null, 'تم حذف الإشعار.');
+        return $this->successResponse(null, __('messages.notif_deleted'));
     }
 
     public function destroyAll(Request $request): JsonResponse
     {
         Notification::where('user_id', $request->user()->id)->delete();
 
-        return $this->successResponse(null, 'تم مسح كل الإشعارات.');
+        return $this->successResponse(null, __('messages.notif_all_cleared'));
     }
 }

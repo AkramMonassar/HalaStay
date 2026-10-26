@@ -32,4 +32,11 @@
     "messages.owner_bookings_list": "حجوزات فنادقك.",
     "messages.booking_confirmed_ok": "تم تأكيد الحجز بنجاح.",
     "messages.booking_rejected_ok": "تم رفض الحجز وتحرير الوحدات.",
+
+        "messages.notifications_list": "إشعاراتك.",
+    "messages.notif_not_mine": "هذا الإشعار ليس لك.",
+    "messages.notif_marked_read": "تم تعليم الإشعار كمقروء.",
+    "messages.notif_all_read": "تم تعليم كل الإشعارات كمقروءة.",
+    "messages.notif_deleted": "تم حذف الإشعار.",
+    "messages.notif_all_cleared": "تم مسح كل الإشعارات."
 }

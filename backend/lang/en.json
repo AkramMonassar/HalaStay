@@ -31,5 +31,12 @@
 
     "messages.owner_bookings_list": "Your hotels' bookings.",
     "messages.booking_confirmed_ok": "Booking confirmed successfully.",
-    "messages.booking_rejected_ok": "Booking rejected and units released."
+    "messages.booking_rejected_ok": "Booking rejected and units released.",
+
+    "messages.notifications_list": "Your notifications.",
+    "messages.notif_not_mine": "This notification is not yours.",
+    "messages.notif_marked_read": "Notification marked as read.",
+    "messages.notif_all_read": "All notifications marked as read.",
+    "messages.notif_deleted": "Notification deleted.",
+    "messages.notif_all_cleared": "All notifications cleared."
 }
